@@ -1,0 +1,41 @@
+{
+  "pools": [
+    {
+      "name": "guaranteed_bucket",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "minecraft:water_bucket",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{display:{Name:\"The Last Drop\", Lore:[\"Better make it count\"]}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "guaranteed_apple",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "minecraft:apple",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 14,
+                "max": 16
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

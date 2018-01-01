@@ -1,0 +1,12 @@
+[
+{
+  "modid": "hcisland",
+  "name": "Hardcore Island",
+  "description": "'cos losing is fun!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "authorList": ["Team Jakojäännös"],
+  "requiredMods": ["jakojaannos-lib"],
+  "dependencies": ["jakojaannos-lib"]
+}
+]
