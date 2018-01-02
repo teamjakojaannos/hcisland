@@ -1,38 +1,28 @@
 package jakojaannos.hcisland.world.biome;
 
-import jakojaannos.api.world.AdvancedBiomeBase;
 import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 
-public class BiomeHCIsland extends BiomeHCBase {
+public class BiomeHCIsland extends BiomeHCIslandBase<HCIslandChunkGeneratorSettings.BiomeSettings.Forest> {
     public BiomeHCIsland() {
-        super(getProperties(), HCIslandConfig.worldGen.island);
-        this.decorator.generateFalls = HCIslandConfig.worldGen.generateFallsIsland;
-        this.decorator.treesPerChunk = 7;
-        this.decorator.grassPerChunk = 4;
-        this.decorator.flowersPerChunk = 25;
+        super(getProperties(), settings -> settings.island);
+        setBedrockDepth(32);
     }
 
     private static BiomeProperties getProperties() {
         BiomeProperties props = new BiomeProperties("HC Island");
         props.setBaseHeight(0.25f);
         props.setHeightVariation(0.1f);
-        props.setTemperature(HCIslandConfig.worldGen.island.temperature);
+        props.setTemperature(HCIslandConfig.world.temperatureIsland);
 
         return props;
     }
 
-    public static AdvancedBiomeBase.Config getDefaultConfig() {
-        AdvancedBiomeBase.Config cfg = new AdvancedBiomeBase.Config();
-        cfg.layers = new String[]{
-                "1, minecraft:grass",
-                "5, minecraft:dirt",
-                "1, minecraft:clay",
-                "2, minecraft:gravel"
-        };
-        cfg.underwaterLayers = new String[]{
-
-        };
-
-        return cfg;
+    @Override
+    protected void applyBiomeSettings(HCIslandChunkGeneratorSettings.BiomeSettings.Forest settings) {
+        super.applyBiomeSettings(settings);
+        this.decorator.treesPerChunk = settings.treesPerChunk;
+        this.decorator.grassPerChunk = settings.grassPerChunk;
+        this.decorator.flowersPerChunk = settings.flowersPerChunk;
     }
 }

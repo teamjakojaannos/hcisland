@@ -1,12 +1,9 @@
 package jakojaannos.hcisland.event.handler;
 
 import jakojaannos.hcisland.HardcoreIsland;
-import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.HCIslandLootTables;
-import jakojaannos.hcisland.world.biome.BiomeHCIsland;
-import jakojaannos.hcisland.world.biome.BiomeHCIslandBeach;
+import jakojaannos.hcisland.world.biome.BiomeHCIslandBase;
 import jakojaannos.hcisland.world.biome.BiomeHCWasteland;
-import jakojaannos.hcisland.world.biome.BiomeHCWastelandBeach;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -46,19 +43,19 @@ public class WorldGenEventHandler {
             return;
         }
 
+        // Find biome at position we are generating
         final int cX = event.getChunkX();
         final int cZ = event.getChunkZ();
-
         final BlockPos blockpos = new BlockPos(cX * 16, 0, cZ * 16);
         final Biome biome = world.getBiome(blockpos.add(16, 0, 16));
 
-        // Deny lake generation in wasteland if config flag is not set
-        if ((!HCIslandConfig.worldGen.generateLakesWasteland && biome instanceof BiomeHCWasteland)
-                // Deny lake generation on island if config flag is not set
-                || (!HCIslandConfig.worldGen.generateLakesIsland && biome instanceof BiomeHCIsland)
-                // Always deny generation on beaches
-                || (biome instanceof BiomeHCIslandBeach || biome instanceof BiomeHCWastelandBeach)) {
-            if (event.getType() == PopulateChunkEvent.Populate.EventType.LAKE) {
+        // If it is modded biome with lake generation disabled, deny the event
+        if (biome instanceof BiomeHCIslandBase) {
+            BiomeHCIslandBase<?> biomeIsland = (BiomeHCIslandBase<?>) biome;
+
+            if (event.getType() == PopulateChunkEvent.Populate.EventType.LAKE && !biomeIsland.generateLakes()) {
+                event.setResult(Event.Result.DENY);
+            } else if (event.getType() == PopulateChunkEvent.Populate.EventType.LAVA && !biomeIsland.generateLakesLava()) {
                 event.setResult(Event.Result.DENY);
             }
         }
@@ -82,7 +79,7 @@ public class WorldGenEventHandler {
         final Biome biome = world.getBiome(blockpos.add(16, 0, 16));
 
         // Generate fire in the wasteland biome
-        if (HCIslandConfig.worldGen.generateFireWasteland && biome instanceof BiomeHCWasteland) {
+        if (biome instanceof BiomeHCWasteland && ((BiomeHCWasteland) biome).generateFire()) {
             Random rand = event.getRand();
 
             if (TerrainGen.populate(event.getGen(), world, rand, cX, cZ, false, PopulateChunkEvent.Populate.EventType.FIRE)) {

@@ -1,27 +1,27 @@
 package jakojaannos.hcisland.world.biome;
 
-import jakojaannos.api.helpers.BlockHelper;
 import jakojaannos.api.world.AdvancedBiomeBase;
-import jakojaannos.api.world.BlockLayer;
-import jakojaannos.hcisland.config.ConfigWorldGen;
-import jakojaannos.hcisland.config.HCIslandConfig;
-import net.minecraft.init.Blocks;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.biome.Biome;
 
-import java.util.List;
+import java.util.function.Function;
 
-public class BiomeHCBase extends AdvancedBiomeBase {
-    BiomeHCBase(Biome.BiomeProperties properties, ConfigWorldGen.BiomeConfig config) {
-        super(properties, config.config);
+public class BiomeHCBase<TSettings extends HCIslandChunkGeneratorSettings.BiomeSettings> extends AdvancedBiomeBase {
+    private final Function<HCIslandChunkGeneratorSettings, TSettings> biomeSettingsMapper;
 
-        // Global properties (override per-biome settings)
+    BiomeHCBase(BiomeProperties properties, Function<HCIslandChunkGeneratorSettings, TSettings> biomeSettingsMapper) {
+        super(properties);
+        this.biomeSettingsMapper = biomeSettingsMapper;
 
-        // Unify sea level of all lake biomes
-        setSeaLevelOverride(HCIslandConfig.worldGen.lakeSeaLevel);
-
-        // Set all lake biomes to use the same ocean block
-        setOceanBlock(BlockHelper.stringToBlockstateWithFallback(Blocks.LAVA.getDefaultState(), HCIslandConfig.worldGen.blockLakeLiquid));
+        this.decorator.generateFalls = false;
+        this.decorator.treesPerChunk = -999;
+        this.decorator.cactiPerChunk = 0;
+        this.decorator.flowersPerChunk = 0;
+        this.decorator.grassPerChunk = 0;
+        this.decorator.deadBushPerChunk = 0;
+        this.decorator.reedsPerChunk = 0;
+        this.decorator.bigMushroomsPerChunk = 0;
+        this.decorator.mushroomsPerChunk = 0;
     }
 
     @Override
@@ -30,4 +30,14 @@ public class BiomeHCBase extends AdvancedBiomeBase {
     }
 
 
+    public void applySettings(HCIslandChunkGeneratorSettings settings) {
+        setSeaLevelOverride(settings.seaLevelOverride);
+        if (!(this instanceof BiomeHCWastelandEdge)) setOceanBlock(settings.oceanBlockOverride);
+
+        applyBiomeSettings(biomeSettingsMapper.apply(settings));
+    }
+
+    protected void applyBiomeSettings(TSettings settings) {
+        setLayers(settings.layers, settings.layersUnderwater);
+    }
 }

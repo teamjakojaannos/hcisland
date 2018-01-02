@@ -1,52 +1,28 @@
 package jakojaannos.hcisland.world.biome;
 
-import jakojaannos.api.world.AdvancedBiomeBase;
 import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 
-public class BiomeHCIslandBeach extends BiomeHCBase {
+public class BiomeHCIslandBeach extends BiomeHCIslandBase<HCIslandChunkGeneratorSettings.BiomeSettings.Beach> {
     public BiomeHCIslandBeach() {
-        super(getProperties(), HCIslandConfig.worldGen.islandBeach);
-
-        this.decorator.generateFalls = HCIslandConfig.worldGen.generateFallsIsland;
+        super(getProperties(), settings -> settings.islandBeach);
 
         this.spawnableCreatureList.clear();
-        this.decorator.treesPerChunk = -999;
-        this.decorator.deadBushPerChunk = 0;
-        this.decorator.reedsPerChunk = 0;
-        this.decorator.cactiPerChunk = 10;
+        setSeaLevelFuzz(1.5f, 2.0f);
     }
 
     private static BiomeProperties getProperties() {
         BiomeProperties props = new BiomeProperties("HC Island Beach");
         props.setBaseHeight(0.24f);
         props.setHeightVariation(0.0f);
-        props.setTemperature(HCIslandConfig.worldGen.islandBeach.temperature);
+        props.setTemperature(HCIslandConfig.world.temperatureIslandBeach);
 
         return props;
     }
 
-    public static AdvancedBiomeBase.Config getDefaultConfig() {
-        AdvancedBiomeBase.Config cfg = new AdvancedBiomeBase.Config();
-        cfg.fallbackFillerBlock = "minecraft:sand";
-        cfg.fallbackTopBlock = "minecraft:sand";
-        cfg.fallBackFillerDepth = 10;
-
-        cfg.layers = new String[]{
-                "10, minecraft:sand",
-                "2, minecraft:sandstone",
-                "1, minecraft:clay",
-                "2, minecraft:gravel"
-        };
-        cfg.underwaterLayers = new String[]{
-                "2, minecraft:obsidian",
-                "1, minecraft:sandstone",
-                "1, minecraft:hardened_clay",
-                "2, minecraft:netherrack"
-        };
-
-        cfg.seaLevelFuzzOffset = -2.0f;
-        cfg.seaLevelFuzzScale = 1.5f;
-
-        return cfg;
+    @Override
+    protected void applyBiomeSettings(HCIslandChunkGeneratorSettings.BiomeSettings.Beach settings) {
+        super.applyBiomeSettings(settings);
+        this.decorator.cactiPerChunk = settings.cactiPerChunk;
     }
 }

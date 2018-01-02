@@ -1,51 +1,52 @@
 package jakojaannos.hcisland.world.biome;
 
-import jakojaannos.api.world.AdvancedBiomeBase;
-import jakojaannos.hcisland.config.ConfigWorldGen;
 import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.init.Biomes;
 
-public class BiomeHCWasteland extends BiomeHCBase {
-    public BiomeHCWasteland() {
-        this(getProperties(), HCIslandConfig.worldGen.wasteland);
+import java.util.function.Function;
+
+public class BiomeHCWasteland extends BiomeHCIslandBase<HCIslandChunkGeneratorSettings.BiomeSettings.Wasteland> {
+    private boolean generateFire;
+
+    public boolean generateFire() {
+        return generateFire;
     }
 
-    protected BiomeHCWasteland(BiomeProperties properties, ConfigWorldGen.BiomeConfig config) {
-        super(properties, config);
+    public BiomeHCWasteland() {
+        this(getProperties(), settings -> settings.wasteland);
+    }
 
+    protected BiomeHCWasteland(BiomeProperties properties, Function<HCIslandChunkGeneratorSettings, HCIslandChunkGeneratorSettings.BiomeSettings.Wasteland> biomeSettingsMapper) {
+        super(properties, biomeSettingsMapper);
+
+        // Disable neutral spawning
         this.spawnableCreatureList.clear();
 
-        this.decorator.treesPerChunk = -999;
-        this.decorator.deadBushPerChunk = 0;
-        this.decorator.reedsPerChunk = 0;
-        this.decorator.cactiPerChunk = 0;
-        this.decorator.generateFalls = false;
+        // Copy cave creatures from hell
+        this.spawnableCaveCreatureList.clear();
+        this.spawnableCaveCreatureList = Biomes.HELL.getSpawnableList(EnumCreatureType.AMBIENT);
+
+        // Copy monsters from hell and add blazes
+        this.spawnableMonsterList.clear();
+        this.spawnableMonsterList = Biomes.HELL.getSpawnableList(EnumCreatureType.MONSTER);
+        this.spawnableMonsterList.add(new SpawnListEntry(EntityBlaze.class, 10, 2, 2));
     }
 
     private static BiomeProperties getProperties() {
         BiomeProperties props = new BiomeProperties("HC Wasteland");
         props.setBaseHeight(0.4f);
         props.setHeightVariation(0.25f);
-        props.setTemperature(HCIslandConfig.worldGen.wasteland.temperature);
+        props.setTemperature(HCIslandConfig.world.temperatureWasteland);
 
         return props;
     }
 
-    public static AdvancedBiomeBase.Config getDefaultConfig() {
-        AdvancedBiomeBase.Config cfg = new AdvancedBiomeBase.Config();
-        cfg.layers = new String[]{
-                "8, minecraft:netherrack"
-        };
-        cfg.underwaterLayers = new String[]{
-                "1, minecraft:obsidian",
-                "1, minecraft:sandstone",
-                "1, minecraft:hardened_clay",
-                "8, minecraft:netherrack"
-        };
-        cfg.stoneBlock = "minecraft:netherrack";
-        cfg.seaLevelFuzzOffset = 0.0f;
-        cfg.seaLevelFuzzScale = 0.0f;
-        cfg.bedrockDepth = 16;
-
-        return cfg;
+    @Override
+    protected void applyBiomeSettings(HCIslandChunkGeneratorSettings.BiomeSettings.Wasteland settings) {
+        super.applyBiomeSettings(settings);
+        this.generateFire = settings.generateFire;
     }
 }

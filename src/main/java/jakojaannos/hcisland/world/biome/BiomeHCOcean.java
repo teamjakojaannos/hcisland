@@ -1,42 +1,27 @@
 package jakojaannos.hcisland.world.biome;
 
-import jakojaannos.api.world.AdvancedBiomeBase;
 import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 
-public class BiomeHCOcean extends BiomeHCBase {
+public class BiomeHCOcean extends BiomeHCBase<HCIslandChunkGeneratorSettings.BiomeSettings> {
     public BiomeHCOcean() {
-        super(getProperties(), HCIslandConfig.worldGen.ocean);
+        super(getProperties(), settings -> settings.ocean);
 
         this.decorator.treesPerChunk = -999;
         this.decorator.deadBushPerChunk = 0;
         this.decorator.reedsPerChunk = 0;
         this.decorator.cactiPerChunk = 0;
+
+        setSeaLevelFuzz(1.0f, 4.0f);
+        setBedrockDepth(16);
     }
 
     private static BiomeProperties getProperties() {
         BiomeProperties props = new BiomeProperties("HC Ocean");
         props.setBaseHeight(-1.8f);
         props.setHeightVariation(0.0f);
-        props.setTemperature(HCIslandConfig.worldGen.ocean.temperature);
+        props.setTemperature(HCIslandConfig.world.temperatureOcean);
 
         return props;
-    }
-
-    public static AdvancedBiomeBase.Config getDefaultConfig() {
-        AdvancedBiomeBase.Config cfg = new AdvancedBiomeBase.Config();
-        cfg.layers = new String[]{
-                "8, minecraft:netherrack"
-        };
-        cfg.underwaterLayers = new String[]{
-                "2, minecraft:obsidian",
-                "1, minecraft:sandstone",
-                "1, minecraft:hardened_clay",
-                "4, minecraft:netherrack"
-        };
-        cfg.seaLevelFuzzOffset = 0.0f;
-        cfg.seaLevelFuzzScale = 0.0f;
-        cfg.bedrockDepth = 16;
-
-        return cfg;
     }
 }

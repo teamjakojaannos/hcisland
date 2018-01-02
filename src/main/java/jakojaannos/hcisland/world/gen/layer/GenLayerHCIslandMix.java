@@ -1,6 +1,6 @@
 package jakojaannos.hcisland.world.gen.layer;
 
-import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -8,11 +8,13 @@ public class GenLayerHCIslandMix extends GenLayer {
 
     private final GenLayer originalChain;
     private final GenLayer hcChain;
+    private final HCIslandChunkGeneratorSettings settings;
 
-    public GenLayerHCIslandMix(long seed, GenLayer originalChain, GenLayer hcChain) {
+    public GenLayerHCIslandMix(long seed, GenLayer originalChain, GenLayer hcChain, HCIslandChunkGeneratorSettings settings) {
         super(seed);
         this.originalChain = originalChain;
         this.hcChain = hcChain;
+        this.settings = settings;
     }
 
     @Override
@@ -22,13 +24,7 @@ public class GenLayerHCIslandMix extends GenLayer {
 
         int[] ints = IntCache.getIntCache(areaWidth * areaHeight);
 
-
-        final int radius = HCIslandConfig.worldGen.island.getRadius()
-                + HCIslandConfig.worldGen.islandBeach.getRadius()
-                + HCIslandConfig.worldGen.ocean.getRadius()
-                + HCIslandConfig.worldGen.wasteland_beach.getRadius()
-                + HCIslandConfig.worldGen.wasteland.getRadius()
-                + HCIslandConfig.worldGen.wasteland_edge.getRadius();
+        final int radius = settings.island.radius + settings.islandBeach.radius + settings.ocean.radius + settings.wastelandBeach.radius + settings.wasteland.radius + settings.wastelandEdge.radius;
         final int radiusSq = radius * radius;
 
         for (int x = 0; x < areaWidth; x++) {
