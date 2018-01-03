@@ -130,6 +130,11 @@ public class HCIslandChunkGeneratorSettings {
             }
         }
 
+        @Override
+        public String toString() {
+            return JSON_ADAPTER.toJson(this);
+        }
+
         public void setDefaults() {
             if (overrides != null) {
                 setOverrides();

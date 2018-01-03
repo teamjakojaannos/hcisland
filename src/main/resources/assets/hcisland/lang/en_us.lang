@@ -1,4 +1,24 @@
 tile.test.name=Test Block
 
 generator.hcisland=Hardcore Island
-generator.hcisland.info=Notice: Make Minecraft "fun" again!
+
+createWorld.customize.hcisland.title=Make Minecraft "fun" again!
+
+createWorld.customize.hcisland.field.seaLevelOverride=Lava Sea Level
+createWorld.customize.hcisland.field.oceanBlockOverride=Lava Block
+
+createWorld.customize.hcisland.field.biome.radius=Biome Radius
+createWorld.customize.hcisland.field.biome.stoneBlock=Stone Block
+createWorld.customize.hcisland.field.biome.layers=Layers
+createWorld.customize.hcisland.field.biome.layersUnderwater=Layers (Underwater)
+
+
+createWorld.customize.hcisland.page0=General Settings
+createWorld.customize.hcisland.page1=Biome Settings
+
+createWorld.customize.hcisland.label.biome.island=Island
+createWorld.customize.hcisland.label.biome.islandBeach=Island Beach
+createWorld.customize.hcisland.label.biome.ocean=Lava Ocean
+createWorld.customize.hcisland.label.biome.wasteland=Wasteland
+createWorld.customize.hcisland.label.biome.wastelandBeach=Wasteland Beach
+createWorld.customize.hcisland.label.biome.wastelandEdge=Wasteland Edge
