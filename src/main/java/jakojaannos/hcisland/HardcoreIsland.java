@@ -4,6 +4,7 @@ import jakojaannos.hcisland.init.HCIslandBiomes;
 import jakojaannos.hcisland.init.HCIslandLootTables;
 import jakojaannos.hcisland.world.WorldTypeHCIsland;
 import net.minecraft.world.WorldType;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.Mod;
@@ -51,6 +52,7 @@ public class HardcoreIsland {
 
     @EventHandler
     public void onInit(FMLInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(biomes);
         proxy.onInit(event);
     }
 }
