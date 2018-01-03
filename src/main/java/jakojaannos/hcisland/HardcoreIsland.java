@@ -47,12 +47,12 @@ public class HardcoreIsland {
     @EventHandler
     public void onInit(FMLPreInitializationEvent event) {
         ConfigManager.sync(ModInfo.MODID, Config.Type.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(biomes);
         biomes.initBiomes();
     }
 
     @EventHandler
     public void onInit(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(biomes);
         proxy.onInit(event);
     }
 }
