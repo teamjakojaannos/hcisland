@@ -5,8 +5,6 @@
   "description": "'cos losing is fun!",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "authorList": ["Team Jakojäännös"],
-  "requiredMods": ["jakojaannoslib"],
-  "dependencies": ["jakojaannoslib"]
+  "authorList": ["Team Jakojäännös"]
 }
 ]

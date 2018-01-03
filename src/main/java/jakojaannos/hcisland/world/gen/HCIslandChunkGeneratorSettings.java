@@ -2,8 +2,8 @@ package jakojaannos.hcisland.world.gen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import jakojaannos.api.helpers.BlockHelper;
-import jakojaannos.api.world.BlockLayer;
+import jakojaannos.hcisland.util.BlockHelper;
+import jakojaannos.hcisland.world.biome.BlockLayer;
 import jakojaannos.hcisland.config.HCIslandConfig;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

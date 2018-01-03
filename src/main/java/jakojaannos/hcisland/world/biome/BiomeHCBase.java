@@ -1,6 +1,5 @@
 package jakojaannos.hcisland.world.biome;
 
-import jakojaannos.api.world.AdvancedBiomeBase;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.util.math.MathHelper;
 
