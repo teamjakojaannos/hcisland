@@ -6,7 +6,7 @@
   "version": "${version}",
   "mcversion": "${mcversion}",
   "authorList": ["Team Jakojäännös"],
-  "requiredMods": ["jakojaannos-lib"],
-  "dependencies": ["jakojaannos-lib"]
+  "requiredMods": ["jakojaannoslib"],
+  "dependencies": ["jakojaannoslib"]
 }
 ]
