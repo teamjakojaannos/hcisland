@@ -4,6 +4,7 @@ import jakojaannos.hcisland.HardcoreIsland;
 import jakojaannos.hcisland.init.HCIslandLootTables;
 import jakojaannos.hcisland.world.biome.BiomeHCIslandBase;
 import jakojaannos.hcisland.world.biome.BiomeHCWasteland;
+import jakojaannos.hcisland.world.storage.HCIslandWorldSavedData;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -68,6 +69,10 @@ public class WorldGenEventHandler {
     @SubscribeEvent
     public static void onPopulateChunk(PopulateChunkEvent.Post event) {
         final World world = event.getWorld();
+        if (world.isRemote) {
+            return;
+        }
+
         if (world.getWorldType() != HardcoreIsland.WORLD_TYPE) {
             return;
         }
@@ -97,33 +102,40 @@ public class WorldGenEventHandler {
     @SubscribeEvent
     public static void onPostDecorate(DecorateBiomeEvent.Post event) {
         if (event.getWorld().getWorldType() == HardcoreIsland.WORLD_TYPE) {
-            generateStartingGear(event.getPos().getX(), event.getPos().getZ(), event.getWorld(), event.getRand());
+            final int chunkX = event.getPos().getX();
+            final int chunkZ = event.getPos().getZ();
+            final boolean isSpawn = chunkX == 0 && chunkZ == 0;
+            final boolean generated = !HCIslandWorldSavedData.getInstance(event.getWorld()).starterChestGenerated;
+
+            if (isSpawn && !generated) {
+                generateStartingGear(event.getWorld(), event.getRand());
+            }
         }
     }
 
-    private static void generateStartingGear(int chunkX, int chunkZ, World world, Random rand) {
-        if (chunkX == 0 && chunkZ == 0) {
-            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-            List<BlockPos> suitableSpots = new ArrayList<>(128);
+    private static void generateStartingGear(World world, Random rand) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        List<BlockPos> suitableSpots = new ArrayList<>(128);
 
-            for (int x = -16; x < 16; ++x) {
-                for (int z = -16; z < 16; ++z) {
-                    for (int y = world.getHeight() - 1; y > 0; --y) {
-                        pos.setPos(x, y, z);
-                        IBlockState state = world.getBlockState(pos);
-                        if (state.getBlock() != Blocks.AIR && state.getMaterial() != Material.LEAVES) {
-                            if (state.getBlock() == Blocks.GRASS) {
-                                suitableSpots.add(pos.toImmutable());
-                            }
-                            break;
+        for (int x = -16; x < 16; ++x) {
+            for (int z = -16; z < 16; ++z) {
+                for (int y = world.getHeight() - 1; y > 0; --y) {
+                    pos.setPos(x, y, z);
+                    IBlockState state = world.getBlockState(pos);
+                    if (state.getBlock() != Blocks.AIR && state.getMaterial() != Material.LEAVES) {
+                        if (state.getBlock() == Blocks.GRASS) {
+                            suitableSpots.add(pos.toImmutable());
                         }
+                        break;
                     }
                 }
             }
-
-            generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), HCIslandLootTables.STARTING_GEAR);
-            generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), HCIslandLootTables.BONUS_GEAR);
         }
+
+        generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), HCIslandLootTables.STARTING_GEAR);
+        generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), HCIslandLootTables.BONUS_GEAR);
+
+        HCIslandWorldSavedData.getInstance(world).starterChestGenerated = true;
     }
 
     private static BlockPos selectRandomSpot(List<BlockPos> positions, World world, Random random) {
