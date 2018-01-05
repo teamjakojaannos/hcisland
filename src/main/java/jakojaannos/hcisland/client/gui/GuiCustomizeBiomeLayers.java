@@ -9,6 +9,7 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonList.GuiResponder {
@@ -46,7 +47,50 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
         for (String layer : underwater ? config.layersUnderwater : config.layers) {
             final BlockLayer bl = new BlockLayer(layer);
             layerList.addEntry(bl.getDepth(), bl.getBlock().getBlock().getRegistryName().toString());
-            layerList.addEntry(bl.getDepth(), bl.getBlock().getBlock().getRegistryName().toString());
+        }
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        switch (button.id) {
+            case 0:
+                applyChanges();
+                mc.displayGuiScreen(parent);
+                break;
+            case 1:
+                addEntry();
+                break;
+            case 2:
+                restoreDefaults();
+                break;
+            default:
+                layerList.entries.stream()
+                        .filter(entry -> entry.depth == button || entry.remove == button)
+                        .findFirst()
+                        .orElseThrow(IllegalStateException::new)
+                        .actionPerformed(button);
+                break;
+        }
+    }
+
+    private void applyChanges() {
+        final String[] layers = layerList.entries.stream().map(LayerEntry::toString).toArray(String[]::new);
+        if (underwater) {
+            config.layersUnderwater = layers;
+        } else {
+            config.layers = layers;
+        }
+    }
+
+    private void addEntry() {
+        layerList.addEntry(1, "minecraft:stone");
+    }
+
+    private void restoreDefaults() {
+        if (underwater) {
+            config.layers = Arrays.copyOf(defaultConfig.layers, defaultConfig.layers.length);
+        } else {
+            config.layersUnderwater = Arrays.copyOf(defaultConfig.layersUnderwater, defaultConfig.layersUnderwater.length);
         }
     }
 
@@ -142,13 +186,18 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
         private final GuiSlider depth;
         private final GuiTextField block;
 
-        private final int sliderId;
-
         private LayerEntry(int baseId) {
-            this.remove = new GuiButtonExt(baseId++, width - 35, 0, 25, 25, "X");
-            this.sliderId = baseId++;
-            this.depth = new GuiSlider(GuiCustomizeBiomeLayers.this, sliderId, 10, 0, "Depth", 1, 255, 1, this);
+            this.remove = addButton(new GuiButtonExt(baseId++, width - 35, 0, 25, 25, "X"));
+            this.depth = addButton(new GuiSlider(GuiCustomizeBiomeLayers.this, baseId++, 10, 0, "Depth", 1, 255, 1, this));
             this.block = new GuiTextField(baseId, fontRenderer, 170, 0, width - 215, 25);
+        }
+
+        private void actionPerformed(GuiButton button) {
+            if (button.id == remove.id) {
+                layerList.entries.remove(this);
+                buttonList.remove(remove);
+                buttonList.remove(depth);
+            }
         }
 
         @Override
@@ -160,9 +209,7 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
 
         @Override
         public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
-            remove.y = y;
-            depth.y = y;
-            block.y = y;
+            updatePosition(slotIndex, x, y, partialTicks);
             remove.drawButton(mc, mouseX, mouseY, partialTicks);
             depth.drawButton(mc, mouseX, mouseY, partialTicks);
             block.drawTextBox();
@@ -197,6 +244,11 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
         @Override
         public String getText(int id, String name, float value) {
             return I18n.format(name) + ": " + (int) value;
+        }
+
+        @Override
+        public String toString() {
+            return (int) depth.getSliderValue() + "," + block.getText();
         }
     }
 }

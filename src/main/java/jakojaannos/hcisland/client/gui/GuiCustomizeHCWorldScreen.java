@@ -80,6 +80,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
         }
 
         createPagedList();
+        setSettingsModified(!settings.equals(defaultSettings));
 
         if (page != 0) {
             pages.setPage(page);
@@ -161,7 +162,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
                         2.0f, 512.0f,
                         config.radius),
                 new GuiPageButtonList.EditBoxEntry(baseId + OFFSET_BIOME_STONE_BLOCK,
-                        "createWorld.customize.hcisland.field.biome.stoneBlock",
+                        config.stoneBlock,
                         false, s -> true),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(baseId + OFFSET_BIOME_LAYERS,
                         "createWorld.customize.hcisland.field.biome.layers",
@@ -169,7 +170,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(baseId + OFFSET_BIOME_LAYERS_UNDERWATER,
                         "createWorld.customize.hcisland.field.biome.layersUnderwater",
                         false, () -> openLayersEditor(config, defaultConfig, true))
-                );
+        );
     }
 
     private void openLayersEditor(HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory config, HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory defaultConfig, boolean underwater) {
@@ -280,7 +281,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
                 updatePageControls();
                 break;
             case ID_BUTTON_DONE:
-                parent.chunkProviderSettingsJson = settings.toString();
+                parent.chunkProviderSettingsJson = saveValues();
                 mc.displayGuiScreen(parent);
                 break;
             case ID_BUTTON_CONFIRM:
