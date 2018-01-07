@@ -3,6 +3,7 @@ tile.test.name=Test Block
 generator.hcisland=Hardcore Island
 
 createWorld.customize.hcisland.title=Make Minecraft "fun" again!
+createWorld.customize.hcisland.clipboard=Copy to clipboard
 
 createWorld.customize.hcisland.field.seaLevelOverride=Lava Sea Level
 createWorld.customize.hcisland.field.oceanBlockOverride=Lava Block

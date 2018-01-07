@@ -23,7 +23,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
     private final HCIslandChunkGeneratorSettings.Factory defaultSettings;
 
     protected String title = "Customize World Settings";
-    protected String subtitle = "Page %s of %s";
+    protected String subtitle = "Page 1 of many";
     protected String pageTitle = "Basic settings";
     protected String[] pageNames = new String[2];
 
@@ -34,6 +34,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
     private GuiButton nextPage;
     private GuiButton confirm;
     private GuiButton cancel;
+    private GuiButton clipboard;
 
     private boolean dirty;
     private int confirmMode;
@@ -64,6 +65,8 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
 
         defaults = addButton(new GuiButton(ID_BUTTON_DEFAULTS, width / 2 - 187, height - 27, 90, 20, I18n.format("createWorld.customize.custom.defaults")));
         defaults.enabled = dirty;
+
+        clipboard = addButton(new GuiButton(ID_BUTTON_CLIPBOARD, width / 2 - 92, height - 27, 185, 20, I18n.format("createWorld.customize.hcisland.clipboard")));
 
         confirm = new GuiButton(ID_BUTTON_CONFIRM, width / 2 - 55, 160, 50, 20, I18n.format("gui.yes"));
         confirm.visible = false;
@@ -128,13 +131,19 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
 
     private GuiPageButtonList.GuiListEntry[] createGeneralPage() {
         return new GuiPageButtonList.GuiListEntry[]{
+                new GuiPageButtonList.GuiLabelEntry(ID_SEA_LEVEL_OVERRIDE_LABEL,
+                        I18n.format("createWorld.customize.hcisland.field.seaLevelOverride"),
+                        true),
                 new GuiPageButtonList.GuiSlideEntry(ID_SEA_LEVEL_OVERRIDE,
                         I18n.format("createWorld.customize.hcisland.field.seaLevelOverride"),
                         true, this,
                         1.0f, 64.0f,
                         settings.seaLevelOverride),
-                new GuiPageButtonList.EditBoxEntry(ID_OCEAN_BLOCK_OVERRIDE,
+                new GuiPageButtonList.GuiLabelEntry(ID_OCEAN_BLOCK_OVERRIDE_LABEL,
                         I18n.format("createWorld.customize.hcisland.field.oceanBlockOverride"),
+                        true),
+                new GuiPageButtonList.EditBoxEntry(ID_OCEAN_BLOCK_OVERRIDE,
+                        settings.oceanBlockOverride,
                         true, s -> true)
         };
     }
@@ -156,11 +165,17 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
                 new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_LABEL,
                         I18n.format("createWorld.customize.hcisland.label.biome." + biome), false),
                 null,
+                new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_RADIUS_LABEL,
+                        I18n.format("createWorld.customize.hcisland.field.biome.radius"),
+                        false),
                 new GuiPageButtonList.GuiSlideEntry(baseId + OFFSET_BIOME_RADIUS,
-                        "createWorld.customize.hcisland.field.biome.radius",
+                        "",
                         false, this,
                         2.0f, 512.0f,
                         config.radius),
+                new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_STONE_BLOCK_LABEL,
+                        I18n.format("createWorld.customize.hcisland.field.biome.stoneBlock"),
+                        false),
                 new GuiPageButtonList.EditBoxEntry(baseId + OFFSET_BIOME_STONE_BLOCK,
                         config.stoneBlock,
                         false, s -> true),
@@ -256,12 +271,12 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
 
     @Override
     public String getText(int id, String name, float value) {
-        return name + ": " + this.getFormattedValue(id, value);
+        return getFormattedValue(id, value);
     }
 
     private String getFormattedValue(int id, float value) {
         // TODO: Select by id
-        return String.format("%.3f", value);
+        return String.format("%d", (int)value);
     }
 
 
@@ -295,6 +310,9 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
                 if (dirty) {
                     enterConfirmation(ID_BUTTON_DEFAULTS);
                 }
+                break;
+            case ID_BUTTON_CLIPBOARD:
+                setClipboardString(saveValues());
                 break;
         }
     }
@@ -352,6 +370,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
         done.enabled = !visible;
         previousPage.enabled = !visible;
         nextPage.enabled = !visible;
+        clipboard.enabled = !visible;
         defaults.enabled = dirty && !visible;
 
         pages.setActive(!visible);
@@ -460,12 +479,15 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
     private static final int ID_BUTTON_CONFIRM = 3;
     private static final int ID_BUTTON_CANCEL = 4;
     private static final int ID_BUTTON_DEFAULTS = 5;
+    private static final int ID_BUTTON_CLIPBOARD = 6;
 
-    private static final int ID_SEA_LEVEL_OVERRIDE = 6;
-    private static final int ID_OCEAN_BLOCK_OVERRIDE = 7;
+    private static final int ID_SEA_LEVEL_OVERRIDE = 7;
+    private static final int ID_SEA_LEVEL_OVERRIDE_LABEL = 8;
+    private static final int ID_OCEAN_BLOCK_OVERRIDE = 9;
+    private static final int ID_OCEAN_BLOCK_OVERRIDE_LABEL = 10;
 
-    private static final int BIOME_PAGE_FIELD_COUNT = 5;
-    private static final int ID_BASE_BIOME_ISLAND = 8;
+    private static final int BIOME_PAGE_FIELD_COUNT = 7;
+    private static final int ID_BASE_BIOME_ISLAND = 11;
     private static final int ID_BASE_BIOME_ISLAND_BEACH = ID_BASE_BIOME_ISLAND + BIOME_PAGE_FIELD_COUNT;
     private static final int ID_BASE_BIOME_OCEAN = ID_BASE_BIOME_ISLAND_BEACH + BIOME_PAGE_FIELD_COUNT;
     private static final int ID_BASE_BIOME_WASTELAND = ID_BASE_BIOME_OCEAN + BIOME_PAGE_FIELD_COUNT;
@@ -473,8 +495,10 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
     private static final int ID_BASE_BIOME_WASTELAND_EDGE = ID_BASE_BIOME_WASTELAND_BEACH + BIOME_PAGE_FIELD_COUNT;
 
     private static final int OFFSET_BIOME_LABEL = 0;
-    private static final int OFFSET_BIOME_RADIUS = 1;
-    private static final int OFFSET_BIOME_STONE_BLOCK = 2;
-    private static final int OFFSET_BIOME_LAYERS = 3;
-    private static final int OFFSET_BIOME_LAYERS_UNDERWATER = 4;
+    private static final int OFFSET_BIOME_RADIUS_LABEL = 1;
+    private static final int OFFSET_BIOME_RADIUS = 2;
+    private static final int OFFSET_BIOME_STONE_BLOCK_LABEL = 3;
+    private static final int OFFSET_BIOME_STONE_BLOCK = 4;
+    private static final int OFFSET_BIOME_LAYERS = 5;
+    private static final int OFFSET_BIOME_LAYERS_UNDERWATER = 6;
 }
