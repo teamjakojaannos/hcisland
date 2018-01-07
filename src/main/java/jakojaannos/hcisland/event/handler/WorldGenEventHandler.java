@@ -105,7 +105,7 @@ public class WorldGenEventHandler {
             final int chunkX = event.getPos().getX();
             final int chunkZ = event.getPos().getZ();
             final boolean isSpawn = chunkX == 0 && chunkZ == 0;
-            final boolean generated = !HCIslandWorldSavedData.getInstance(event.getWorld()).starterChestGenerated;
+            final boolean generated = HCIslandWorldSavedData.getInstance(event.getWorld()).starterChestGenerated;
 
             if (isSpawn && !generated) {
                 generateStartingGear(event.getWorld(), event.getRand());
