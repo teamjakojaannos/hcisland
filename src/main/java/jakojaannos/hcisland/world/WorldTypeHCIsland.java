@@ -46,12 +46,14 @@ public class WorldTypeHCIsland extends WorldType {
         HCIslandChunkGeneratorSettings.Factory.refreshOverrides();
         this.settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(world.getWorldInfo().getGeneratorOptions()).build();
 
-        ((BiomeHCBase) HCIslandBiomes.ISLAND).applySettings(settings);
-        ((BiomeHCBase) HCIslandBiomes.ISLAND_BEACH).applySettings(settings);
-        ((BiomeHCBase) HCIslandBiomes.OCEAN).applySettings(settings);
-        ((BiomeHCBase) HCIslandBiomes.WASTELAND).applySettings(settings);
-        ((BiomeHCBase) HCIslandBiomes.WASTELAND_BEACH).applySettings(settings);
-        ((BiomeHCBase) HCIslandBiomes.WASTELAND_EDGE).applySettings(settings);
+        if (!world.isRemote) {
+            ((BiomeHCBase) HCIslandBiomes.ISLAND).applySettings(settings);
+            ((BiomeHCBase) HCIslandBiomes.ISLAND_BEACH).applySettings(settings);
+            ((BiomeHCBase) HCIslandBiomes.OCEAN).applySettings(settings);
+            ((BiomeHCBase) HCIslandBiomes.WASTELAND).applySettings(settings);
+            ((BiomeHCBase) HCIslandBiomes.WASTELAND_BEACH).applySettings(settings);
+            ((BiomeHCBase) HCIslandBiomes.WASTELAND_EDGE).applySettings(settings);
+        }
 
         return new BiomeProviderHCIsland(world.getWorldInfo());
     }

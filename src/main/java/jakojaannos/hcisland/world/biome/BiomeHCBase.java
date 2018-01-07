@@ -34,7 +34,7 @@ public class BiomeHCBase<TSettings extends HCIslandChunkGeneratorSettings.BiomeS
 
         setSeaLevelOverride(settings.seaLevelOverride);
         setStoneBlock(biomeSettings.stoneBlock);
-        if (!(this instanceof BiomeHCWastelandEdge)) setOceanBlock(settings.oceanBlockOverride);
+        setOceanBlock(settings.oceanBlockOverride);
 
         applyBiomeSettings(biomeSettings);
     }

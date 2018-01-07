@@ -1,15 +1,12 @@
 package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.init.Blocks;
 
 public class BiomeHCWastelandEdge extends BiomeHCWasteland {
     public BiomeHCWastelandEdge() {
         super(getProperties(), settings -> settings.wastelandEdge);
-
-        setSeaLevelOverride(-1);
-        setStoneBlock(Blocks.STONE.getDefaultState());
-        setOceanBlock(Blocks.WATER.getDefaultState());
     }
 
     // TODO: Gradually fade from wasteland filler/stone block substitutes to stone/grass/sand when approaching the outer edge
@@ -24,5 +21,12 @@ public class BiomeHCWastelandEdge extends BiomeHCWasteland {
         props.setTemperature(HCIslandConfig.world.temperatureWastelandEdge);
 
         return props;
+    }
+
+    @Override
+    protected void applyBiomeSettings(HCIslandChunkGeneratorSettings.BiomeSettings.Wasteland settings) {
+        super.applyBiomeSettings(settings);
+        setSeaLevelOverride(-1);
+        setOceanBlock(Blocks.WATER.getDefaultState());
     }
 }
