@@ -6,7 +6,6 @@ import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 public class BiomeHCIsland extends BiomeHCIslandBase<HCIslandChunkGeneratorSettings.BiomeSettings.Forest> {
     public BiomeHCIsland() {
         super(getProperties(), settings -> settings.island);
-        setBedrockDepth(32);
     }
 
     private static BiomeProperties getProperties() {
