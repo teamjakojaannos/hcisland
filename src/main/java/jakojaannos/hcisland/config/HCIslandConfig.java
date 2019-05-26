@@ -2,10 +2,15 @@ package jakojaannos.hcisland.config;
 
 import jakojaannos.hcisland.ModInfo;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Config root
  */
+@Mod.EventBusSubscriber
 @Config(modid = ModInfo.MODID)
 public class HCIslandConfig {
     @Config.Comment("World generation")
@@ -36,5 +41,15 @@ public class HCIslandConfig {
 
         @Config.RequiresMcRestart
         public float temperatureWastelandEdge = 1.25f;
+
+        @Config.Comment("Set to false to prevent spawning of Advent of Ascension mobs on the island")
+        public boolean allowAoAMobsOnIsland = true;
+    }
+
+    @SubscribeEvent
+    public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (event.getModID().equals(ModInfo.MODID)) {
+            ConfigManager.sync(ModInfo.MODID, Config.Type.INSTANCE);
+        }
     }
 }
