@@ -196,12 +196,12 @@ public abstract class AdvancedBiomeBase extends Biome {
         final boolean underwater = solidDepth <= fuzzySeaLevel;
         final Iterator<BlockLayer> layerIter = Arrays.stream(getLayers(underwater)).iterator();
 
-        int layerLocalY = 0;
+        int layerBlocksPlaced = 0;
         BlockLayer current = layerIter.hasNext() ? layerIter.next() : null;
-        for (int y = 0; y < solidDepth; y++, layerLocalY++) {
-            if (current != null && layerLocalY > current.getDepth()) {
+        for (int y = 0; y < solidDepth; y++, layerBlocksPlaced++) {
+            if (current != null && layerBlocksPlaced >= current.getDepth()) {
                 current = layerIter.hasNext() ? layerIter.next() : null;
-                layerLocalY = 0;
+                layerBlocksPlaced = 0;
             }
 
             if (isAtBedrock(random, solidDepth, y)) {
