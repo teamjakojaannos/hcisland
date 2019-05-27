@@ -1,11 +1,11 @@
 package jakojaannos.hcisland.world.gen.layer;
 
+import jakojaannos.hcisland.util.UnitHelper;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerHCIslandMix extends GenLayer {
-
     private final GenLayer originalChain;
     private final GenLayer hcChain;
     private final HCIslandChunkGeneratorSettings settings;
@@ -24,8 +24,9 @@ public class GenLayerHCIslandMix extends GenLayer {
 
         int[] ints = IntCache.getIntCache(areaWidth * areaHeight);
 
-        final int radius = settings.island.radius + settings.islandBeach.radius + settings.ocean.radius + settings.wastelandBeach.radius + settings.wasteland.radius + settings.wastelandEdge.radius;
-        final int radiusSq = radius * radius;
+        final int radiusInChunks = settings.island.radius + settings.islandBeach.radius + settings.ocean.radius + settings.wastelandBeach.radius + settings.wasteland.radius + settings.wastelandEdge.radius;
+        final float radiusInGenLayerUnitsBeforeStretching = radiusInChunks * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
+        final float radiusSq = radiusInGenLayerUnitsBeforeStretching * radiusInGenLayerUnitsBeforeStretching;
 
         for (int x = 0; x < areaWidth; x++) {
             for (int y = 0; y < areaHeight; y++) {

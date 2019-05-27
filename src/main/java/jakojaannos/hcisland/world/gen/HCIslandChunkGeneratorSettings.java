@@ -145,7 +145,7 @@ public class HCIslandChunkGeneratorSettings {
             oceanBlockOverride = "minecraft:lava";
 
             island = new BiomeSettingsFactory.Forest(
-                    6,
+                    3,
                     "minecraft:stone",
                     new String[]{
                             "1, minecraft:grass",
@@ -163,7 +163,7 @@ public class HCIslandChunkGeneratorSettings {
                     25
             );
             islandBeach = new BiomeSettingsFactory.Beach(
-                    5,
+                    2,
                     "minecraft:stone",
                     new String[]{
                             "8, minecraft:sand",
@@ -183,7 +183,7 @@ public class HCIslandChunkGeneratorSettings {
                     12
             );
             ocean = new BiomeSettingsFactory(
-                    128,
+                    16,
                     "minecraft:stone",
                     new String[]{
                             "8, minecraft:netherrack"
@@ -196,7 +196,7 @@ public class HCIslandChunkGeneratorSettings {
                     }
             );
             wasteland = new BiomeSettingsFactory.Wasteland(
-                    64,
+                    4,
                     "minecraft:netherrack",
                     new String[]{
                             "8, minecraft:netherrack"
@@ -213,7 +213,7 @@ public class HCIslandChunkGeneratorSettings {
                     true
             );
             wastelandBeach = new BiomeSettingsFactory.Wasteland(
-                    5,
+                    2,
                     "minecraft:netherrack",
                     new String[]{
                             "16, minecraft:netherrack"
@@ -230,7 +230,7 @@ public class HCIslandChunkGeneratorSettings {
                     true
             );
             wastelandEdge = new BiomeSettingsFactory.Wasteland(
-                    8,
+                    2,
                     "minecraft:stone",
                     new String[]{
                             "8, minecraft:netherrack",
@@ -269,11 +269,11 @@ public class HCIslandChunkGeneratorSettings {
 
 
         public static class BiomeSettingsFactory {
-            public int radius = 0;
+            public int radius;
 
-            public String stoneBlock = "minecraft:stone";
-            public String[] layers = new String[0];
-            public String[] layersUnderwater = new String[0];
+            public String stoneBlock;
+            public String[] layers;
+            public String[] layersUnderwater;
 
             public BiomeSettingsFactory(int radius, String stoneBlock, String[] layers, String[] layersUnderwater) {
                 this.radius = radius;
@@ -283,9 +283,9 @@ public class HCIslandChunkGeneratorSettings {
             }
 
             public static abstract class Island extends BiomeSettingsFactory {
-                public boolean generateFalls = false;
-                public boolean generateLakes = false;
-                public boolean generateLakesLava = false;
+                public boolean generateFalls;
+                public boolean generateLakes;
+                public boolean generateLakesLava;
 
                 public Island(int radius, String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava) {
                     super(radius, stoneBlock, layers, layersUnderwater);
@@ -296,9 +296,9 @@ public class HCIslandChunkGeneratorSettings {
             }
 
             public static class Forest extends BiomeSettingsFactory.Island {
-                public int treesPerChunk = 7;
-                public int grassPerChunk = 4;
-                public int flowersPerChunk = 25;
+                public int treesPerChunk;
+                public int grassPerChunk;
+                public int flowersPerChunk;
 
                 public Forest(int radius, String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava, int treesPerChunk, int grassPerChunk, int flowersPerChunk) {
                     super(radius, stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
@@ -309,7 +309,7 @@ public class HCIslandChunkGeneratorSettings {
             }
 
             public static class Beach extends BiomeSettingsFactory.Island {
-                public int cactiPerChunk = 12;
+                public int cactiPerChunk;
 
                 public Beach(int radius, String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava, int cactiPerChunk) {
                     super(radius, stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
@@ -318,7 +318,7 @@ public class HCIslandChunkGeneratorSettings {
             }
 
             public static class Wasteland extends BiomeSettingsFactory.Island {
-                public boolean generateFire = false;
+                public boolean generateFire;
 
                 public Wasteland(int radius, String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava, boolean generateFire) {
                     super(radius, stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
