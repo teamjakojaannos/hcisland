@@ -1,7 +1,8 @@
 package jakojaannos.hcisland.event.handler;
 
 import jakojaannos.hcisland.config.HCIslandConfig;
-import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import jakojaannos.hcisland.world.biome.BiomeHCBase;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -17,18 +18,7 @@ public class EntityEventHandler {
 
         // FIXME: Add actual optional dependency on Aoa and do a cleaner check with types
         if (event.getEntity().getClass().getName().contains("net.tslat.aoa3")) {
-            final HCIslandChunkGeneratorSettings settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(event.getWorld().getWorldInfo().getGeneratorOptions()).build();
-
-            final int totalRadiusIsland = settings.island.radius;
-            final int totalRadiusIslandBeach = totalRadiusIsland + settings.islandBeach.radius;
-            final int totalRadiusOcean = totalRadiusIslandBeach + settings.ocean.radius;
-            final int totalRadiusWastelandBeach = totalRadiusOcean + settings.wastelandBeach.radius;
-            final int totalRadiusWasteland = totalRadiusWastelandBeach + settings.wasteland.radius;
-            final int totalRadiusWastelandEdge = (totalRadiusWasteland + settings.wastelandEdge.radius) * 4; // FIXME: Coordinates use weird scale due to biome layer scaling
-
-            final float distToSpawnSq = event.getX() * event.getX() + event.getZ() * event.getZ();
-
-            if (distToSpawnSq < totalRadiusWastelandEdge * totalRadiusWastelandEdge) {
+            if (event.getWorld().getBiome(new BlockPos(event.getX(), event.getY(), event.getZ())) instanceof BiomeHCBase) {
                 event.setResult(Event.Result.DENY);
             }
         }
