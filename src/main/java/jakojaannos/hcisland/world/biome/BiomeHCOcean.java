@@ -13,7 +13,6 @@ public class BiomeHCOcean extends BiomeHCBase<HCIslandChunkGeneratorSettings.Bio
         this.decorator.cactiPerChunk = 0;
 
         setSeaLevelFuzz(1.0f, 4.0f);
-        setBedrockDepth(16);
     }
 
     private static BiomeProperties getProperties() {

@@ -8,6 +8,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -185,44 +187,33 @@ public abstract class AdvancedBiomeBase extends Biome {
      * Generates lookup table for blockstates in a single column. DO NOT CREATE NEW ARRAY ON EACH CALL, use the array
      * provided in "lookup" parameter as it is recycled.
      *
-     * @param solidY        y-coordinate of the first solid layer
+     * @param solidDepth    y-coordinate of the first solid layer
      * @param fuzzySeaLevel sea level with fuzz applied
      * @param x             global x-coordinate of the column
      * @param z             global z-coordinate of the column
      */
-    protected void generateLookup(Random random, int solidY, int fuzzySeaLevel, int x, int z, double noiseVal, IBlockState[] lookup) {
-        final boolean underwater = solidY <= fuzzySeaLevel;
-        final BlockLayer[] layers = getLayers(underwater);
+    protected void generateLookup(Random random, int solidDepth, int fuzzySeaLevel, int x, int z, double noiseVal, IBlockState[] lookup) {
+        final boolean underwater = solidDepth <= fuzzySeaLevel;
+        final Iterator<BlockLayer> layerIter = Arrays.stream(getLayers(underwater)).iterator();
 
-        int y = 0;
-        for (BlockLayer layer : layers) {
-            int i = 0;
-            while (y < solidY && i < layer.getDepth()) {
-                if (y == 0) {
-                    lookup[y] = layer.getBlock();
-                } else if (y > solidY - random.nextInt(bedrockDepth)) {
-                    lookup[y] = Blocks.BEDROCK.getDefaultState();
-                } else {
-                    lookup[y] = layer.getBlock();
-                }
-
-                i++;
-                y++;
+        int layerLocalY = 0;
+        BlockLayer current = layerIter.hasNext() ? layerIter.next() : null;
+        for (int y = 0; y < solidDepth; y++, layerLocalY++) {
+            if (current != null && layerLocalY > current.getDepth()) {
+                current = layerIter.hasNext() ? layerIter.next() : null;
+                layerLocalY = 0;
             }
-        }
 
-        // Fill the rest of blocks with stone blocks
-        while (y < solidY) {
-            if (y == 0) {
-                lookup[y] = stoneBlock;
-            } else if (y > solidY - random.nextInt(bedrockDepth)) {
+            if (isAtBedrock(random, solidDepth, y)) {
                 lookup[y] = Blocks.BEDROCK.getDefaultState();
             } else {
-                lookup[y] = stoneBlock;
+                lookup[y] = current != null ? current.getBlock() : stoneBlock;
             }
-
-            y++;
         }
+    }
+
+    private boolean isAtBedrock(Random random, int solidDepth, int y) {
+        return y >= solidDepth - random.nextInt(bedrockDepth);
     }
 
     protected BlockLayer[] getLayers(boolean underwater) {
