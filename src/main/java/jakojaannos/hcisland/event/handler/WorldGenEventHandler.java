@@ -102,8 +102,8 @@ public class WorldGenEventHandler {
     @SubscribeEvent
     public static void onPostDecorate(DecorateBiomeEvent.Post event) {
         if (event.getWorld().getWorldType() == HardcoreIsland.WORLD_TYPE) {
-            final int chunkX = event.getPos().getX();
-            final int chunkZ = event.getPos().getZ();
+            final int chunkX = event.getChunkPos().x;
+            final int chunkZ = event.getChunkPos().z;
             final boolean isSpawn = chunkX == 0 && chunkZ == 0;
             final boolean generated = HCIslandWorldSavedData.getInstance(event.getWorld()).starterChestGenerated;
 

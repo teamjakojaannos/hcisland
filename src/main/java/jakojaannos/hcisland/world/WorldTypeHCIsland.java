@@ -27,7 +27,7 @@ public class WorldTypeHCIsland extends WorldType {
 
     public WorldTypeHCIsland() {
         super(NAME);
-        this.enableInfoNotice();
+        enableInfoNotice();
     }
 
     @Override
