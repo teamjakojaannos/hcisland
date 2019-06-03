@@ -6,6 +6,7 @@ import jakojaannos.hcisland.world.biome.BiomeHCBase;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandBiomes;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandMix;
+import lombok.Getter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
@@ -23,7 +24,7 @@ import java.util.List;
 public class WorldTypeHCIsland extends WorldType {
     private static final String NAME = "hcisland";
 
-    private HCIslandChunkGeneratorSettings settings;
+    @Getter private HCIslandChunkGeneratorSettings settings;
 
     public WorldTypeHCIsland() {
         super(NAME);

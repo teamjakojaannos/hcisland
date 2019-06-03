@@ -22,10 +22,10 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
     private final GuiCreateWorld parent;
     private final HCIslandChunkGeneratorSettings.Factory defaultSettings;
 
-    protected String title = "Customize World Settings";
-    protected String subtitle = "Page 1 of many";
-    protected String pageTitle = "Basic settings";
-    protected String[] pageNames = new String[2];
+    private String title = "Customize World Settings";
+    private String subtitle = "Page 1 of many";
+    private String pageTitle = "Basic settings";
+    private String[] pageNames = new String[2];
 
     private ExtendedGuiPageButtonList pages;
     private GuiButton done;
@@ -98,7 +98,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
         pages.handleMouseInput();
     }
 
-    public String saveValues() {
+    private String saveValues() {
         return settings.toString().replace("\n", "");
     }
 
@@ -157,10 +157,10 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
         entries.addAll(createBiomeEntries(ID_BASE_BIOME_WASTELAND_BEACH, "wastelandBeach", settings.wastelandBeach, defaultSettings.wastelandBeach));
         entries.addAll(createBiomeEntries(ID_BASE_BIOME_WASTELAND_EDGE, "wastelandEdge", settings.wastelandEdge, defaultSettings.wastelandEdge));
 
-        return entries.toArray(new GuiPageButtonList.GuiListEntry[entries.size()]);
+        return entries.toArray(new GuiPageButtonList.GuiListEntry[0]);
     }
 
-    private List<GuiPageButtonList.GuiListEntry> createBiomeEntries(int baseId, String biome, HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory config, HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory defaultConfig) {
+    private List<GuiPageButtonList.GuiListEntry> createBiomeEntries(int baseId, String biome, HCIslandChunkGeneratorSettings.BiomeSettings.Factory config, HCIslandChunkGeneratorSettings.BiomeSettings.Factory defaultConfig) {
         return Lists.newArrayList(
                 new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_LABEL,
                         I18n.format("createWorld.customize.hcisland.label.biome." + biome), false),
@@ -168,11 +168,11 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
                 new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_RADIUS_LABEL,
                         I18n.format("createWorld.customize.hcisland.field.biome.radius"),
                         false),
-                new GuiPageButtonList.GuiSlideEntry(baseId + OFFSET_BIOME_RADIUS,
+                /*new GuiPageButtonList.GuiSlideEntry(baseId + OFFSET_BIOME_RADIUS,
                         "",
                         false, this,
                         2.0f, 512.0f,
-                        config.radius),
+                        config.radius),*/
                 new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_STONE_BLOCK_LABEL,
                         I18n.format("createWorld.customize.hcisland.field.biome.stoneBlock"),
                         false),
@@ -188,7 +188,7 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
         );
     }
 
-    private void openLayersEditor(HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory config, HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory defaultConfig, boolean underwater) {
+    private void openLayersEditor(HCIslandChunkGeneratorSettings.BiomeSettings.Factory config, HCIslandChunkGeneratorSettings.BiomeSettings.Factory defaultConfig, boolean underwater) {
         mc.displayGuiScreen(new GuiCustomizeBiomeLayers(this, config, defaultConfig, underwater));
     }
 
@@ -234,24 +234,6 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
         switch (id) {
             case ID_SEA_LEVEL_OVERRIDE:
                 settings.seaLevelOverride = (int) value;
-                break;
-            case OFFSET_BIOME_RADIUS + ID_BASE_BIOME_ISLAND:
-                settings.island.radius = (int) value;
-                break;
-            case OFFSET_BIOME_RADIUS + ID_BASE_BIOME_ISLAND_BEACH:
-                settings.islandBeach.radius = (int) value;
-                break;
-            case OFFSET_BIOME_RADIUS + ID_BASE_BIOME_OCEAN:
-                settings.ocean.radius = (int) value;
-                break;
-            case OFFSET_BIOME_RADIUS + ID_BASE_BIOME_WASTELAND:
-                settings.wasteland.radius = (int) value;
-                break;
-            case OFFSET_BIOME_RADIUS + ID_BASE_BIOME_WASTELAND_BEACH:
-                settings.wastelandBeach.radius = (int) value;
-                break;
-            case OFFSET_BIOME_RADIUS + ID_BASE_BIOME_WASTELAND_EDGE:
-                settings.wastelandEdge.radius = (int) value;
                 break;
         }
 
@@ -496,9 +478,8 @@ public class GuiCustomizeHCWorldScreen extends GuiScreen implements GuiSlider.Fo
 
     private static final int OFFSET_BIOME_LABEL = 0;
     private static final int OFFSET_BIOME_RADIUS_LABEL = 1;
-    private static final int OFFSET_BIOME_RADIUS = 2;
-    private static final int OFFSET_BIOME_STONE_BLOCK_LABEL = 3;
-    private static final int OFFSET_BIOME_STONE_BLOCK = 4;
-    private static final int OFFSET_BIOME_LAYERS = 5;
-    private static final int OFFSET_BIOME_LAYERS_UNDERWATER = 6;
+    private static final int OFFSET_BIOME_STONE_BLOCK_LABEL = 2;
+    private static final int OFFSET_BIOME_STONE_BLOCK = 3;
+    private static final int OFFSET_BIOME_LAYERS = 4;
+    private static final int OFFSET_BIOME_LAYERS_UNDERWATER = 5;
 }

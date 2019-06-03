@@ -24,7 +24,7 @@ public class GenLayerHCIslandMix extends GenLayer {
 
         int[] ints = IntCache.getIntCache(areaWidth * areaHeight);
 
-        final int radiusInChunks = settings.island.radius + settings.islandBeach.radius + settings.ocean.radius + settings.wastelandBeach.radius + settings.wasteland.radius + settings.wastelandEdge.radius;
+        final int radiusInChunks = settings.getTotalRadialZoneRadius();
         final float radiusInGenLayerUnitsBeforeStretching = radiusInChunks * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
         final float radiusSq = radiusInGenLayerUnitsBeforeStretching * radiusInGenLayerUnitsBeforeStretching;
 

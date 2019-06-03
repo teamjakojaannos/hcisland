@@ -14,8 +14,8 @@ import java.util.List;
 
 public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonList.GuiResponder {
     private final GuiCustomizeHCWorldScreen parent;
-    private final HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory config;
-    private final HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory defaultConfig;
+    private final HCIslandChunkGeneratorSettings.BiomeSettings.Factory config;
+    private final HCIslandChunkGeneratorSettings.BiomeSettings.Factory defaultConfig;
     private final boolean underwater;
 
     private GuiLayerList layerList;
@@ -26,7 +26,7 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
     private Gui focused;
     private int idCounter;
 
-    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorldScreen parent, HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory config, HCIslandChunkGeneratorSettings.Factory.BiomeSettingsFactory defaultConfig, boolean underwater) {
+    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorldScreen parent, HCIslandChunkGeneratorSettings.BiomeSettings.Factory config, HCIslandChunkGeneratorSettings.BiomeSettings.Factory defaultConfig, boolean underwater) {
         this.parent = parent;
         this.config = config;
         this.defaultConfig = defaultConfig;

@@ -3,6 +3,8 @@ package jakojaannos.hcisland.world.gen.layer;
 import jakojaannos.hcisland.init.HCIslandBiomes;
 import jakojaannos.hcisland.util.UnitHelper;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import lombok.val;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
@@ -27,35 +29,18 @@ public class GenLayerHCIslandBiomes extends GenLayer {
                 final long distSq = (long) (x + areaX) * (x + areaX) + (long) (y + areaY) * (y + areaY);
                 final int index = x + (y * areaWidth);
 
-                final float totalRadiusIsland = this.settings.island.radius * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
-                final float totalRadiusIslandBeach = totalRadiusIsland + this.settings.islandBeach.radius * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
-                final float totalRadiusOcean = totalRadiusIslandBeach + this.settings.ocean.radius * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
-                final float totalRadiusWastelandBeach = totalRadiusOcean + this.settings.wastelandBeach.radius * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
-                final float totalRadiusWasteland = totalRadiusWastelandBeach + this.settings.wasteland.radius * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
-                final float totalRadiusWastelandEdge = totalRadiusWasteland + this.settings.wastelandEdge.radius * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
+                final float totalRadius = settings.getTotalRadialZoneRadius() * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
 
-                if (distSq > sq(totalRadiusWastelandEdge)) {
+                if (distSq > totalRadius * totalRadius) {
                     ints[index] = parentInts[index];
-                } else if (distSq > sq(totalRadiusWasteland)) {
-                    ints[index] = Biome.getIdForBiome(HCIslandBiomes.WASTELAND_EDGE);
-                } else if (distSq > sq(totalRadiusWastelandBeach)) {
-                    ints[index] = Biome.getIdForBiome(HCIslandBiomes.WASTELAND);
-                } else if (distSq > sq(totalRadiusOcean)) {
-                    ints[index] = Biome.getIdForBiome(HCIslandBiomes.WASTELAND_BEACH);
-                } else if (distSq > sq(totalRadiusIslandBeach)) {
-                    ints[index] = Biome.getIdForBiome(HCIslandBiomes.OCEAN);
-                } else if (distSq > sq(totalRadiusIsland)) {
-                    ints[index] = Biome.getIdForBiome(HCIslandBiomes.ISLAND_BEACH);
                 } else {
-                    ints[index] = Biome.getIdForBiome(HCIslandBiomes.ISLAND);
+                    val biome = settings.getBiomeAtDistanceSq(distSq);
+                    // TODO: Make fallback biome configurable
+                    ints[index] = Biome.getIdForBiome(biome == null ? Biomes.FOREST : biome);
                 }
             }
         }
 
         return ints;
-    }
-
-    private static float sq(float a) {
-        return a * a;
     }
 }
