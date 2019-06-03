@@ -22,12 +22,10 @@ public class HardcoreIsland {
     public static CommonProxy proxy;
 
     public HardcoreIsland() {
-        this.loot = new HCIslandLootTables();
+        new HCIslandLootTables();
     }
 
     public static final WorldType WORLD_TYPE = new WorldTypeHCIsland();
-
-    private final HCIslandLootTables loot;
 
     @EventHandler
     public void onInit(FMLPreInitializationEvent event) {
