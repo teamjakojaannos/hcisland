@@ -31,6 +31,10 @@ public class BiomeSettings {
         public String stoneBlock;
         public String[] layers;
         public String[] layersUnderwater;
+
+        public BiomeSettings build() {
+            return new BiomeSettings(this);
+        }
     }
 
     public static class Island extends BiomeSettings {
@@ -55,6 +59,11 @@ public class BiomeSettings {
                 this.generateFalls = generateFalls;
                 this.generateLakes = generateLakes;
                 this.generateLakesLava = generateLakesLava;
+            }
+
+            @Override
+            public BiomeSettings build() {
+                return new Island(this);
             }
         }
     }
@@ -83,6 +92,11 @@ public class BiomeSettings {
                 this.grassPerChunk = grassPerChunk;
                 this.flowersPerChunk = flowersPerChunk;
             }
+
+            @Override
+            public BiomeSettings build() {
+                return new Forest(this);
+            }
         }
     }
 
@@ -102,6 +116,11 @@ public class BiomeSettings {
                 super(seaLevel, oceanBlock, stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
                 this.cactiPerChunk = cactiPerChunk;
             }
+
+            @Override
+            public BiomeSettings build() {
+                return new Beach(this);
+            }
         }
     }
 
@@ -120,6 +139,11 @@ public class BiomeSettings {
             public Factory(int seaLevel, String oceanBlock, String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava, boolean generateFire) {
                 super(seaLevel, oceanBlock, stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
                 this.generateFire = generateFire;
+            }
+
+            @Override
+            public BiomeSettings build() {
+                return new Wasteland(this);
             }
         }
     }

@@ -32,7 +32,7 @@ public class HCIslandChunkGeneratorSettings {
 
     private final List<IslandRadialBiome> biomes;
 
-    private final Map<ResourceLocation, BiomeSettings> biomeSettings = new HashMap<>();
+    private final Map<ResourceLocation, BiomeSettings> biomeSettings;
 
     private HCIslandChunkGeneratorSettings(Factory factory) {
         this.seaLevelOverride = factory.seaLevelOverride;
@@ -41,6 +41,11 @@ public class HCIslandChunkGeneratorSettings {
         this.biomes = factory.biomes.stream()
                                     .map(IslandRadialBiome::new)
                                     .collect(Collectors.toList());
+
+        this.biomeSettings = new HashMap<>();
+        for (val biomeEntry : factory.biomeSettings.entrySet()) {
+            this.biomeSettings.put(biomeEntry.getKey(), biomeEntry.getValue().build());
+        }
     }
 
     @Nullable
@@ -172,6 +177,7 @@ public class HCIslandChunkGeneratorSettings {
             oceanBlockOverride = overrides.oceanBlockOverride;
 
             biomes = overrides.biomes; // TODO: Does this cause issues?
+            biomeSettings = overrides.biomeSettings;
 
             island = overrides.island;
             islandBeach = overrides.islandBeach;
