@@ -5,7 +5,7 @@ import jakojaannos.hcisland.world.gen.BiomeSettings;
 
 public class BiomeHCIsland extends BiomeHCIslandBase<BiomeSettings.Forest> {
     public BiomeHCIsland() {
-        super(getProperties(), settings -> settings.island);
+        super(getProperties());
     }
 
     private static BiomeProperties getProperties() {

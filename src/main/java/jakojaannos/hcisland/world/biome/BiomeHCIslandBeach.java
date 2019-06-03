@@ -5,7 +5,7 @@ import jakojaannos.hcisland.world.gen.BiomeSettings;
 
 public class BiomeHCIslandBeach extends BiomeHCIslandBase<BiomeSettings.Beach> {
     public BiomeHCIslandBeach() {
-        super(getProperties(), settings -> settings.islandBeach);
+        super(getProperties());
 
         this.spawnableCreatureList.clear();
         setSeaLevelFuzz(1.5f, 2.0f);

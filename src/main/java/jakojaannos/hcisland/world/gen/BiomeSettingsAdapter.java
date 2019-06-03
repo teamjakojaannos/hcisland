@@ -8,7 +8,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeSettingsAdapter> {
+public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeSettingsAdapter> {
     private final Supplier<BiomeSettings.Factory> defaultSettingsSupplier;
     private final ResourceLocation biomeId;
 
@@ -49,4 +49,6 @@ public class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeSettingsAd
     public Class<BiomeSettingsAdapter> getRegistryType() {
         return BiomeSettingsAdapter.class;
     }
+
+    public abstract void applyBiomeSettings(BiomeSettings settings);
 }

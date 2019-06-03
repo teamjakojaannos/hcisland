@@ -1,17 +1,11 @@
 package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.world.gen.BiomeSettings;
-import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.function.Function;
-
 public class BiomeHCBase<TSettings extends BiomeSettings> extends AdvancedBiomeBase {
-    private final Function<HCIslandChunkGeneratorSettings, TSettings> biomeSettingsMapper;
-
-    BiomeHCBase(BiomeProperties properties, Function<HCIslandChunkGeneratorSettings, TSettings> biomeSettingsMapper) {
+    BiomeHCBase(BiomeProperties properties) {
         super(properties);
-        this.biomeSettingsMapper = biomeSettingsMapper;
 
         this.decorator.generateFalls = false;
         this.decorator.treesPerChunk = -999;
@@ -29,15 +23,12 @@ public class BiomeHCBase<TSettings extends BiomeSettings> extends AdvancedBiomeB
         return MathHelper.hsvToRGB(0.07f, 0.75f, 0.85f);
     }
 
+    public void applySettings(TSettings settings) {
+        setSeaLevelOverride(settings.seaLevel);
+        setStoneBlock(settings.stoneBlock);
+        setOceanBlock(settings.oceanBlock);
 
-    public void applySettings(HCIslandChunkGeneratorSettings settings) {
-        TSettings biomeSettings = biomeSettingsMapper.apply(settings);
-
-        setSeaLevelOverride(settings.seaLevelOverride);
-        setStoneBlock(biomeSettings.stoneBlock);
-        setOceanBlock(settings.oceanBlockOverride);
-
-        applyBiomeSettings(biomeSettings);
+        applyBiomeSettings(settings);
     }
 
     protected void applyBiomeSettings(TSettings settings) {

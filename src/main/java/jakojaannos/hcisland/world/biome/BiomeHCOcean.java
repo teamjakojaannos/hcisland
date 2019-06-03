@@ -5,7 +5,7 @@ import jakojaannos.hcisland.world.gen.BiomeSettings;
 
 public class BiomeHCOcean extends BiomeHCBase<BiomeSettings> {
     public BiomeHCOcean() {
-        super(getProperties(), settings -> settings.ocean);
+        super(getProperties());
 
         this.decorator.treesPerChunk = -999;
         this.decorator.deadBushPerChunk = 0;

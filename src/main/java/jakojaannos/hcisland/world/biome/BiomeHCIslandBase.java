@@ -1,9 +1,6 @@
 package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.world.gen.BiomeSettings;
-import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
-
-import java.util.function.Function;
 
 public abstract class BiomeHCIslandBase<TSettings extends BiomeSettings.Island> extends BiomeHCBase<TSettings> {
     private boolean generateLakesLava;
@@ -17,8 +14,8 @@ public abstract class BiomeHCIslandBase<TSettings extends BiomeSettings.Island> 
         return generateLakesLava;
     }
 
-    BiomeHCIslandBase(BiomeProperties properties, Function<HCIslandChunkGeneratorSettings, TSettings> biomeSettingsMapper) {
-        super(properties, biomeSettingsMapper);
+    BiomeHCIslandBase(BiomeProperties properties) {
+        super(properties);
         this.generateLakes = true;
         this.generateLakesLava = true;
     }

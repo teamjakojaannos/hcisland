@@ -3,7 +3,9 @@ package jakojaannos.hcisland.world;
 import com.google.common.collect.ImmutableList;
 import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorld;
 import jakojaannos.hcisland.init.ModBiomes;
+import jakojaannos.hcisland.init.ModRegistries;
 import jakojaannos.hcisland.world.biome.BiomeHCBase;
+import jakojaannos.hcisland.world.gen.BiomeSettingsAdapter;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandBiomes;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandMix;
@@ -49,12 +51,8 @@ public class WorldTypeHCIsland extends WorldType {
         this.settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(world.getWorldInfo().getGeneratorOptions()).build();
 
         if (!world.isRemote) {
-            ((BiomeHCBase) ModBiomes.ISLAND).applySettings(settings);
-            ((BiomeHCBase) ModBiomes.ISLAND_BEACH).applySettings(settings);
-            ((BiomeHCBase) ModBiomes.OCEAN).applySettings(settings);
-            ((BiomeHCBase) ModBiomes.WASTELAND).applySettings(settings);
-            ((BiomeHCBase) ModBiomes.WASTELAND_BEACH).applySettings(settings);
-            ((BiomeHCBase) ModBiomes.WASTELAND_EDGE).applySettings(settings);
+            ModRegistries.BIOME_ADAPTERS.getValuesCollection()
+                                        .forEach(a -> a.applyBiomeSettings(settings.getSettingsFor(a.getBiome().getRegistryName())));
         }
 
         return new BiomeProviderHCIsland(world.getWorldInfo());

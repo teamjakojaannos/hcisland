@@ -168,7 +168,7 @@ public class GuiCustomizeHCWorld extends GuiCustomizeWithDefaults<HCIslandChunkG
     }
 
     private void openBiomeEditor(BiomeSettingsAdapter adapter) {
-        mc.displayGuiScreen(new GuiCustomizeHCWorldBiome(this, adapter, null /* settings.getSettingsFor(adapter.getBiome().getRegistryName()) */));
+        mc.displayGuiScreen(new GuiCustomizeHCWorldBiome(this, adapter, settings.getSettingsFor(adapter.getBiome().getRegistryName())));
     }
 
     private List<GuiPageButtonList.GuiListEntry> createBiomeEntries(int baseId, String biome, BiomeSettings.Factory config, BiomeSettings.Factory defaultConfig) {

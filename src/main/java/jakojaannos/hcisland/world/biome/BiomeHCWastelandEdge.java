@@ -6,13 +6,14 @@ import net.minecraft.init.Blocks;
 
 public class BiomeHCWastelandEdge extends BiomeHCWasteland {
     public BiomeHCWastelandEdge() {
-        super(getProperties(), settings -> settings.wastelandEdge);
+        super(getProperties());
     }
 
     // TODO: Gradually fade from wasteland filler/stone block substitutes to stone/grass/sand when approaching the outer edge
     //      -> requires figuring out the actual radius of biomes so that distance to edge can be calculated
     //      -> should be doable by trial-and-error and a bit of digging GenLayer code
     //      -> Actual radius seems to be roughly 4 x configured radius, but that's not yet accurate enough
+    //      -> Can we mess up the generation by setting biomes per-column via gen-layers? that way we could use random on edges to select either vanilla or wasteland
 
     private static BiomeProperties getProperties() {
         BiomeProperties props = new BiomeProperties("HC Wasteland Edge");

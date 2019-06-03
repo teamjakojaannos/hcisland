@@ -4,7 +4,7 @@ import jakojaannos.hcisland.config.HCIslandConfig;
 
 public class BiomeHCWastelandBeach extends BiomeHCWasteland {
     public BiomeHCWastelandBeach() {
-        super(getProperties(), settings -> settings.wastelandBeach);
+        super(getProperties());
     }
 
     private static BiomeProperties getProperties() {

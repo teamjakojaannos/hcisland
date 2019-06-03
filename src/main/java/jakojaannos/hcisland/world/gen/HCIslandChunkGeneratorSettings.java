@@ -3,8 +3,10 @@ package jakojaannos.hcisland.world.gen;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import jakojaannos.hcisland.ModInfo;
 import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
+import jakojaannos.hcisland.init.ModRegistries;
 import jakojaannos.hcisland.util.BlockHelper;
 import jakojaannos.hcisland.util.UnitHelper;
 import lombok.AllArgsConstructor;
@@ -19,33 +21,22 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HCIslandChunkGeneratorSettings {
     public final int seaLevelOverride;
     public final IBlockState oceanBlockOverride;
 
-    public final BiomeSettings.Forest island;
-    public final BiomeSettings.Beach islandBeach;
-    public final BiomeSettings ocean;
-    public final BiomeSettings.Wasteland wasteland;
-    public final BiomeSettings.Wasteland wastelandBeach;
-    public final BiomeSettings.Wasteland wastelandEdge;
-
     private final List<IslandRadialBiome> biomes;
 
+    private final Map<ResourceLocation, BiomeSettings> biomeSettings = new HashMap<>();
 
     private HCIslandChunkGeneratorSettings(Factory factory) {
         this.seaLevelOverride = factory.seaLevelOverride;
         this.oceanBlockOverride = BlockHelper.stringToBlockstateWithFallback(Blocks.LAVA.getDefaultState(), factory.oceanBlockOverride);
-
-        this.island = new BiomeSettings.Forest(factory.island);
-        this.islandBeach = new BiomeSettings.Beach(factory.islandBeach);
-        this.ocean = new BiomeSettings(factory.ocean);
-        this.wasteland = new BiomeSettings.Wasteland(factory.wasteland);
-        this.wastelandBeach = new BiomeSettings.Wasteland(factory.wastelandBeach);
-        this.wastelandEdge = new BiomeSettings.Wasteland(factory.wastelandEdge);
 
         this.biomes = factory.biomes.stream()
                                     .map(IslandRadialBiome::new)
@@ -79,6 +70,14 @@ public class HCIslandChunkGeneratorSettings {
                      .sum();
     }
 
+    public BiomeSettings getSettingsFor(ResourceLocation registryName) {
+        if (!biomeSettings.containsKey(registryName)) {
+            throw new IllegalStateException("Cannot get settings for biome \"" + registryName + "\"");
+        }
+
+        return biomeSettings.get(registryName);
+    }
+
     public static class IslandRadialBiome {
         @Getter private int radius;
         @Getter private ResourceLocation biomeId;
@@ -105,6 +104,7 @@ public class HCIslandChunkGeneratorSettings {
         public String oceanBlockOverride;
 
         private List<IslandRadialBiome.Factory> biomes;
+        private Map<ResourceLocation, BiomeSettings.Factory> biomeSettings;
 
         public BiomeSettings.Forest.Factory island;
         public BiomeSettings.Beach.Factory islandBeach;
@@ -157,100 +157,10 @@ public class HCIslandChunkGeneratorSettings {
                     new IslandRadialBiome.Factory(1, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
             );
 
-            island = new BiomeSettings.Forest.Factory(
-                    "minecraft:stone",
-                    new String[]{
-                            "1, minecraft:grass",
-                            "5, minecraft:dirt",
-                            "1, minecraft:clay",
-                            "2, minecraft:gravel"
-                    },
-                    new String[]{
-                    },
-                    false,
-                    false,
-                    false,
-                    7,
-                    4,
-                    25
-            );
-            islandBeach = new BiomeSettings.Beach.Factory(
-                    "minecraft:stone",
-                    new String[]{
-                            "8, minecraft:sand",
-                            "2, minecraft:sandstone",
-                            "1, minecraft:clay",
-                            "2, minecraft:gravel"
-                    },
-                    new String[]{
-                            "2, minecraft:obsidian",
-                            "1, minecraft:sandstone",
-                            "1, minecraft:hardened_clay",
-                            "2, minecraft:netherrack"
-                    },
-                    false,
-                    false,
-                    false,
-                    12
-            );
-            ocean = new BiomeSettings.Factory(
-                    "minecraft:stone",
-                    new String[]{
-                            "8, minecraft:netherrack"
-                    },
-                    new String[]{
-                            "2, minecraft:obsidian",
-                            "1, minecraft:sandstone",
-                            "1, minecraft:hardened_clay",
-                            "4, minecraft:netherrack"
-                    }
-            );
-            wasteland = new BiomeSettings.Wasteland.Factory(
-                    "minecraft:netherrack",
-                    new String[]{
-                            "8, minecraft:netherrack"
-                    },
-                    new String[]{
-                            "1, minecraft:obsidian",
-                            "1, minecraft:sandstone",
-                            "1, minecraft:hardened_clay",
-                            "8, minecraft:netherrack"
-                    },
-                    true,
-                    false,
-                    true,
-                    true
-            );
-            wastelandBeach = new BiomeSettings.Wasteland.Factory(
-                    "minecraft:netherrack",
-                    new String[]{
-                            "16, minecraft:netherrack"
-                    },
-                    new String[]{
-                            "1, minecraft:obsidian",
-                            "1, minecraft:sandstone",
-                            "1, minecraft:hardened_clay",
-                            "10, minecraft:netherrack"
-                    },
-                    true,
-                    false,
-                    true,
-                    true
-            );
-            wastelandEdge = new BiomeSettings.Wasteland.Factory(
-                    "minecraft:stone",
-                    new String[]{
-                            "8, minecraft:netherrack",
-                            "2, minecraft:gravel"
-                    },
-                    new String[]{
-                            "8, minecraft:netherrack"
-                    },
-                    true,
-                    true,
-                    true,
-                    true
-            );
+            biomeSettings = new HashMap<>();
+            for (val adapterEntry : ModRegistries.BIOME_ADAPTERS.getEntries()) {
+                biomeSettings.put(adapterEntry.getKey(), adapterEntry.getValue().createDefaultSettingsFactory());
+            }
         }
 
         public Factory() {
@@ -273,6 +183,10 @@ public class HCIslandChunkGeneratorSettings {
 
         public static void refreshOverrides() {
             overrides = jsonToFactory(HCIslandConfig.world.generatorSettingsDefaults);
+        }
+
+        public BiomeSettings.Factory getSettingsFor(ResourceLocation registryName) {
+            return biomeSettings.get(registryName);
         }
     }
 }
