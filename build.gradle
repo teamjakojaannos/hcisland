@@ -40,7 +40,13 @@ minecraft {
     replace '__VERSION__', project.version
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
 }
 
 processResources {
