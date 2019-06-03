@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class EntityEventHandler {
     @SubscribeEvent
     public static void onEntity(LivingSpawnEvent.CheckSpawn event) {
-        if (event.getWorld().provider.getDimension() == 0 && HCIslandConfig.world.allowAoAMobsOnIsland) {
+        if (event.getWorld().provider.getDimension() != 0 || HCIslandConfig.world.allowAoAMobsOnIsland) {
             return;
         }
 
