@@ -2,6 +2,8 @@ package jakojaannos.hcisland.init;
 
 import jakojaannos.hcisland.ModInfo;
 import jakojaannos.hcisland.world.biome.*;
+import jakojaannos.hcisland.world.gen.BiomeSettings;
+import jakojaannos.hcisland.world.gen.BiomeSettingsAdapter;
 import lombok.val;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
@@ -17,7 +19,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 @ObjectHolder(ModInfo.MODID)
 @Mod.EventBusSubscriber
-public class HCIslandBiomes {
+public class ModBiomes {
     public static final Biome ISLAND = null;
     public static final Biome ISLAND_BEACH = null;
     public static final Biome OCEAN = null;
@@ -42,5 +44,21 @@ public class HCIslandBiomes {
 
         BiomeManager.addBiome(managerType, new BiomeManager.BiomeEntry(biome, weight));
         BiomeDictionary.addTypes(biome, types);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterSettingsAdapters(RegistryEvent.Register<BiomeSettingsAdapter> event) {
+        event.getRegistry().registerAll(
+                new BiomeSettingsAdapter( rl("island"), BiomeSettings.Island.Factory::new),
+                new BiomeSettingsAdapter( rl("island_beach"), BiomeSettings.Beach.Factory::new),
+                new BiomeSettingsAdapter( rl("ocean"), BiomeSettings.Factory::new),
+                new BiomeSettingsAdapter( rl("wasteland"), BiomeSettings.Wasteland.Factory::new),
+                new BiomeSettingsAdapter( rl("wasteland_beach"), BiomeSettings.Wasteland.Factory::new),
+                new BiomeSettingsAdapter( rl("wasteland_edge"), BiomeSettings.Wasteland.Factory::new)
+        );
+    }
+
+    private static ResourceLocation rl(String path) {
+        return new ResourceLocation(ModInfo.MODID, path);
     }
 }

@@ -1,9 +1,9 @@
 package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.config.HCIslandConfig;
-import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import jakojaannos.hcisland.world.gen.BiomeSettings;
 
-public class BiomeHCIsland extends BiomeHCIslandBase<HCIslandChunkGeneratorSettings.BiomeSettings.Forest> {
+public class BiomeHCIsland extends BiomeHCIslandBase<BiomeSettings.Forest> {
     public BiomeHCIsland() {
         super(getProperties(), settings -> settings.island);
     }
@@ -18,7 +18,7 @@ public class BiomeHCIsland extends BiomeHCIslandBase<HCIslandChunkGeneratorSetti
     }
 
     @Override
-    protected void applyBiomeSettings(HCIslandChunkGeneratorSettings.BiomeSettings.Forest settings) {
+    protected void applyBiomeSettings(BiomeSettings.Forest settings) {
         super.applyBiomeSettings(settings);
         this.decorator.treesPerChunk = settings.treesPerChunk;
         this.decorator.grassPerChunk = settings.grassPerChunk;

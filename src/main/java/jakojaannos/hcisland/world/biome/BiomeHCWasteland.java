@@ -1,6 +1,7 @@
 package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.world.gen.BiomeSettings;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -8,7 +9,7 @@ import net.minecraft.init.Biomes;
 
 import java.util.function.Function;
 
-public class BiomeHCWasteland extends BiomeHCIslandBase<HCIslandChunkGeneratorSettings.BiomeSettings.Wasteland> {
+public class BiomeHCWasteland extends BiomeHCIslandBase<BiomeSettings.Wasteland> {
     private boolean generateFire;
 
     public boolean generateFire() {
@@ -19,7 +20,7 @@ public class BiomeHCWasteland extends BiomeHCIslandBase<HCIslandChunkGeneratorSe
         this(getProperties(), settings -> settings.wasteland);
     }
 
-    protected BiomeHCWasteland(BiomeProperties properties, Function<HCIslandChunkGeneratorSettings, HCIslandChunkGeneratorSettings.BiomeSettings.Wasteland> biomeSettingsMapper) {
+    protected BiomeHCWasteland(BiomeProperties properties, Function<HCIslandChunkGeneratorSettings, BiomeSettings.Wasteland> biomeSettingsMapper) {
         super(properties, biomeSettingsMapper);
 
         // Disable neutral spawning
@@ -45,7 +46,7 @@ public class BiomeHCWasteland extends BiomeHCIslandBase<HCIslandChunkGeneratorSe
     }
 
     @Override
-    protected void applyBiomeSettings(HCIslandChunkGeneratorSettings.BiomeSettings.Wasteland settings) {
+    protected void applyBiomeSettings(BiomeSettings.Wasteland settings) {
         super.applyBiomeSettings(settings);
         this.generateFire = settings.generateFire;
     }

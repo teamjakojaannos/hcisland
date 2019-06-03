@@ -1,10 +1,11 @@
 package jakojaannos.hcisland.world.biome;
 
+import jakojaannos.hcisland.world.gen.BiomeSettings;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 
 import java.util.function.Function;
 
-public abstract class BiomeHCIslandBase<TSettings extends HCIslandChunkGeneratorSettings.BiomeSettings.Island> extends BiomeHCBase<TSettings> {
+public abstract class BiomeHCIslandBase<TSettings extends BiomeSettings.Island> extends BiomeHCBase<TSettings> {
     private boolean generateLakesLava;
     private boolean generateLakes;
 

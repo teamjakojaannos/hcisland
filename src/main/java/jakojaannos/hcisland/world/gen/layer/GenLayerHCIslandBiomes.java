@@ -1,6 +1,5 @@
 package jakojaannos.hcisland.world.gen.layer;
 
-import jakojaannos.hcisland.init.HCIslandBiomes;
 import jakojaannos.hcisland.util.UnitHelper;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.val;

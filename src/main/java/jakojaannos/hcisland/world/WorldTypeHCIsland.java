@@ -1,7 +1,8 @@
 package jakojaannos.hcisland.world;
 
 import com.google.common.collect.ImmutableList;
-import jakojaannos.hcisland.init.HCIslandBiomes;
+import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorld;
+import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.world.biome.BiomeHCBase;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandBiomes;
@@ -39,7 +40,7 @@ public class WorldTypeHCIsland extends WorldType {
     @SideOnly(Side.CLIENT)
     @Override
     public void onCustomizeButton(net.minecraft.client.Minecraft mc, net.minecraft.client.gui.GuiCreateWorld guiCreateWorld) {
-        mc.displayGuiScreen(new jakojaannos.hcisland.client.gui.GuiCustomizeHCWorldScreen(guiCreateWorld, guiCreateWorld.chunkProviderSettingsJson));
+        mc.displayGuiScreen(new GuiCustomizeHCWorld(guiCreateWorld, guiCreateWorld.chunkProviderSettingsJson));
     }
 
     @Override
@@ -48,12 +49,12 @@ public class WorldTypeHCIsland extends WorldType {
         this.settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(world.getWorldInfo().getGeneratorOptions()).build();
 
         if (!world.isRemote) {
-            ((BiomeHCBase) HCIslandBiomes.ISLAND).applySettings(settings);
-            ((BiomeHCBase) HCIslandBiomes.ISLAND_BEACH).applySettings(settings);
-            ((BiomeHCBase) HCIslandBiomes.OCEAN).applySettings(settings);
-            ((BiomeHCBase) HCIslandBiomes.WASTELAND).applySettings(settings);
-            ((BiomeHCBase) HCIslandBiomes.WASTELAND_BEACH).applySettings(settings);
-            ((BiomeHCBase) HCIslandBiomes.WASTELAND_EDGE).applySettings(settings);
+            ((BiomeHCBase) ModBiomes.ISLAND).applySettings(settings);
+            ((BiomeHCBase) ModBiomes.ISLAND_BEACH).applySettings(settings);
+            ((BiomeHCBase) ModBiomes.OCEAN).applySettings(settings);
+            ((BiomeHCBase) ModBiomes.WASTELAND).applySettings(settings);
+            ((BiomeHCBase) ModBiomes.WASTELAND_BEACH).applySettings(settings);
+            ((BiomeHCBase) ModBiomes.WASTELAND_EDGE).applySettings(settings);
         }
 
         return new BiomeProviderHCIsland(world.getWorldInfo());
@@ -66,7 +67,7 @@ public class WorldTypeHCIsland extends WorldType {
 
         @Override
         public List<Biome> getBiomesToSpawnIn() {
-            return ImmutableList.of(HCIslandBiomes.ISLAND);
+            return ImmutableList.of(ModBiomes.ISLAND);
         }
 
         @Override

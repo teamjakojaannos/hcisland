@@ -1,7 +1,7 @@
 package jakojaannos.hcisland.client.gui;
 
 import jakojaannos.hcisland.world.biome.BlockLayer;
-import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import jakojaannos.hcisland.world.gen.BiomeSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
@@ -13,9 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonList.GuiResponder {
-    private final GuiCustomizeHCWorldScreen parent;
-    private final HCIslandChunkGeneratorSettings.BiomeSettings.Factory config;
-    private final HCIslandChunkGeneratorSettings.BiomeSettings.Factory defaultConfig;
+    private final GuiCustomizeHCWorld parent;
+    private final BiomeSettings.Factory config;
+    private final BiomeSettings.Factory defaultConfig;
     private final boolean underwater;
 
     private GuiLayerList layerList;
@@ -26,7 +26,7 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
     private Gui focused;
     private int idCounter;
 
-    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorldScreen parent, HCIslandChunkGeneratorSettings.BiomeSettings.Factory config, HCIslandChunkGeneratorSettings.BiomeSettings.Factory defaultConfig, boolean underwater) {
+    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorld parent, BiomeSettings.Factory config, BiomeSettings.Factory defaultConfig, boolean underwater) {
         this.parent = parent;
         this.config = config;
         this.defaultConfig = defaultConfig;

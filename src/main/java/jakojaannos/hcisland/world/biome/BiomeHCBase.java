@@ -1,11 +1,12 @@
 package jakojaannos.hcisland.world.biome;
 
+import jakojaannos.hcisland.world.gen.BiomeSettings;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.function.Function;
 
-public class BiomeHCBase<TSettings extends HCIslandChunkGeneratorSettings.BiomeSettings> extends AdvancedBiomeBase {
+public class BiomeHCBase<TSettings extends BiomeSettings> extends AdvancedBiomeBase {
     private final Function<HCIslandChunkGeneratorSettings, TSettings> biomeSettingsMapper;
 
     BiomeHCBase(BiomeProperties properties, Function<HCIslandChunkGeneratorSettings, TSettings> biomeSettingsMapper) {

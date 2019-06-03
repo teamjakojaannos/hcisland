@@ -1,9 +1,9 @@
 package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.config.HCIslandConfig;
-import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import jakojaannos.hcisland.world.gen.BiomeSettings;
 
-public class BiomeHCOcean extends BiomeHCBase<HCIslandChunkGeneratorSettings.BiomeSettings> {
+public class BiomeHCOcean extends BiomeHCBase<BiomeSettings> {
     public BiomeHCOcean() {
         super(getProperties(), settings -> settings.ocean);
 

@@ -4,10 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakojaannos.hcisland.config.HCIslandConfig;
-import jakojaannos.hcisland.init.HCIslandBiomes;
+import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.util.BlockHelper;
 import jakojaannos.hcisland.util.UnitHelper;
-import jakojaannos.hcisland.world.biome.BlockLayer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.val;
@@ -20,7 +19,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,113 +97,6 @@ public class HCIslandChunkGeneratorSettings {
         }
     }
 
-    public static class BiomeSettings {
-        public final IBlockState stoneBlock;
-        public final BlockLayer[] layers;
-        public final BlockLayer[] layersUnderwater;
-
-        public BiomeSettings(BiomeSettings.Factory factory) {
-            this.stoneBlock = BlockHelper.stringToBlockstateWithFallback(Blocks.STONE.getDefaultState(), factory.stoneBlock);
-            this.layers = Arrays.stream(factory.layers).map(BlockLayer::new).toArray(BlockLayer[]::new);
-            this.layersUnderwater = Arrays.stream(factory.layersUnderwater).map(BlockLayer::new).toArray(BlockLayer[]::new);
-        }
-
-        @AllArgsConstructor
-        public static class Factory {
-            public String stoneBlock;
-            public String[] layers;
-            public String[] layersUnderwater;
-        }
-
-        public static class Island extends BiomeSettings {
-            public final boolean generateFalls;
-            public final boolean generateLakes;
-            public final boolean generateLakesLava;
-
-            public Island(BiomeSettings.Island.Factory factory) {
-                super(factory);
-                this.generateFalls = factory.generateFalls;
-                this.generateLakes = factory.generateLakes;
-                this.generateLakesLava = factory.generateLakesLava;
-            }
-
-            public static class Factory extends BiomeSettings.Factory {
-                private boolean generateFalls;
-                private boolean generateLakes;
-                private boolean generateLakesLava;
-
-                public Factory(String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava) {
-                    super(stoneBlock, layers, layersUnderwater);
-                    this.generateFalls = generateFalls;
-                    this.generateLakes = generateLakes;
-                    this.generateLakesLava = generateLakesLava;
-                }
-            }
-        }
-
-        public static class Forest extends Island {
-            public final int treesPerChunk;
-            public final int grassPerChunk;
-            public final int flowersPerChunk;
-
-            public Forest(BiomeSettings.Forest.Factory factory) {
-                super(factory);
-                this.treesPerChunk = factory.treesPerChunk;
-                this.grassPerChunk = factory.grassPerChunk;
-                this.flowersPerChunk = factory.flowersPerChunk;
-            }
-
-            public static class Factory extends BiomeSettings.Island.Factory {
-                private int treesPerChunk;
-                private int grassPerChunk;
-                private int flowersPerChunk;
-
-                public Factory(String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava, int treesPerChunk, int grassPerChunk, int flowersPerChunk) {
-                    super(stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
-                    this.treesPerChunk = treesPerChunk;
-                    this.grassPerChunk = grassPerChunk;
-                    this.flowersPerChunk = flowersPerChunk;
-                }
-            }
-        }
-
-        public static class Beach extends Island {
-            public final int cactiPerChunk;
-
-            public Beach(BiomeSettings.Beach.Factory factory) {
-                super(factory);
-                this.cactiPerChunk = factory.cactiPerChunk;
-            }
-
-            public static class Factory extends BiomeSettings.Island.Factory {
-                private int cactiPerChunk;
-
-                public Factory(String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava, int cactiPerChunk) {
-                    super(stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
-                    this.cactiPerChunk = cactiPerChunk;
-                }
-            }
-        }
-
-        public static class Wasteland extends Island {
-            public final boolean generateFire;
-
-            public Wasteland(BiomeSettings.Wasteland.Factory factory) {
-                super(factory);
-                this.generateFire = factory.generateFire;
-            }
-
-            public static class Factory extends BiomeSettings.Island.Factory {
-                private boolean generateFire;
-
-                public Factory(String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava, boolean generateFire) {
-                    super(stoneBlock, layers, layersUnderwater, generateFalls, generateLakes, generateLakesLava);
-                    this.generateFire = generateFire;
-                }
-            }
-        }
-    }
-
     public static class Factory {
         private static final Gson JSON_ADAPTER = new GsonBuilder().create();
         private static Factory overrides;
@@ -258,12 +149,12 @@ public class HCIslandChunkGeneratorSettings {
             oceanBlockOverride = "minecraft:lava";
 
             biomes = Lists.newArrayList(
-                    new IslandRadialBiome.Factory(3, HCIslandBiomes.ISLAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(2, HCIslandBiomes.ISLAND_BEACH.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(8, HCIslandBiomes.OCEAN.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(2, HCIslandBiomes.WASTELAND_BEACH.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(4, HCIslandBiomes.WASTELAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(1, HCIslandBiomes.WASTELAND_EDGE.getRegistryName().toString())
+                    new IslandRadialBiome.Factory(3, ModBiomes.ISLAND.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(2, ModBiomes.ISLAND_BEACH.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(8, ModBiomes.OCEAN.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(2, ModBiomes.WASTELAND_BEACH.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(4, ModBiomes.WASTELAND.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(1, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
             );
 
             island = new BiomeSettings.Forest.Factory(

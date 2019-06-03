@@ -1,7 +1,7 @@
 package jakojaannos.hcisland.event.handler;
 
 import jakojaannos.hcisland.HardcoreIsland;
-import jakojaannos.hcisland.init.HCIslandLootTables;
+import jakojaannos.hcisland.init.ModLootTables;
 import jakojaannos.hcisland.world.biome.BiomeHCIslandBase;
 import jakojaannos.hcisland.world.biome.BiomeHCWasteland;
 import jakojaannos.hcisland.world.storage.HCIslandWorldSavedData;
@@ -132,8 +132,8 @@ public class WorldGenEventHandler {
             }
         }
 
-        generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), HCIslandLootTables.STARTING_GEAR);
-        generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), HCIslandLootTables.BONUS_GEAR);
+        generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), ModLootTables.STARTING_GEAR);
+        generateChestAt(world, selectRandomSpot(suitableSpots, world, rand), ModLootTables.BONUS_GEAR);
 
         HCIslandWorldSavedData.getInstance(world).starterChestGenerated = true;
     }
