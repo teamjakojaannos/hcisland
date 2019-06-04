@@ -9,7 +9,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
 public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<BiomeSettings.Factory> implements GuiPageButtonList.GuiResponder {
@@ -17,22 +17,20 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
     private final BiomeSettingsAdapter adapter;
     private final IBiomeSettingsGuiProvider guiProvider;
 
+    private final Supplier<BiomeSettings.Factory> defaultSettingsSupplier;
+
     public GuiCustomizeHCWorldBiome(
             GuiCustomizeHCWorld parent,
             BiomeSettingsAdapter adapter,
-            @Nullable BiomeSettings.Factory preset
+            BiomeSettings.Factory settings,
+            Supplier<BiomeSettings.Factory> defaultSettingsSupplier
     ) {
         this.parent = parent;
         this.adapter = adapter;
-
-        this.defaultSettings = adapter.createDefaultSettingsFactory();
+        this.defaultSettingsSupplier = defaultSettingsSupplier;
         this.guiProvider = adapter.createGuiProvider();
 
-        if (preset == null) {
-            this.settings = adapter.createDefaultSettingsFactory();
-        } else {
-            this.settings = preset;
-        }
+        this.settings = settings;
     }
 
     @Override
@@ -84,6 +82,7 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
 
     @Override
     protected void restoreDefaults() {
-        settings = adapter.createDefaultSettingsFactory();
+        settings = defaultSettingsSupplier.get();
+        super.restoreDefaults();
     }
 }

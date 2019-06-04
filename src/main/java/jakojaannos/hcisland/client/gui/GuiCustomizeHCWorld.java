@@ -43,10 +43,13 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
         this.title = "Customize World Settings";
         this.subtitle = "Page 1 of many";
 
-        HCIslandChunkGeneratorSettings.Factory.refreshOverrides();
-        defaultSettings = new HCIslandChunkGeneratorSettings.Factory();
+        this.defaultSettings = new HCIslandChunkGeneratorSettings.Factory(true);
 
-        loadValues(preset);
+        if (preset != null && !preset.isEmpty()) {
+            settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(preset);
+        } else {
+            settings = new HCIslandChunkGeneratorSettings.Factory(true);
+        }
     }
 
     @Override
@@ -63,14 +66,6 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
 
     private String saveValues() {
         return settings.toString().replace("\n", "");
-    }
-
-    private void loadValues(@Nullable String preset) {
-        if (preset != null && !preset.isEmpty()) {
-            settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(preset);
-        } else {
-            settings = new HCIslandChunkGeneratorSettings.Factory();
-        }
     }
 
     @Override
@@ -131,38 +126,18 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
     }
 
     private void openBiomeEditor(BiomeSettingsAdapter adapter) {
-        mc.displayGuiScreen(new GuiCustomizeHCWorldBiome(this, adapter, settings.getSettingsFor(adapter.getBiome().getRegistryName())));
+        mc.displayGuiScreen(new GuiCustomizeHCWorldBiome(this,
+                                                         adapter,
+                                                         settings.getSettingsFor(adapter.getBiome().getRegistryName()),
+                                                         () -> {
+                                                             // FIXME: This is not really a sensible way of doing this
+                                                             val backup = settings;
+                                                             restoreDefaults();
+                                                             val result = settings.getSettingsFor(adapter.getBiome().getRegistryName());
+                                                             settings = backup;
+                                                             return result;
+                                                         }));
     }
-
-    /*
-    private List<GuiPageButtonList.GuiListEntry> createBiomeEntries(int baseId, String biome, BiomeSettings.Factory config, BiomeSettings.Factory defaultConfig) {
-        return Lists.newArrayList(
-                new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_LABEL,
-                                                    I18n.format("createWorld.customize.hcisland.label.biome." + biome), false),
-                null,
-                new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_RADIUS_LABEL,
-                                                    I18n.format("createWorld.customize.hcisland.field.biome.radius"),
-                                                    false),
-                new GuiPageButtonList.GuiSlideEntry(baseId + OFFSET_BIOME_RADIUS,
-                        "",
-                        false, this,
-                        2.0f, 512.0f,
-                        config.radius),
-                new GuiPageButtonList.GuiLabelEntry(baseId + OFFSET_BIOME_STONE_BLOCK_LABEL,
-                                                    I18n.format("createWorld.customize.hcisland.field.biome.stoneBlock"),
-                                                    false),
-                new GuiPageButtonList.EditBoxEntry(baseId + OFFSET_BIOME_STONE_BLOCK,
-                                                   config.stoneBlock,
-                                                   false, s -> true),
-                new ExtendedGuiPageButtonList.GuiActionButtonEntry(baseId + OFFSET_BIOME_LAYERS,
-                                                                   "createWorld.customize.hcisland.field.biome.layers",
-                                                                   false, () -> openLayersEditor(config, defaultConfig, false)),
-                new ExtendedGuiPageButtonList.GuiActionButtonEntry(baseId + OFFSET_BIOME_LAYERS_UNDERWATER,
-                                                                   "createWorld.customize.hcisland.field.biome.layersUnderwater",
-                                                                   false, () -> openLayersEditor(config, defaultConfig, true))
-        );
-    }
-    */
 
     @Override
     public void setEntryValue(int id, String valueStr) {

@@ -47,7 +47,6 @@ public class WorldTypeHCIsland extends WorldType {
 
     @Override
     public BiomeProvider getBiomeProvider(World world) {
-        HCIslandChunkGeneratorSettings.Factory.refreshOverrides();
         this.settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(world.getWorldInfo().getGeneratorOptions()).build();
 
         if (!world.isRemote) {

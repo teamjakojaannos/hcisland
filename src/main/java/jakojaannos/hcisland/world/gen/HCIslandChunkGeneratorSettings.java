@@ -3,18 +3,14 @@ package jakojaannos.hcisland.world.gen;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import jakojaannos.hcisland.ModInfo;
 import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
-import jakojaannos.hcisland.util.BlockHelper;
 import jakojaannos.hcisland.util.UnitHelper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.val;
 import lombok.var;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
@@ -38,7 +34,7 @@ public class HCIslandChunkGeneratorSettings {
 
         this.biomeSettings = new HashMap<>();
         for (val biomeEntry : factory.biomeSettings.entrySet()) {
-            this.biomeSettings.put(biomeEntry.getKey(), biomeEntry.getValue().build());
+            this.biomeSettings.put(new ResourceLocation(biomeEntry.getKey()), biomeEntry.getValue().build());
         }
     }
 
@@ -96,30 +92,43 @@ public class HCIslandChunkGeneratorSettings {
     }
 
     public static class Factory {
-        private static final Gson JSON_ADAPTER = new GsonBuilder().create();
-        private static Factory overrides;
+        private static final Gson JSON_ADAPTER = new GsonBuilder().enableComplexMapKeySerialization()
+                                                                  .setLenient()
+                                                                  .create();
+
+        public static boolean hasOverrides() {
+            return !HCIslandConfig.world.generatorSettingsDefaults.isEmpty();
+        }
+
+        public static Factory createOverrides() {
+            return jsonToFactory(HCIslandConfig.world.generatorSettingsDefaults, false);
+        }
 
         private List<IslandRadialBiome.Factory> biomes;
-        private Map<ResourceLocation, BiomeSettings.Factory> biomeSettings;
+        private Map<String, BiomeSettings.Factory> biomeSettings;
 
         public HCIslandChunkGeneratorSettings build() {
             return new HCIslandChunkGeneratorSettings(this);
         }
 
         public static Factory jsonToFactory(String json) {
+            return jsonToFactory(json, true);
+        }
+
+        private static Factory jsonToFactory(String json, boolean useOverrides) {
             if (json.isEmpty()) {
-                return new Factory();
+                return new Factory(useOverrides);
             }
 
             try {
-                Factory factory = JsonUtils.gsonDeserialize(JSON_ADAPTER, json, Factory.class);
+                Factory factory = JSON_ADAPTER.fromJson(json, Factory.class);
                 if (factory == null) {
-                    return new Factory();
+                    return new Factory(useOverrides);
                 }
 
                 return factory;
             } catch (Exception ignored) {
-                return new Factory();
+                return new Factory(useOverrides);
             }
         }
 
@@ -129,7 +138,11 @@ public class HCIslandChunkGeneratorSettings {
         }
 
         public void setDefaults() {
-            if (overrides != null) {
+            setDefaults(true);
+        }
+
+        private void setDefaults(boolean useOverrides) {
+            if (useOverrides && hasOverrides()) {
                 setOverrides();
                 return;
             }
@@ -145,29 +158,30 @@ public class HCIslandChunkGeneratorSettings {
 
             biomeSettings = new HashMap<>();
             for (val adapterEntry : ModRegistries.BIOME_ADAPTERS.getEntries()) {
-                biomeSettings.put(adapterEntry.getKey(), adapterEntry.getValue().createDefaultSettingsFactory());
+                biomeSettings.put(adapterEntry.getKey().toString(), adapterEntry.getValue().createDefaultSettingsFactory());
             }
         }
 
         public Factory() {
-            setDefaults();
+            this(false);
+        }
+
+        public Factory(boolean useOverrides) {
+            setDefaults(useOverrides);
         }
 
         private void setOverrides() {
-            biomes = overrides.biomes; // TODO: Does this cause issues?
+            val overrides = createOverrides();
+            biomes = overrides.biomes;
             biomeSettings = overrides.biomeSettings;
         }
 
-        public static void refreshOverrides() {
-            overrides = jsonToFactory(HCIslandConfig.world.generatorSettingsDefaults);
-        }
-
         public BiomeSettings.Factory getSettingsFor(ResourceLocation registryName) {
-            return biomeSettings.get(registryName);
+            return biomeSettings.get(registryName.toString());
         }
 
         public void updateBiomeSettingsFor(ResourceLocation registryName, BiomeSettings.Factory settings) {
-            biomeSettings.put(registryName, settings);
+            biomeSettings.put(registryName.toString(), settings);
         }
     }
 }
