@@ -17,7 +17,6 @@ public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustom
 
     @Override
     public void initGui() {
-        createButtons();
         super.initGui();
 
         createPagedList();

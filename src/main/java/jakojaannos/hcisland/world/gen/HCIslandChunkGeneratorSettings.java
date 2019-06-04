@@ -3,6 +3,8 @@ package jakojaannos.hcisland.world.gen;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.reflect.TypeToken;
 import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
@@ -11,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.val;
 import lombok.var;
-import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -34,7 +35,7 @@ public class HCIslandChunkGeneratorSettings {
 
         this.biomeSettings = new HashMap<>();
         for (val biomeEntry : factory.biomeSettings.entrySet()) {
-            this.biomeSettings.put(new ResourceLocation(biomeEntry.getKey()), biomeEntry.getValue().build());
+            this.biomeSettings.put(biomeEntry.getKey(), biomeEntry.getValue().build());
         }
     }
 
@@ -92,8 +93,25 @@ public class HCIslandChunkGeneratorSettings {
     }
 
     public static class Factory {
-        private static final Gson JSON_ADAPTER = new GsonBuilder().enableComplexMapKeySerialization()
-                                                                  .setLenient()
+        private static final Gson JSON_ADAPTER = new GsonBuilder().setLenient()
+                                                                  .registerTypeAdapter(Factory.class, (JsonDeserializer<Factory>) (json, typeOfT, context) -> {
+                                                                      val result = new Factory(false);
+                                                                      val jsonObject = json.getAsJsonObject();
+                                                                      result.biomes = context.deserialize(jsonObject.getAsJsonArray("biomes"),
+                                                                                                          new TypeToken<List<IslandRadialBiome.Factory>>() {
+                                                                                                          }.getType());
+
+                                                                      val resultBiomeSettings = new HashMap<ResourceLocation, BiomeSettings.Factory>();
+                                                                      val biomeSettingsJson = jsonObject.getAsJsonObject("biomeSettings");
+                                                                      for (val entry : result.biomeSettings.entrySet()) {
+                                                                          val entryJson = biomeSettingsJson.getAsJsonObject(entry.getKey().toString());
+                                                                          BiomeSettings.Factory biomeSettings = context.deserialize(entryJson, entry.getValue().getClass());
+
+                                                                          resultBiomeSettings.put(entry.getKey(), biomeSettings);
+                                                                      }
+                                                                      result.biomeSettings = resultBiomeSettings;
+                                                                      return result;
+                                                                  })
                                                                   .create();
 
         public static boolean hasOverrides() {
@@ -105,7 +123,7 @@ public class HCIslandChunkGeneratorSettings {
         }
 
         private List<IslandRadialBiome.Factory> biomes;
-        private Map<String, BiomeSettings.Factory> biomeSettings;
+        private Map<ResourceLocation, BiomeSettings.Factory> biomeSettings;
 
         public HCIslandChunkGeneratorSettings build() {
             return new HCIslandChunkGeneratorSettings(this);
@@ -158,7 +176,7 @@ public class HCIslandChunkGeneratorSettings {
 
             biomeSettings = new HashMap<>();
             for (val adapterEntry : ModRegistries.BIOME_ADAPTERS.getEntries()) {
-                biomeSettings.put(adapterEntry.getKey().toString(), adapterEntry.getValue().createDefaultSettingsFactory());
+                biomeSettings.put(adapterEntry.getKey(), adapterEntry.getValue().createDefaultSettingsFactory());
             }
         }
 
@@ -177,11 +195,11 @@ public class HCIslandChunkGeneratorSettings {
         }
 
         public BiomeSettings.Factory getSettingsFor(ResourceLocation registryName) {
-            return biomeSettings.get(registryName.toString());
+            return biomeSettings.get(registryName);
         }
 
         public void updateBiomeSettingsFor(ResourceLocation registryName, BiomeSettings.Factory settings) {
-            biomeSettings.put(registryName.toString(), settings);
+            biomeSettings.put(registryName, settings);
         }
     }
 }

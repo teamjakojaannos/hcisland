@@ -138,7 +138,10 @@ public abstract class GuiCustomizeWithDefaults<TSettings> extends GuiScreen impl
 
     protected void setSettingsModified(boolean modified) {
         dirty = modified;
-        defaults.enabled = modified;
+
+        if (defaults != null) {
+            defaults.enabled = modified;
+        }
     }
 
     protected void restoreDefaults() {

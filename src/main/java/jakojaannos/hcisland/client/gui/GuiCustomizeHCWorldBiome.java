@@ -31,6 +31,7 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
         this.guiProvider = adapter.createGuiProvider();
 
         this.settings = settings;
+        this.defaultSettings = defaultSettingsSupplier.get();
     }
 
     @Override
@@ -62,16 +63,19 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
     @Override
     public void setEntryValue(int id, boolean value) {
         guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
+        setSettingsModified(!settings.equals(defaultSettings));
     }
 
     @Override
     public void setEntryValue(int id, float value) {
         guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
+        setSettingsModified(!settings.equals(defaultSettings));
     }
 
     @Override
     public void setEntryValue(int id, String value) {
         guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
+        setSettingsModified(!settings.equals(defaultSettings));
     }
 
     @Override
