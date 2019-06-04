@@ -13,12 +13,14 @@ createWorld.customize.hcisland.field.oceanBlockOverride=Lava Block
 
 createWorld.customize.hcisland.field.biome.radius=Biome Radius (chunks)
 createWorld.customize.hcisland.field.biome.stoneBlock=Stone Block
+createWorld.customize.hcisland.field.biome.seaLevel=Sea Level
 createWorld.customize.hcisland.field.biome.layers=Layers
 createWorld.customize.hcisland.field.biome.layersUnderwater=Layers (Underwater)
 
 
 createWorld.customize.hcisland.page0=General Settings
-createWorld.customize.hcisland.page1=Biome Settings
+createWorld.customize.hcisland.page1=Radial Settings
+createWorld.customize.hcisland.page2=Biome Settings
 
 createWorld.customize.hcisland.label.biome.island=Island
 createWorld.customize.hcisland.label.biome.islandBeach=Island Beach

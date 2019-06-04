@@ -27,17 +27,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HCIslandChunkGeneratorSettings {
-    public final int seaLevelOverride;
-    public final IBlockState oceanBlockOverride;
-
     private final List<IslandRadialBiome> biomes;
 
     private final Map<ResourceLocation, BiomeSettings> biomeSettings;
 
     private HCIslandChunkGeneratorSettings(Factory factory) {
-        this.seaLevelOverride = factory.seaLevelOverride;
-        this.oceanBlockOverride = BlockHelper.stringToBlockstateWithFallback(Blocks.LAVA.getDefaultState(), factory.oceanBlockOverride);
-
         this.biomes = factory.biomes.stream()
                                     .map(IslandRadialBiome::new)
                                     .collect(Collectors.toList());
@@ -105,18 +99,8 @@ public class HCIslandChunkGeneratorSettings {
         private static final Gson JSON_ADAPTER = new GsonBuilder().create();
         private static Factory overrides;
 
-        public int seaLevelOverride;
-        public String oceanBlockOverride;
-
         private List<IslandRadialBiome.Factory> biomes;
         private Map<ResourceLocation, BiomeSettings.Factory> biomeSettings;
-
-        public BiomeSettings.Forest.Factory island;
-        public BiomeSettings.Beach.Factory islandBeach;
-        public BiomeSettings.Factory ocean;
-        public BiomeSettings.Wasteland.Factory wasteland;
-        public BiomeSettings.Wasteland.Factory wastelandBeach;
-        public BiomeSettings.Wasteland.Factory wastelandEdge;
 
         public HCIslandChunkGeneratorSettings build() {
             return new HCIslandChunkGeneratorSettings(this);
@@ -150,9 +134,6 @@ public class HCIslandChunkGeneratorSettings {
                 return;
             }
 
-            seaLevelOverride = 48;
-            oceanBlockOverride = "minecraft:lava";
-
             biomes = Lists.newArrayList(
                     new IslandRadialBiome.Factory(3, ModBiomes.ISLAND.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(2, ModBiomes.ISLAND_BEACH.getRegistryName().toString()),
@@ -173,18 +154,8 @@ public class HCIslandChunkGeneratorSettings {
         }
 
         private void setOverrides() {
-            seaLevelOverride = overrides.seaLevelOverride;
-            oceanBlockOverride = overrides.oceanBlockOverride;
-
             biomes = overrides.biomes; // TODO: Does this cause issues?
             biomeSettings = overrides.biomeSettings;
-
-            island = overrides.island;
-            islandBeach = overrides.islandBeach;
-            ocean = overrides.ocean;
-            wasteland = overrides.wasteland;
-            wastelandBeach = overrides.wastelandBeach;
-            wastelandEdge = overrides.wastelandEdge;
         }
 
         public static void refreshOverrides() {
@@ -193,6 +164,10 @@ public class HCIslandChunkGeneratorSettings {
 
         public BiomeSettings.Factory getSettingsFor(ResourceLocation registryName) {
             return biomeSettings.get(registryName);
+        }
+
+        public void updateBiomeSettingsFor(ResourceLocation registryName, BiomeSettings.Factory settings) {
+            biomeSettings.put(registryName, settings);
         }
     }
 }

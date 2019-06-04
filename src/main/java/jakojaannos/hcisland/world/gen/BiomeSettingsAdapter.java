@@ -1,8 +1,11 @@
 package jakojaannos.hcisland.world.gen;
 
+import jakojaannos.hcisland.client.gui.adapter.IBiomeSettingsGuiProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -51,4 +54,7 @@ public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeS
     }
 
     public abstract void applyBiomeSettings(BiomeSettings settings);
+
+    @SideOnly(Side.CLIENT)
+    public abstract IBiomeSettingsGuiProvider createGuiProvider();
 }
