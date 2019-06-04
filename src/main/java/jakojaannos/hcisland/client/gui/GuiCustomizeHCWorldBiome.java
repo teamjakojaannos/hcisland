@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class GuiCustomizeHCWorldBiome extends GuiCustomizeWithDefaults<BiomeSettings.Factory> implements GuiPageButtonList.GuiResponder {
+public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<BiomeSettings.Factory> implements GuiPageButtonList.GuiResponder {
     private final GuiCustomizeHCWorld parent;
     private final BiomeSettingsAdapter adapter;
     private final IBiomeSettingsGuiProvider guiProvider;
@@ -42,11 +42,6 @@ public class GuiCustomizeHCWorldBiome extends GuiCustomizeWithDefaults<BiomeSett
     }
 
     @Override
-    protected void createButtons() {
-
-    }
-
-    @Override
     protected String[] updatePageNames() {
         return new String[]{adapter.getBiome().getBiomeName()};
     }
@@ -59,7 +54,7 @@ public class GuiCustomizeHCWorldBiome extends GuiCustomizeWithDefaults<BiomeSett
     @Override
     protected GuiPageButtonList.GuiListEntry[][] getPages() {
         val result = new GuiPageButtonList.GuiListEntry[][]{
-                guiProvider.createPage(idCounter, settings)
+                guiProvider.createPage(this, idCounter, settings, defaultSettings)
         };
 
         idCounter += result.length;
@@ -68,17 +63,17 @@ public class GuiCustomizeHCWorldBiome extends GuiCustomizeWithDefaults<BiomeSett
 
     @Override
     public void setEntryValue(int id, boolean value) {
-        guiProvider.setEntryValue(id, value, settings);
+        guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
     }
 
     @Override
     public void setEntryValue(int id, float value) {
-        guiProvider.setEntryValue(id, value, settings);
+        guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
     }
 
     @Override
     public void setEntryValue(int id, String value) {
-        guiProvider.setEntryValue(id, value, settings);
+        guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
     }
 
     @Override

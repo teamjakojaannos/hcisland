@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonList.GuiResponder {
-    private final GuiCustomizeHCWorld parent;
+    private final GuiCustomizeHCWorldBiome parent;
     private final BiomeSettings.Factory config;
     private final BiomeSettings.Factory defaultConfig;
     private final boolean underwater;
@@ -26,7 +26,7 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
     private Gui focused;
     private int idCounter;
 
-    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorld parent, BiomeSettings.Factory config, BiomeSettings.Factory defaultConfig, boolean underwater) {
+    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorldBiome parent, BiomeSettings.Factory config, BiomeSettings.Factory defaultConfig, boolean underwater) {
         this.parent = parent;
         this.config = config;
         this.defaultConfig = defaultConfig;

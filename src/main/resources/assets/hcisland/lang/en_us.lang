@@ -8,12 +8,10 @@ createWorld.customize.hcisland.clipboard=Copy to clipboard
 createWorld.customize.hcisland.field.biome.edit=Edit
 createWorld.customize.hcisland.biome.title=Edit biome settings
 
-createWorld.customize.hcisland.field.seaLevelOverride=Lava Sea Level
-createWorld.customize.hcisland.field.oceanBlockOverride=Lava Block
-
 createWorld.customize.hcisland.field.biome.radius=Biome Radius (chunks)
 createWorld.customize.hcisland.field.biome.stoneBlock=Stone Block
 createWorld.customize.hcisland.field.biome.seaLevel=Sea Level
+createWorld.customize.hcisland.field.biome.oceanBlock=Ocean Block
 createWorld.customize.hcisland.field.biome.layers=Layers
 createWorld.customize.hcisland.field.biome.layersUnderwater=Layers (Underwater)
 

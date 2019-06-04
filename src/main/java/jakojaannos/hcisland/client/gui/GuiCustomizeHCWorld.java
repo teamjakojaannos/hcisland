@@ -1,7 +1,6 @@
 package jakojaannos.hcisland.client.gui;
 
 import jakojaannos.hcisland.init.ModRegistries;
-import jakojaannos.hcisland.world.gen.BiomeSettings;
 import jakojaannos.hcisland.world.gen.BiomeSettingsAdapter;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.val;
@@ -33,7 +32,7 @@ import java.util.stream.Stream;
 //          3. biomes themselves need some way of identifying their own entry from settings (probably hashmap by biome registry name)
 
 @SideOnly(Side.CLIENT)
-public class GuiCustomizeHCWorld extends GuiCustomizeWithDefaults<HCIslandChunkGeneratorSettings.Factory> implements GuiSlider.FormatHelper, GuiPageButtonList.GuiResponder {
+public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandChunkGeneratorSettings.Factory> implements GuiSlider.FormatHelper, GuiPageButtonList.GuiResponder {
     private final GuiCreateWorld parent;
 
     private GuiButton clipboard;
@@ -58,6 +57,7 @@ public class GuiCustomizeHCWorld extends GuiCustomizeWithDefaults<HCIslandChunkG
 
     @Override
     protected void createButtons() {
+        super.createButtons();
         clipboard = addButton(new GuiButton(idCounter++, width / 2 - 92, height - 27, 185, 20, I18n.format("createWorld.customize.hcisland.clipboard")));
     }
 
@@ -163,10 +163,6 @@ public class GuiCustomizeHCWorld extends GuiCustomizeWithDefaults<HCIslandChunkG
         );
     }
     */
-    private void openLayersEditor(BiomeSettings.Factory config, BiomeSettings.Factory defaultConfig, boolean underwater) {
-        mc.displayGuiScreen(new GuiCustomizeBiomeLayers(this, config, defaultConfig, underwater));
-    }
-
 
     @Override
     public void setEntryValue(int id, String valueStr) {
