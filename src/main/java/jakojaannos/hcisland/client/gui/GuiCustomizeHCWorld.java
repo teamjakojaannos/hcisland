@@ -99,8 +99,13 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
     private GuiPageButtonList.GuiListEntry[] createRadialPage() {
         return new GuiPageButtonList.GuiListEntry[]{
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
-                                                    "Nothing at the moment :c",
+                                                    "Edit biomes",
                                                     true),
+                null,
+                new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
+                                                                   "Open Editor",
+                                                                   true,
+                                                                   () -> mc.displayGuiScreen(new GuiCustomizeRadialBiomes(this))),
                 null
         };
     }

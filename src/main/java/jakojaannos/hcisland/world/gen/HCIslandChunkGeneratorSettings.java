@@ -9,10 +9,7 @@ import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
 import jakojaannos.hcisland.util.UnitHelper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.val;
-import lombok.var;
+import lombok.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -87,8 +84,8 @@ public class HCIslandChunkGeneratorSettings {
 
         @AllArgsConstructor
         public static class Factory {
-            @Getter private int radius;
-            @Getter private String biomeId;
+            @Getter @Setter private int radius;
+            @Getter @Setter private String biomeId;
         }
     }
 
@@ -122,7 +119,7 @@ public class HCIslandChunkGeneratorSettings {
             return jsonToFactory(HCIslandConfig.world.generatorSettingsDefaults, false);
         }
 
-        private List<IslandRadialBiome.Factory> biomes;
+        @Setter @Getter private List<IslandRadialBiome.Factory> biomes;
         private Map<ResourceLocation, BiomeSettings.Factory> biomeSettings;
 
         public HCIslandChunkGeneratorSettings build() {

@@ -3,17 +3,19 @@ package jakojaannos.hcisland.client.gui;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 
-public abstract class GuiCustomizeWithDefaults<TSettings> extends GuiScreen implements GuiPageButtonList.GuiResponder {
+@SideOnly(Side.CLIENT)
+public abstract class GuiCustomizeWithDefaults<TSettings> extends GuiScreen {
     protected String title = "Customize screen with defaults";
     protected String subtitle = "This is a subtitle";
 

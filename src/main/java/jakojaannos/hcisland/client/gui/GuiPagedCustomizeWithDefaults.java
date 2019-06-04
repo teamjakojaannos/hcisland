@@ -4,10 +4,13 @@ import com.google.common.primitives.Floats;
 import lombok.val;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 
-public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustomizeWithDefaults<TSettings> {
+@SideOnly(Side.CLIENT)
+public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustomizeWithDefaults<TSettings> implements GuiPageButtonList.GuiResponder {
     protected String pageTitle = "Settings Page";
     private String[] pageNames;
 
