@@ -2,6 +2,7 @@ package jakojaannos.hcisland.client.gui;
 
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.val;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -12,18 +13,22 @@ import java.util.stream.Collectors;
 @SideOnly(Side.CLIENT)
 public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory>> {
     private final GuiCustomizeHCWorld parent;
-    private GuiListRadialBiomeSettings settingsList;
+    private RadialBiomeSettingsList settingsList;
 
     public GuiCustomizeRadialBiomes(GuiCustomizeHCWorld parent) {
         this.parent = parent;
         this.settings = parent.settings.getBiomes();
     }
 
+    public  <T extends GuiButton> T addButton(T button) {
+        return super.addButton(button);
+    }
+
     @Override
     public void initGui() {
         super.initGui();
 
-        settingsList = new GuiListRadialBiomeSettings(this, width, height, 32, height - 64, 36);
+        settingsList = new RadialBiomeSettingsList(this, width, height, 32, height - 64, 36);
         settingsList.updateEntries(settings);
     }
 
@@ -31,7 +36,7 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     protected void onDonePressed() {
         val newBiomes = settingsList.getEntries()
                                     .stream()
-                                    .map(GuiListRadialBiomeSettings.Entry::getInfo)
+                                    .map(RadialBiomeSettingsList.Entry::getInfo)
                                     .collect(Collectors.toList());
 
         parent.settings.setBiomes(newBiomes);
