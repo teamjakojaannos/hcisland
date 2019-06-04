@@ -43,7 +43,7 @@ public class ModBiomes {
         biome.setRegistryName(new ResourceLocation(ModInfo.MODID, key));
         registry.register(biome);
 
-        BiomeManager.addBiome(managerType, new BiomeManager.BiomeEntry(biome, weight));
+        //BiomeManager.addBiome(managerType, new BiomeManager.BiomeEntry(biome, weight));
         BiomeDictionary.addTypes(biome, types);
     }
 
