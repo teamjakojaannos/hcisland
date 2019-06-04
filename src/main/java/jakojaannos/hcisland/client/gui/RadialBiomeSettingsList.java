@@ -8,6 +8,7 @@ import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +17,13 @@ import java.util.stream.Collectors;
 public class RadialBiomeSettingsList extends GuiListExtended {
     private static final ResourceLocation SERVER_SELECTION_BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
 
-    private static final int SCROLLBAR_OFFSET = 10;
-    private static final int LIST_PADDING = 16;
-    private static final int ENTRY_CONTROL_OFFSET = 8;
+    private static final int SCROLLBAR_OFFSET = 16;
+    private static final int LIST_EXTRA_WIDTH = 180;
+    private static final int ENTRY_CONTROL_OFFSET = 10;
     private static final int BUTTON_MARGIN = 2;
     private static final int SMALL_BUTTON_SIZE = 16;
-    private static final int TEXT_FIELD_WIDTH = 128;
-    private static final int RADIUS_SLIDER_WIDTH = 64;
+    private static final int TEXT_FIELD_WIDTH = 150;
+    private static final int RADIUS_SLIDER_WIDTH = 100;
 
 
     @Getter private List<Entry> entries = new ArrayList<>();
@@ -34,6 +35,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
     private int idCounter;
 
     public RadialBiomeSettingsList(
+            int baseId,
             GuiCustomizeRadialBiomes owner,
             int width,
             int height,
@@ -42,6 +44,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             int slotHeight
     ) {
         super(owner.mc, width, height, top, bottom, slotHeight);
+        this.idCounter = baseId;
         this.owner = owner;
     }
 
@@ -66,15 +69,35 @@ public class RadialBiomeSettingsList extends GuiListExtended {
 
     @Override
     public int getListWidth() {
-        return width - LIST_PADDING;
+        return super.getListWidth() + LIST_EXTRA_WIDTH;
     }
 
     @Override
     public void actionPerformed(GuiButton button) {
         super.actionPerformed(button);
 
-
+        for (val entry : entries) {
+            entry.actionPerformed(button);
+        }
     }
+
+    @Override
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
+        for (val entry : entries) {
+            if (focused != entry.biome) {
+                entry.biome.setFocused(false);
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, mouseEvent);
+    }
+
+    public void keyTyped(char typedChar, int keyCode) {
+        if (focused != null && focused instanceof GuiTextField) {
+            ((GuiTextField) focused).textboxKeyTyped(typedChar, keyCode);
+        }
+    }
+
 
     public void updateEntries(List<HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory> settings) {
         entries = settings.stream()
@@ -148,8 +171,9 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                                    1,
                                    64,
                                    3,
-                                   (id, name, value) -> String.valueOf((int) value));
+                                   (id, name, value) -> String.valueOf(Math.round(value)));
             radius.width = RADIUS_SLIDER_WIDTH;
+            radius.height = SMALL_BUTTON_SIZE;
 
             decreaseRadius = addButton(new GuiButtonExt(idCounter++,
                                                         0,
@@ -164,8 +188,11 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                                      ENTRY_CONTROL_OFFSET,
                                      TEXT_FIELD_WIDTH,
                                      SMALL_BUTTON_SIZE);
+            biome.setGuiResponder(this);
 
             biome.setText(info.getBiomeId());
+            setEntryValue(biome.getId(), info.getBiomeId());
+
             radius.setSliderValue(info.getRadius(), false);
         }
 
@@ -175,11 +202,22 @@ public class RadialBiomeSettingsList extends GuiListExtended {
 
         @Override
         public void setEntryValue(int id, String value) {
+            if (id == biome.getId()) {
+                info.setBiomeId(value);
+                biomeName = null;
+
+                val biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(value));
+                if (biome != null) {
+                    biomeName = biome.getBiomeName();
+                }
+            }
         }
 
         @Override
         public void setEntryValue(int id, float value) {
-
+            if (id == radius.id) {
+                info.setRadius(Math.round(value));
+            }
         }
 
         @Override
@@ -231,12 +269,12 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             val controlY = y + ENTRY_CONTROL_OFFSET;
             remove.y = increaseRadius.y = radius.y = decreaseRadius.y = biome.y = controlY;
 
-            remove.x = x + getListWidth() - SMALL_BUTTON_SIZE - BUTTON_MARGIN;
+            remove.x = x + getListWidth() - SMALL_BUTTON_SIZE - BUTTON_MARGIN - 8;
             increaseRadius.x = x + 18;
             decreaseRadius.x = x + 18 + SMALL_BUTTON_SIZE + 2 * BUTTON_MARGIN + radius.width;
 
             radius.x = x + 18 + SMALL_BUTTON_SIZE + BUTTON_MARGIN;
-            biome.x = x + getListWidth() - TEXT_FIELD_WIDTH - SMALL_BUTTON_SIZE - BUTTON_MARGIN * 2;
+            biome.x = x + getListWidth() - TEXT_FIELD_WIDTH - SMALL_BUTTON_SIZE - BUTTON_MARGIN * 2 - 8;
         }
 
         @Override
@@ -261,7 +299,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
 
         private void drawSelectionBox(int x, int y, int listWidth, boolean isSelected) {
             if (isSelected) {
-                Gui.drawRect(x, y, x + listWidth - 8, y + 32, -1601138544);
+                Gui.drawRect(x, y, x + listWidth - 6, y + 32, -1601138544);
             }
         }
 
@@ -284,6 +322,14 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                 } else {
                     Gui.drawModalRectWithCustomSizedTexture(x, y, 64.0F, 0.0F, 32, 32, 256.0F, 256.0F);
                 }
+            }
+        }
+
+        public void actionPerformed(GuiButton button) {
+            if (button.id == increaseRadius.id) {
+                radius.setSliderValue(radius.getSliderValue() + 1, true);
+            } else if (button.id == decreaseRadius.id) {
+                radius.setSliderValue(radius.getSliderValue() - 1, true);
             }
         }
     }

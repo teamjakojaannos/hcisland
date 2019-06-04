@@ -25,10 +25,9 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-
-        settingsList = new RadialBiomeSettingsList(this, width, height, 32, height - 64, 36);
+    protected void createButtons() {
+        super.createButtons();
+        settingsList = new RadialBiomeSettingsList(idCounter,this, width, height, 32, height - 64, 36);
         settingsList.updateEntries(settings);
     }
 
@@ -65,6 +64,12 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     protected void drawBackgroundLayer(int mouseX, int mouseY, float partialTicks) {
         super.drawBackgroundLayer(mouseX, mouseY, partialTicks);
         settingsList.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        super.keyTyped(typedChar, keyCode);
+        settingsList.keyTyped(typedChar, keyCode);
     }
 
     @Override
