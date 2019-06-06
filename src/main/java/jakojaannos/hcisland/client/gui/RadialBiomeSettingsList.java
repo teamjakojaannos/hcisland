@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.val;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -23,7 +24,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
     private static final int BUTTON_MARGIN = 2;
     private static final int SMALL_BUTTON_SIZE = 16;
     private static final int TEXT_FIELD_WIDTH = 150;
-    private static final int RADIUS_SLIDER_WIDTH = 100;
+    private static final int RADIUS_SLIDER_WIDTH = 85;
 
 
     @Getter private List<Entry> entries = new ArrayList<>();
@@ -154,7 +155,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
     }
 
     public void addEntry() {
-        entries.add(new Entry(new HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory(3, "minecraft:forest")));
+        entries.add(new Entry(new HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory(3, false, "minecraft:forest")));
     }
 
     public class Entry implements IGuiListEntry, GuiPageButtonList.GuiResponder {
@@ -166,6 +167,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
         private final GuiButton increaseRadius;
         private final GuiSlider radius;
         private final GuiButton decreaseRadius;
+        private final GuiButton spawn;
         private final GuiTextField biome;
 
         public Entry(HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory info) {
@@ -177,6 +179,15 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                                                 SMALL_BUTTON_SIZE,
                                                 SMALL_BUTTON_SIZE,
                                                 "X"));
+
+            spawn = addButton(new GuiButtonExt(idCounter++,
+                                               0,
+                                               ENTRY_CONTROL_OFFSET,
+                                               70,
+                                               SMALL_BUTTON_SIZE,
+                                               "Spawn: Nope.avi"));
+            setSpawnDisplayString();
+
             increaseRadius = addButton(new GuiButtonExt(idCounter++,
                                                         0,
                                                         ENTRY_CONTROL_OFFSET,
@@ -271,6 +282,10 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                 newFocused = decreaseRadius;
             }
 
+            if (spawn.mousePressed(mc, mouseX, mouseY)) {
+                newFocused = spawn;
+            }
+
             if (biome.mouseClicked(mouseX, mouseY, mouseEvent)) {
                 newFocused = biome;
             }
@@ -290,19 +305,20 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             increaseRadius.mouseReleased(mouseX, mouseY);
             radius.mouseReleased(mouseX, mouseY);
             decreaseRadius.mouseReleased(mouseX, mouseY);
+            spawn.mouseReleased(mouseX, mouseY);
         }
 
         @Override
         public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
             val controlY = y + ENTRY_CONTROL_OFFSET;
-            remove.y = increaseRadius.y = radius.y = decreaseRadius.y = biome.y = controlY;
+            remove.y = increaseRadius.y = radius.y = decreaseRadius.y = biome.y = spawn.y = controlY;
 
             remove.x = x + getListWidth() - SMALL_BUTTON_SIZE - BUTTON_MARGIN - 8;
-            increaseRadius.x = x + 18 + SMALL_BUTTON_SIZE + 2 * BUTTON_MARGIN + radius.width;
             decreaseRadius.x = x + 18;
-
             radius.x = x + 18 + SMALL_BUTTON_SIZE + BUTTON_MARGIN;
-            biome.x = x + getListWidth() - TEXT_FIELD_WIDTH - SMALL_BUTTON_SIZE - BUTTON_MARGIN * 2 - 8;
+            increaseRadius.x = x + 18 + SMALL_BUTTON_SIZE + 2 * BUTTON_MARGIN + radius.width;
+            spawn.x = x + 18 + 2 * SMALL_BUTTON_SIZE + 3 * BUTTON_MARGIN + radius.width;
+            biome.x = x + 18 + 2 * SMALL_BUTTON_SIZE + 4 * BUTTON_MARGIN + radius.width + spawn.width;
         }
 
         @Override
@@ -322,17 +338,22 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             increaseRadius.drawButton(mc, mouseX, mouseY, partialTicks);
             radius.drawButton(mc, mouseX, mouseY, partialTicks);
             decreaseRadius.drawButton(mc, mouseX, mouseY, partialTicks);
+            spawn.drawButton(mc, mouseX, mouseY, partialTicks);
             biome.drawTextBox();
 
+            // FIXME: Workaround to avoid overdraw when buttonList is iterated in owner
             remove.visible = false;
             increaseRadius.visible = false;
             decreaseRadius.visible = false;
+            spawn.visible = false;
         }
 
+        // FIXME: Workaround to avoid overdraw when buttonList is iterated in owner
         public void postDraw() {
             remove.visible = true;
             increaseRadius.visible = true;
             decreaseRadius.visible = true;
+            spawn.visible = true;
         }
 
         private void drawSelectionBox(int x, int y, int listWidth, boolean isSelected) {
@@ -370,7 +391,21 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                 radius.setSliderValue(radius.getSliderValue() - 1, true);
             } else if (button.id == remove.id) {
                 removed = true;
+            } else if (button.id == spawn.id) {
+                toggleSpawn();
             }
+        }
+
+        private void toggleSpawn() {
+            info.setSpawn(!info.isSpawn());
+            setSpawnDisplayString();
+        }
+
+        private void setSpawnDisplayString() {
+            val selected = info.isSpawn()
+                    ? I18n.format("gui.yes")
+                    : I18n.format("gui.no");
+            spawn.displayString = I18n.format("createWorld.customize.hcisland.radial.spawn", selected);
         }
     }
 }

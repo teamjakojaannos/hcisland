@@ -9,6 +9,8 @@ createWorld.customize.hcisland.field.biome.edit=Edit
 createWorld.customize.hcisland.biome.add=Add Biome
 createWorld.customize.hcisland.biome.title=Edit biome settings
 
+createWorld.customize.hcisland.radial.spawn=Spawn: %s
+
 createWorld.customize.hcisland.field.biome.radius=Biome Radius (chunks)
 createWorld.customize.hcisland.field.biome.stoneBlock=Stone Block
 createWorld.customize.hcisland.field.biome.seaLevel=Sea Level
