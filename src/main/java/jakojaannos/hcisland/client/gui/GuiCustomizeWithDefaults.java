@@ -174,4 +174,8 @@ public abstract class GuiCustomizeWithDefaults<TSettings> extends GuiScreen {
         done.enabled = !visible;
         defaults.enabled = dirty && !visible;
     }
+
+    public void removeButton(GuiButton button) {
+        buttonList.removeIf(b -> b.id == button.id);
+    }
 }

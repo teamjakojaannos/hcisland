@@ -3,6 +3,7 @@ package jakojaannos.hcisland.client.gui;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.val;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory>> {
     private final GuiCustomizeHCWorld parent;
     private RadialBiomeSettingsList settingsList;
+
+    private GuiButton add;
 
     public GuiCustomizeRadialBiomes(GuiCustomizeHCWorld parent) {
         this.parent = parent;
@@ -27,6 +30,7 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     @Override
     protected void createButtons() {
         super.createButtons();
+        add = addButton(new GuiButton(idCounter++, width / 2 + 98, height - 27 - 25, 90, 20, I18n.format("createWorld.customize.hcisland.biome.add")));
         settingsList = new RadialBiomeSettingsList(idCounter,this, width, height, 32, height - 64, 36);
         settingsList.updateEntries(settings);
     }
@@ -73,8 +77,28 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     }
 
     @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        super.actionPerformed(button);
+        settingsList.actionPerformed(button);
+
+        if (!button.enabled) {
+            return;
+        }
+
+        if (button.id == add.id) {
+            settingsList.addEntry();
+        }
+    }
+
+    @Override
     protected void restoreDefaults() {
         super.restoreDefaults();
         // TODO
+    }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        settingsList.postDraw();
     }
 }

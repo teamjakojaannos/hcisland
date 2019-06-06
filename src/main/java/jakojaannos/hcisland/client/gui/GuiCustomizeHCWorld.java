@@ -101,12 +101,10 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
                                                     "Edit biomes",
                                                     true),
-                null,
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
                                                                    "Open Editor",
                                                                    true,
-                                                                   () -> mc.displayGuiScreen(new GuiCustomizeRadialBiomes(this))),
-                null
+                                                                   () -> mc.displayGuiScreen(new GuiCustomizeRadialBiomes(this)))
         };
     }
 
@@ -122,7 +120,8 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
     private Stream<GuiPageButtonList.GuiListEntry> createBiomeEntries(BiomeSettingsAdapter adapter) {
         return Stream.of(
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
-                                                    adapter.getBiome().getBiomeName(), false),
+                                                    adapter.getBiome().getBiomeName(),
+                                                    false),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
                                                                    "createWorld.customize.hcisland.field.biome.edit",
                                                                    false,
@@ -136,11 +135,8 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
                                                          settings.getSettingsFor(adapter.getBiome().getRegistryName()),
                                                          () -> {
                                                              // FIXME: This is not really a sensible way of doing this
-                                                             val backup = settings;
-                                                             restoreDefaults();
-                                                             val result = settings.getSettingsFor(adapter.getBiome().getRegistryName());
-                                                             settings = backup;
-                                                             return result;
+                                                             val defaults = new HCIslandChunkGeneratorSettings.Factory(true);
+                                                             return defaults.getSettingsFor(adapter.getBiome().getRegistryName());
                                                          }));
     }
 

@@ -79,6 +79,17 @@ public class RadialBiomeSettingsList extends GuiListExtended {
         for (val entry : entries) {
             entry.actionPerformed(button);
         }
+
+        val removed = entries.stream()
+                             .filter(e -> e.removed)
+                             .collect(Collectors.toList());
+
+        for (val removedEntry : removed) {
+            owner.removeButton(removedEntry.remove);
+            owner.removeButton(removedEntry.increaseRadius);
+            owner.removeButton(removedEntry.decreaseRadius);
+            entries.remove(removedEntry);
+        }
     }
 
     @Override
@@ -138,9 +149,18 @@ public class RadialBiomeSettingsList extends GuiListExtended {
         return owner.addButton(button);
     }
 
+    public void postDraw() {
+        entries.forEach(Entry::postDraw);
+    }
+
+    public void addEntry() {
+        entries.add(new Entry(new HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory(3, "minecraft:forest")));
+    }
+
     public class Entry implements IGuiListEntry, GuiPageButtonList.GuiResponder {
         @Getter private HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory info;
         private String biomeName = null;
+        private boolean removed = false;
 
         private final GuiButton remove;
         private final GuiButton increaseRadius;
@@ -237,13 +257,21 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             Gui newFocused = null;
             if (remove.mousePressed(mc, mouseX, mouseY)) {
                 newFocused = remove;
-            } else if (increaseRadius.mousePressed(mc, mouseX, mouseY)) {
+            }
+
+            if (increaseRadius.mousePressed(mc, mouseX, mouseY)) {
                 newFocused = increaseRadius;
-            } else if (radius.mousePressed(mc, mouseX, mouseY)) {
+            }
+
+            if (radius.mousePressed(mc, mouseX, mouseY)) {
                 newFocused = radius;
-            } else if (decreaseRadius.mousePressed(mc, mouseX, mouseY)) {
+            }
+
+            if (decreaseRadius.mousePressed(mc, mouseX, mouseY)) {
                 newFocused = decreaseRadius;
-            } else if (biome.mouseClicked(mouseX, mouseY, mouseEvent)) {
+            }
+
+            if (biome.mouseClicked(mouseX, mouseY, mouseEvent)) {
                 newFocused = biome;
             }
 
@@ -270,8 +298,8 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             remove.y = increaseRadius.y = radius.y = decreaseRadius.y = biome.y = controlY;
 
             remove.x = x + getListWidth() - SMALL_BUTTON_SIZE - BUTTON_MARGIN - 8;
-            increaseRadius.x = x + 18;
-            decreaseRadius.x = x + 18 + SMALL_BUTTON_SIZE + 2 * BUTTON_MARGIN + radius.width;
+            increaseRadius.x = x + 18 + SMALL_BUTTON_SIZE + 2 * BUTTON_MARGIN + radius.width;
+            decreaseRadius.x = x + 18;
 
             radius.x = x + 18 + SMALL_BUTTON_SIZE + BUTTON_MARGIN;
             biome.x = x + getListWidth() - TEXT_FIELD_WIDTH - SMALL_BUTTON_SIZE - BUTTON_MARGIN * 2 - 8;
@@ -295,6 +323,16 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             radius.drawButton(mc, mouseX, mouseY, partialTicks);
             decreaseRadius.drawButton(mc, mouseX, mouseY, partialTicks);
             biome.drawTextBox();
+
+            remove.visible = false;
+            increaseRadius.visible = false;
+            decreaseRadius.visible = false;
+        }
+
+        public void postDraw() {
+            remove.visible = true;
+            increaseRadius.visible = true;
+            decreaseRadius.visible = true;
         }
 
         private void drawSelectionBox(int x, int y, int listWidth, boolean isSelected) {
@@ -330,6 +368,8 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                 radius.setSliderValue(radius.getSliderValue() + 1, true);
             } else if (button.id == decreaseRadius.id) {
                 radius.setSliderValue(radius.getSliderValue() - 1, true);
+            } else if (button.id == remove.id) {
+                removed = true;
             }
         }
     }
