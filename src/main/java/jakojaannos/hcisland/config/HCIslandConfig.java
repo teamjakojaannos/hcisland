@@ -42,14 +42,17 @@ public class HCIslandConfig {
         @Config.RequiresMcRestart
         public float temperatureWastelandEdge = 1.25f;
 
-        @Config.Comment("Set to false to completely disable AoA mob spawn prevention")
+        @Config.Comment("Set to true to completely disable mob spawn prevention")
         public boolean disableBlockingMobSpawns = false;
 
-        @Config.Comment("Radius inside which mobs from blacklisted mod IDs are not allowed to spawn")
+        @Config.Comment("Radius inside which blacklisted mobs are not allowed to spawn")
         public int mobSpawnPreventionRadius = 6;
 
-        @Config.Comment("Blacklist of mod IDs from which mobs are not allowed to spawn inside blocking radius")
+        @Config.Comment("Blacklist of mod IDs from which mobs are not allowed to spawn inside prevention radius")
         public String[] mobSpawnPreventionModIdBlacklist = {"aoa3"};
+
+        @Config.Comment("Blacklist of mob entity keys which are not allowed to spawn inside prevention radius. e.g. \"minecraft:zombie\" would prevent zombies from spawning")
+        public String[] mobSpawnPreventionBlacklist = {};
     }
 
     @SubscribeEvent

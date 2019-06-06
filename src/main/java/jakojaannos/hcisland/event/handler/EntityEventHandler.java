@@ -24,8 +24,13 @@ public class EntityEventHandler {
             return;
         }
 
-        if (Arrays.stream(HCIslandConfig.world.mobSpawnPreventionModIdBlacklist)
-                  .anyMatch(blacklistEntry -> keyMatches(entityKey, blacklistEntry))) {
+
+        val modIdIsBlacklisted = Arrays.stream(HCIslandConfig.world.mobSpawnPreventionModIdBlacklist)
+                                       .anyMatch(modId -> modId.equalsIgnoreCase(entityKey.getResourceDomain()));
+        val mobKeyIsBlacklisted = Arrays.stream(HCIslandConfig.world.mobSpawnPreventionBlacklist)
+                                        .anyMatch(mobKey -> mobKey.equalsIgnoreCase(entityKey.toString()));
+
+        if (modIdIsBlacklisted || mobKeyIsBlacklisted) {
             val x = event.getX();
             val z = event.getZ();
             double distSq = x * x + z * z;
@@ -34,9 +39,5 @@ public class EntityEventHandler {
                 event.setResult(Event.Result.DENY);
             }
         }
-    }
-
-    private static boolean keyMatches(ResourceLocation entityKey, String blacklistEntry) {
-        return entityKey.getResourceDomain().equalsIgnoreCase(blacklistEntry);
     }
 }
