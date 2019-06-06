@@ -54,17 +54,20 @@ public class WorldTypeHCIsland extends WorldType {
                                         .forEach(a -> a.applyBiomeSettings(settings.getSettingsFor(a.getBiome().getRegistryName())));
         }
 
-        return new BiomeProviderHCIsland(world.getWorldInfo());
+        return new BiomeProviderHCIsland(world.getWorldInfo(), settings);
     }
 
     private class BiomeProviderHCIsland extends BiomeProvider {
-        BiomeProviderHCIsland(WorldInfo info) {
+        private final HCIslandChunkGeneratorSettings settings;
+
+        BiomeProviderHCIsland(WorldInfo info, HCIslandChunkGeneratorSettings settings) {
             super(info);
+            this.settings = settings;
         }
 
         @Override
         public List<Biome> getBiomesToSpawnIn() {
-            return ImmutableList.of(ModBiomes.ISLAND);
+            return ImmutableList.copyOf(settings.getSpawnBiomes());
         }
 
         @Override
