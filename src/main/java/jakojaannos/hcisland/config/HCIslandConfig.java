@@ -45,8 +45,11 @@ public class HCIslandConfig {
         @Config.Comment("Set to false to completely disable AoA mob spawn prevention")
         public boolean disableBlockingMobSpawns = false;
 
-        @Config.Comment("Radius inside which Advent of Ascension mobs are not allowed to spawn")
-        public int disableAoAMobSpawningInRadius = 6;
+        @Config.Comment("Radius inside which mobs from blacklisted mod IDs are not allowed to spawn")
+        public int mobSpawnPreventionRadius = 6;
+
+        @Config.Comment("Blacklist of mod IDs from which mobs are not allowed to spawn inside blocking radius")
+        public String[] mobSpawnPreventionModIdBlacklist = {"aoa3"};
     }
 
     @SubscribeEvent
