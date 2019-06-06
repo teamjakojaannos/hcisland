@@ -1,5 +1,6 @@
 package jakojaannos.hcisland.client.gui.adapter;
 
+import com.google.common.collect.Lists;
 import jakojaannos.hcisland.client.gui.ExtendedGuiPageButtonList;
 import jakojaannos.hcisland.client.gui.GuiCustomizeBiomeLayers;
 import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorldBiome;
@@ -9,6 +10,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
+
 @SideOnly(Side.CLIENT)
 public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Factory> implements IBiomeSettingsGuiProvider<TSettings> {
     private int idSeaLevel = -1;
@@ -16,8 +19,8 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Fa
     private int idStoneBlock = -1;
 
     @Override
-    public GuiPageButtonList.GuiListEntry[] createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, TSettings defaultSettings) {
-        return new GuiPageButtonList.GuiListEntry[]{
+    public List<GuiPageButtonList.GuiListEntry> createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, TSettings defaultSettings) {
+        return Lists.newArrayList(
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
                                                     I18n.format("createWorld.customize.hcisland.field.biome.stoneBlock"),
                                                     true),
@@ -49,7 +52,7 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Fa
                                                                    "createWorld.customize.hcisland.field.biome.layersUnderwater",
                                                                    true,
                                                                    () -> openLayersEditor(screen, settings, defaultSettings, true))
-        };
+        );
     }
 
     private void openLayersEditor(GuiCustomizeHCWorldBiome screen, TSettings settings, TSettings defaultSettings, boolean underwater) {

@@ -18,6 +18,10 @@ createWorld.customize.hcisland.field.biome.oceanBlock=Ocean Block
 createWorld.customize.hcisland.field.biome.layers=Layers
 createWorld.customize.hcisland.field.biome.layersUnderwater=Layers (Underwater)
 
+createWorld.customize.hcisland.field.biome.generateFalls=Generate falls
+createWorld.customize.hcisland.field.biome.generateLakes=Generate lakes
+createWorld.customize.hcisland.field.biome.generateLakesLava=Generate lakes (Lava)
+
 
 createWorld.customize.hcisland.page0=General Settings
 createWorld.customize.hcisland.page1=Radial Settings

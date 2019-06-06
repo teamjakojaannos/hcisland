@@ -9,6 +9,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
@@ -52,8 +53,9 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
 
     @Override
     protected GuiPageButtonList.GuiListEntry[][] getPages() {
+        List<GuiPageButtonList.GuiListEntry> list = guiProvider.createPage(this, idCounter, settings, defaultSettings);
         val result = new GuiPageButtonList.GuiListEntry[][]{
-                guiProvider.createPage(this, idCounter, settings, defaultSettings)
+                list.toArray(new GuiPageButtonList.GuiListEntry[0])
         };
 
         idCounter += result.length;

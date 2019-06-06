@@ -50,9 +50,9 @@ public class BiomeSettings {
         }
 
         public static class Factory extends BiomeSettings.Factory {
-            private boolean generateFalls;
-            private boolean generateLakes;
-            private boolean generateLakesLava;
+            public boolean generateFalls;
+            public boolean generateLakes;
+            public boolean generateLakesLava;
 
             public Factory(int seaLevel, String oceanBlock, String stoneBlock, String[] layers, String[] layersUnderwater, boolean generateFalls, boolean generateLakes, boolean generateLakesLava) {
                 super(seaLevel, oceanBlock, stoneBlock, layers, layersUnderwater);

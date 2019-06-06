@@ -65,12 +65,12 @@ public class RadialBiomeSettingsList extends GuiListExtended {
 
     @Override
     protected int getScrollBarX() {
-        return getListWidth() + SCROLLBAR_OFFSET;
+        return width - 6;
     }
 
     @Override
     public int getListWidth() {
-        return super.getListWidth() + LIST_EXTRA_WIDTH;
+        return width;
     }
 
     @Override
@@ -89,19 +89,22 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             owner.removeButton(removedEntry.remove);
             owner.removeButton(removedEntry.increaseRadius);
             owner.removeButton(removedEntry.decreaseRadius);
+            owner.removeButton(removedEntry.spawn);
             entries.remove(removedEntry);
         }
     }
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
+        val result = super.mouseClicked(mouseX, mouseY, mouseEvent);
+
         for (val entry : entries) {
             if (focused != entry.biome) {
                 entry.biome.setFocused(false);
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, mouseEvent);
+        return result;
     }
 
     public void keyTyped(char typedChar, int keyCode) {
@@ -213,7 +216,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                                                         SMALL_BUTTON_SIZE,
                                                         "-"));
 
-            biome = new GuiTextField(idCounter,
+            biome = new GuiTextField(idCounter++,
                                      mc.fontRenderer,
                                      0,
                                      ENTRY_CONTROL_OFFSET,
@@ -237,9 +240,9 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                 info.setBiomeId(value);
                 biomeName = null;
 
-                val biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(value));
-                if (biome != null) {
-                    biomeName = biome.getBiomeName();
+                val registryBiome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(value.toLowerCase().trim()));
+                if (registryBiome != null) {
+                    biomeName = registryBiome.getBiomeName();
                 }
             }
         }
@@ -253,18 +256,6 @@ public class RadialBiomeSettingsList extends GuiListExtended {
 
         @Override
         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
-            if (relativeX <= 32) {
-                if (relativeX < 16 && relativeY < 16 && canMoveUp(slotIndex)) {
-                    moveEntryUp(this, slotIndex, GuiScreen.isShiftKeyDown());
-                    return true;
-                }
-
-                if (relativeX < 16 && relativeY > 16 && canMoveDown(slotIndex)) {
-                    moveEntryDown(this, slotIndex, GuiScreen.isShiftKeyDown());
-                    return true;
-                }
-            }
-
             Gui newFocused = null;
             if (remove.mousePressed(mc, mouseX, mouseY)) {
                 newFocused = remove;
@@ -295,6 +286,18 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                 return true;
             }
 
+            if (relativeX <= 32) {
+                if (relativeX < 16 && relativeY < 16 && canMoveUp(slotIndex)) {
+                    moveEntryUp(this, slotIndex, GuiScreen.isShiftKeyDown());
+                    return true;
+                }
+
+                if (relativeX < 16 && relativeY > 16 && canMoveDown(slotIndex)) {
+                    moveEntryDown(this, slotIndex, GuiScreen.isShiftKeyDown());
+                    return true;
+                }
+            }
+
             selectEntry(slotIndex);
             return true;
         }
@@ -317,8 +320,8 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             decreaseRadius.x = x + 18;
             radius.x = x + 18 + SMALL_BUTTON_SIZE + BUTTON_MARGIN;
             increaseRadius.x = x + 18 + SMALL_BUTTON_SIZE + 2 * BUTTON_MARGIN + radius.width;
-            spawn.x = x + 18 + 2 * SMALL_BUTTON_SIZE + 3 * BUTTON_MARGIN + radius.width;
-            biome.x = x + 18 + 2 * SMALL_BUTTON_SIZE + 4 * BUTTON_MARGIN + radius.width + spawn.width;
+            spawn.x = x + 18 + 2 * SMALL_BUTTON_SIZE + 3 * BUTTON_MARGIN + RADIUS_SLIDER_WIDTH;
+            biome.x = x + 18 + 2 * SMALL_BUTTON_SIZE + 4 * BUTTON_MARGIN + RADIUS_SLIDER_WIDTH + spawn.width;
         }
 
         @Override
