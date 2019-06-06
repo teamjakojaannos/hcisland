@@ -20,7 +20,7 @@ public class EntityEventHandler {
             val x = event.getX();
             val z = event.getZ();
             double distSq = x * x + z * z;
-            val preventionRadius = HCIslandConfig.world.disableAoAMobSpawningInRadius;
+            val preventionRadius = HCIslandConfig.world.disableAoAMobSpawningInRadius * 16;
             if (distSq < preventionRadius * preventionRadius) {
                 event.setResult(Event.Result.DENY);
             }
