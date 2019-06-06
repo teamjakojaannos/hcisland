@@ -1,6 +1,5 @@
 package jakojaannos.hcisland.world.biome;
 
-import com.google.common.collect.ImmutableList;
 import jakojaannos.hcisland.world.WorldTypeHCIsland;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandBiomes;
@@ -14,6 +13,8 @@ import net.minecraft.world.gen.layer.GenLayerVoronoiZoom;
 import net.minecraft.world.storage.WorldInfo;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class BiomeProviderHCIsland extends BiomeProvider {
     private List<Biome> spawnBiomes;
@@ -25,7 +26,9 @@ public class BiomeProviderHCIsland extends BiomeProvider {
 
     @Override
     public List<Biome> getBiomesToSpawnIn() {
-        return ImmutableList.copyOf(spawnBiomes);
+        return spawnBiomes.stream()
+                          .filter(Objects::nonNull)
+                          .collect(Collectors.toList());
     }
 
     @Override
