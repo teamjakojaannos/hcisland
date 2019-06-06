@@ -1,6 +1,7 @@
-package jakojaannos.hcisland.world.gen;
+package jakojaannos.hcisland.world.gen.adapter;
 
 import jakojaannos.hcisland.client.gui.adapter.IBiomeSettingsGuiProvider;
+import jakojaannos.hcisland.world.gen.BiomeSettings;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -12,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeSettingsAdapter> {
-    private final Supplier<BiomeSettings.Factory> defaultSettingsSupplier;
+    private final Supplier<? extends BiomeSettings.Factory> defaultSettingsSupplier;
     private final ResourceLocation biomeId;
 
     @Nullable private Biome cachedBiome;
@@ -29,7 +30,7 @@ public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeS
         return cachedBiome;
     }
 
-    public BiomeSettingsAdapter(ResourceLocation biomeId, Supplier<BiomeSettings.Factory> defaultSettingsSupplier) {
+    public BiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings.Factory> defaultSettingsSupplier) {
         this.biomeId = biomeId;
         this.defaultSettingsSupplier = defaultSettingsSupplier;
     }

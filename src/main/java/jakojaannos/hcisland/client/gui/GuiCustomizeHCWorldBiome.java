@@ -2,7 +2,7 @@ package jakojaannos.hcisland.client.gui;
 
 import jakojaannos.hcisland.client.gui.adapter.IBiomeSettingsGuiProvider;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
-import jakojaannos.hcisland.world.gen.BiomeSettingsAdapter;
+import jakojaannos.hcisland.world.gen.adapter.BiomeSettingsAdapter;
 import lombok.val;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.resources.I18n;

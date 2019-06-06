@@ -2,9 +2,8 @@ package jakojaannos.hcisland.init;
 
 import jakojaannos.hcisland.ModInfo;
 import jakojaannos.hcisland.world.biome.*;
-import jakojaannos.hcisland.world.gen.AdvancedBiomeSettingsAdapter;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
-import jakojaannos.hcisland.world.gen.BiomeSettingsAdapter;
+import jakojaannos.hcisland.world.gen.adapter.*;
 import lombok.val;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
@@ -50,116 +49,125 @@ public class ModBiomes {
     @SubscribeEvent
     public static void onRegisterSettingsAdapters(RegistryEvent.Register<BiomeSettingsAdapter> event) {
         event.getRegistry().registerAll(
-                new AdvancedBiomeSettingsAdapter(rl("island"), () -> new BiomeSettings.Forest.Factory(
-                        48,
-                        "minecraft:water",
-                        "minecraft:stone",
-                        new String[]{
-                                "1, minecraft:grass",
-                                "5, minecraft:dirt",
-                                "1, minecraft:clay",
-                                "2, minecraft:gravel"
-                        },
-                        new String[]{
-                        },
-                        false,
-                        false,
-                        false,
-                        7,
-                        4,
-                        25
-                )),
-                new AdvancedBiomeSettingsAdapter(rl("island_beach"), () -> new BiomeSettings.Beach.Factory(
-                        48,
-                        "minecraft:lava",
-                        "minecraft:stone",
-                        new String[]{
-                                "8, minecraft:sand",
-                                "2, minecraft:sandstone",
-                                "1, minecraft:clay",
-                                "2, minecraft:gravel"
-                        },
-                        new String[]{
-                                "2, minecraft:obsidian",
-                                "1, minecraft:sandstone",
-                                "1, minecraft:hardened_clay",
-                                "2, minecraft:netherrack"
-                        },
-                        false,
-                        false,
-                        false,
-                        12
-                )),
-                new AdvancedBiomeSettingsAdapter(rl("ocean"), () -> new BiomeSettings.Factory(
-                        48,
-                        "minecraft:lava",
-                        "minecraft:stone",
-                        new String[]{
-                                "8, minecraft:netherrack"
-                        },
-                        new String[]{
-                                "2, minecraft:obsidian",
-                                "1, minecraft:sandstone",
-                                "1, minecraft:hardened_clay",
-                                "4, minecraft:netherrack"
-                        }
-                )),
-                new AdvancedBiomeSettingsAdapter(rl("wasteland"), () -> new BiomeSettings.Wasteland.Factory(
-                        48,
-                        "minecraft:lava",
-                        "minecraft:netherrack",
-                        new String[]{
-                                "8, minecraft:netherrack"
-                        },
-                        new String[]{
-                                "1, minecraft:obsidian",
-                                "1, minecraft:sandstone",
-                                "1, minecraft:hardened_clay",
-                                "8, minecraft:netherrack"
-                        },
-                        true,
-                        false,
-                        true,
-                        true
-                )),
-                new AdvancedBiomeSettingsAdapter(rl("wasteland_beach"), () -> new BiomeSettings.Wasteland.Factory(
-                        48,
-                        "minecraft:lava",
-                        "minecraft:netherrack",
-                        new String[]{
-                                "16, minecraft:netherrack"
-                        },
-                        new String[]{
-                                "1, minecraft:obsidian",
-                                "1, minecraft:sandstone",
-                                "1, minecraft:hardened_clay",
-                                "10, minecraft:netherrack"
-                        },
-                        true,
-                        false,
-                        true,
-                        true
-                )),
-                new AdvancedBiomeSettingsAdapter(rl("wasteland_edge"), () -> new BiomeSettings.Wasteland.Factory(
-                        48,
-                        "minecraft:lava",
-                        "minecraft:stone",
-                        new String[]{
-                                "8, minecraft:netherrack",
-                                "2, minecraft:gravel"
-                        },
-                        new String[]{
-                                "8, minecraft:netherrack"
-                        },
-                        true,
-                        true,
-                        true,
-                        true
-                ))
+                new ForestBiomeSettingsAdapter(
+                        new ResourceLocation(ModInfo.MODID, "island"),
+                        () -> new BiomeSettings.Forest.Factory(
+                                48,
+                                "minecraft:water",
+                                "minecraft:stone",
+                                new String[]{
+                                        "1, minecraft:grass",
+                                        "5, minecraft:dirt",
+                                        "1, minecraft:clay",
+                                        "2, minecraft:gravel"
+                                },
+                                new String[]{
+                                },
+                                false,
+                                false,
+                                false,
+                                7,
+                                4,
+                                25
+                        )),
+                new BeachBiomeSettingsAdapter(
+                        new ResourceLocation(ModInfo.MODID, "island_beach"),
+                        () -> new BiomeSettings.Beach.Factory(
+                                48,
+                                "minecraft:lava",
+                                "minecraft:stone",
+                                new String[]{
+                                        "8, minecraft:sand",
+                                        "2, minecraft:sandstone",
+                                        "1, minecraft:clay",
+                                        "2, minecraft:gravel"
+                                },
+                                new String[]{
+                                        "2, minecraft:obsidian",
+                                        "1, minecraft:sandstone",
+                                        "1, minecraft:hardened_clay",
+                                        "2, minecraft:netherrack"
+                                },
+                                false,
+                                false,
+                                false,
+                                12
+                        )),
+                new AdvancedBiomeSettingsAdapter(
+                        new ResourceLocation(ModInfo.MODID, "ocean"),
+                        () -> new BiomeSettings.Factory(
+                                48,
+                                "minecraft:lava",
+                                "minecraft:stone",
+                                new String[]{
+                                        "8, minecraft:netherrack"
+                                },
+                                new String[]{
+                                        "2, minecraft:obsidian",
+                                        "1, minecraft:sandstone",
+                                        "1, minecraft:hardened_clay",
+                                        "4, minecraft:netherrack"
+                                }
+                        )),
+                new WastelandBiomeSettingsAdapter(
+                        new ResourceLocation(ModInfo.MODID, "wasteland"),
+                        () -> new BiomeSettings.Wasteland.Factory(
+                                48,
+                                "minecraft:lava",
+                                "minecraft:netherrack",
+                                new String[]{
+                                        "8, minecraft:netherrack"
+                                },
+                                new String[]{
+                                        "1, minecraft:obsidian",
+                                        "1, minecraft:sandstone",
+                                        "1, minecraft:hardened_clay",
+                                        "8, minecraft:netherrack"
+                                },
+                                true,
+                                false,
+                                true,
+                                true
+                        )),
+                new WastelandBiomeSettingsAdapter(
+                        new ResourceLocation(ModInfo.MODID, "wasteland_beach"),
+                        () -> new BiomeSettings.Wasteland.Factory(
+                                48,
+                                "minecraft:lava",
+                                "minecraft:netherrack",
+                                new String[]{
+                                        "16, minecraft:netherrack"
+                                },
+                                new String[]{
+                                        "1, minecraft:obsidian",
+                                        "1, minecraft:sandstone",
+                                        "1, minecraft:hardened_clay",
+                                        "10, minecraft:netherrack"
+                                },
+                                true,
+                                false,
+                                true,
+                                true
+                        )),
+                new WastelandBiomeSettingsAdapter(
+                        new ResourceLocation(ModInfo.MODID, "wasteland_edge"),
+                        () -> new BiomeSettings.Wasteland.Factory(
+                                48,
+                                "minecraft:lava",
+                                "minecraft:stone",
+                                new String[]{
+                                        "8, minecraft:netherrack",
+                                        "2, minecraft:gravel"
+                                },
+                                new String[]{
+                                        "8, minecraft:netherrack"
+                                },
+                                true,
+                                true,
+                                true,
+                                true
+                        ))
         );
     }
 
-    private static ResourceLocation rl(String path) {
-        return new ResourceLocation(ModInfo.MODID, path);
-    }
 }

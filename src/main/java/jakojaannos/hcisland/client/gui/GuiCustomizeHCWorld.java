@@ -1,7 +1,7 @@
 package jakojaannos.hcisland.client.gui;
 
 import jakojaannos.hcisland.init.ModRegistries;
-import jakojaannos.hcisland.world.gen.BiomeSettingsAdapter;
+import jakojaannos.hcisland.world.gen.adapter.BiomeSettingsAdapter;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.val;
 import net.minecraft.client.gui.GuiButton;

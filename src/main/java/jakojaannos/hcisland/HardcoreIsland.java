@@ -2,7 +2,7 @@ package jakojaannos.hcisland;
 
 import jakojaannos.hcisland.init.ModLootTables;
 import jakojaannos.hcisland.world.WorldTypeHCIsland;
-import jakojaannos.hcisland.world.gen.BiomeSettingsAdapter;
+import jakojaannos.hcisland.world.gen.adapter.BiomeSettingsAdapter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.common.config.Config;
