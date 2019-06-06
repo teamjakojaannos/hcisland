@@ -42,8 +42,11 @@ public class HCIslandConfig {
         @Config.RequiresMcRestart
         public float temperatureWastelandEdge = 1.25f;
 
-        @Config.Comment("Set to false to prevent spawning of Advent of Ascension mobs on the island")
-        public boolean allowAoAMobsOnIsland = true;
+        @Config.Comment("Set to false to completely disable AoA mob spawn prevention")
+        public boolean disableBlockingMobSpawns = false;
+
+        @Config.Comment("Radius inside which Advent of Ascension mobs are not allowed to spawn")
+        public int disableAoAMobSpawningInRadius = 6;
     }
 
     @SubscribeEvent
