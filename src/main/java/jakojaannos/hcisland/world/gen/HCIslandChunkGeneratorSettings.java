@@ -10,6 +10,7 @@ import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
 import jakojaannos.hcisland.util.UnitHelper;
 import lombok.*;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -36,15 +37,14 @@ public class HCIslandChunkGeneratorSettings {
     }
 
     @Nullable
-    public Biome getBiomeAtDistanceSq(long distSq) {
+    public Biome getBiomeAtDistanceSq(long distSq, double unitScale) {
         if (biomes.isEmpty()) {
             return null;
         }
 
-        // TODO: Debug
         var distance = 0L;
         for (val biomeEntry : biomes) {
-            val newDistance = (distance + biomeEntry.radius) * UnitHelper.CHUNKS_TO_GEN_LAYER_CONVERSION_RATIO;
+            val newDistance = (distance + biomeEntry.radius) * unitScale;
             if (distSq < newDistance * newDistance) {
                 return biomeEntry.biome;
             }
@@ -171,10 +171,18 @@ public class HCIslandChunkGeneratorSettings {
                 return;
             }
 
-            biomes = Lists.newArrayList(
+            /*biomes = Lists.newArrayList(
                     new IslandRadialBiome.Factory(3, true, ModBiomes.ISLAND.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(2, false, ModBiomes.ISLAND_BEACH.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(8, false, ModBiomes.OCEAN.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(2, false, ModBiomes.WASTELAND_BEACH.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(1, false, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
+            );*/
+
+            biomes = Lists.newArrayList(
+                    new IslandRadialBiome.Factory(5, true, ModBiomes.ISLAND.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(8, false, Biomes.OCEAN.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(2, false, ModBiomes.WASTELAND_BEACH.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(1, false, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())

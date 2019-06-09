@@ -52,7 +52,7 @@ public class ModBiomes {
                 new ForestBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "island"),
                         () -> new BiomeSettings.Forest.Factory(
-                                48,
+                                64,
                                 "minecraft:water",
                                 "minecraft:stone",
                                 new String[]{
