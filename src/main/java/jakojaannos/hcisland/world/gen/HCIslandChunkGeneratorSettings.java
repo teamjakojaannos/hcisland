@@ -22,10 +22,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HCIslandChunkGeneratorSettings {
+    @Getter private final int islandShapeFuzz;
+    @Getter private final boolean smoothBiomeEdges;
+    @Getter private final boolean generateShores;
+    @Getter private final int shoreScale;
     private final List<IslandRadialBiome> biomes;
     private final Map<ResourceLocation, BiomeSettings> biomeSettings;
 
     private HCIslandChunkGeneratorSettings(Factory factory) {
+        this.islandShapeFuzz = factory.islandShapeFuzz;
+        this.smoothBiomeEdges = false;
+        this.generateShores = false;
+        this.shoreScale = factory.shoreScale;
+
         this.biomes = factory.biomes.stream()
                                     .map(IslandRadialBiome::new)
                                     .collect(Collectors.toList());
@@ -128,7 +137,12 @@ public class HCIslandChunkGeneratorSettings {
             return jsonToFactory(HCIslandConfig.world.generatorSettingsDefaults, false);
         }
 
-        @Setter @Getter private List<IslandRadialBiome.Factory> biomes;
+        @Getter @Setter private int islandShapeFuzz;
+        @Getter @Setter private boolean smoothBiomeEdges;
+        @Getter @Setter private boolean generateShores;
+        @Getter @Setter private int shoreScale;
+        @Getter @Setter private List<IslandRadialBiome.Factory> biomes;
+
         private Map<ResourceLocation, BiomeSettings.Factory> biomeSettings;
 
         public HCIslandChunkGeneratorSettings build() {
@@ -179,6 +193,11 @@ public class HCIslandChunkGeneratorSettings {
                     new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(1, false, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
             );*/
+
+            islandShapeFuzz = 2;
+            smoothBiomeEdges = true;
+            generateShores = true;
+            shoreScale = 2;
 
             biomes = Lists.newArrayList(
                     new IslandRadialBiome.Factory(5, true, ModBiomes.ISLAND.getRegistryName().toString()),

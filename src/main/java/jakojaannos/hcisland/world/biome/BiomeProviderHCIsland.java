@@ -49,18 +49,18 @@ public class BiomeProviderHCIsland extends BiomeProvider {
     public GenLayer createBiomeGeneratorChain(WorldTypeHCIsland worldType, long seed, GenLayer[] original) {
         val settings = worldType.getSettings();
 
-        val islandShapeFuzz = 2;
-        val smoothBiomeEdges = true;
-        val generateShores = true;
-        val shoreScale = 2;
-        val nZoom = islandShapeFuzz + shoreScale;
+        val islandShapeFuzz = settings.getIslandShapeFuzz();
+        val smoothBiomeEdges = settings.isSmoothBiomeEdges();
+        val generateShores = settings.isGenerateShores();
+        val shoreScale = settings.getShoreScale();
 
-        // with 0 zooms (fuzz and shoreScale at zero):
+        // Without any zooming (fuzz and shoreScale at zero):
         //  - conversion ratio at biome layer is 1:4 (multiplication by 4.0)
         // As zoom increases:
         //  - conversion ratio is divided by 2 for each zoom (zoom magnifies the world by 2x)
+        val numberOfZooms = islandShapeFuzz + shoreScale;
         var biomeUnitConversionRatio = 4.0;
-        for (var i = 0; i < nZoom; i++) {
+        for (var i = 0; i < numberOfZooms; i++) {
             biomeUnitConversionRatio /= 2.0;
         }
 
