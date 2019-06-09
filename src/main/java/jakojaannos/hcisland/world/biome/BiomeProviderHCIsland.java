@@ -58,6 +58,7 @@ public class BiomeProviderHCIsland extends BiomeProvider {
         //  - conversion ratio at biome layer is 1:4 (multiplication by 4.0)
         // As zoom increases:
         //  - conversion ratio is divided by 2 for each zoom (zoom magnifies the world by 2x)
+        // -> unit scale is 1 / pow(2, 2 - number_of_zooms)
         val numberOfZooms = islandShapeFuzz + shoreScale;
         var biomeUnitConversionRatio = 4.0;
         for (var i = 0; i < numberOfZooms; i++) {
