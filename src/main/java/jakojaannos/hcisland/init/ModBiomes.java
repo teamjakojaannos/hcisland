@@ -31,7 +31,7 @@ public class ModBiomes {
     public static void onRegisterBiomes(RegistryEvent.Register<Biome> event) {
         val r = event.getRegistry();
         register(r, "island", 0, BiomeType.WARM, new BiomeHCIsland(), Type.FOREST, Type.SPARSE);
-        register(r, "island_beach", 0, BiomeType.WARM, new BiomeHCIslandBeach(), Type.BEACH);
+        register(r, "island_beach", 0, BiomeType.WARM, new BiomeHCBeach(), Type.BEACH);
         register(r, "ocean", 0, BiomeType.WARM, new BiomeHCOcean(), Type.OCEAN, Type.DEAD);
         register(r, "wasteland", 0, BiomeType.DESERT, new BiomeHCWasteland(), Type.WASTELAND, Type.DEAD, Type.HOT);
         register(r, "wasteland_beach", 0, BiomeType.DESERT, new BiomeHCWastelandBeach(), Type.WASTELAND, Type.BEACH);
@@ -41,9 +41,11 @@ public class ModBiomes {
     private static void register(IForgeRegistry<Biome> registry, String key, int weight, BiomeManager.BiomeType managerType, Biome biome, BiomeDictionary.Type... types) {
         biome.setRegistryName(new ResourceLocation(ModInfo.MODID, key));
         registry.register(biome);
-
-        //BiomeManager.addBiome(managerType, new BiomeManager.BiomeEntry(biome, weight));
         BiomeDictionary.addTypes(biome, types);
+
+        if (weight > 0) {
+            BiomeManager.addBiome(managerType, new BiomeManager.BiomeEntry(biome, weight));
+        }
     }
 
     @SubscribeEvent
@@ -71,10 +73,10 @@ public class ModBiomes {
                                 25
                         )),
                 new BeachBiomeSettingsAdapter(
-                        new ResourceLocation(ModInfo.MODID, "island_beach"),
+                        new ResourceLocation(ModInfo.MODID, "beach"),
                         () -> new BiomeSettings.Beach.Factory(
-                                48,
-                                "minecraft:lava",
+                                64,
+                                "minecraft:water",
                                 "minecraft:stone",
                                 new String[]{
                                         "8, minecraft:sand",
@@ -96,8 +98,8 @@ public class ModBiomes {
                 new AdvancedBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "ocean"),
                         () -> new BiomeSettings.Factory(
-                                48,
-                                "minecraft:lava",
+                                64,
+                                "minecraft:water",
                                 "minecraft:stone",
                                 new String[]{
                                         "8, minecraft:netherrack"
@@ -112,8 +114,8 @@ public class ModBiomes {
                 new WastelandBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "wasteland"),
                         () -> new BiomeSettings.Wasteland.Factory(
-                                48,
-                                "minecraft:lava",
+                                64,
+                                "minecraft:water",
                                 "minecraft:netherrack",
                                 new String[]{
                                         "8, minecraft:netherrack"
@@ -132,8 +134,8 @@ public class ModBiomes {
                 new WastelandBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "wasteland_beach"),
                         () -> new BiomeSettings.Wasteland.Factory(
-                                48,
-                                "minecraft:lava",
+                                64,
+                                "minecraft:water",
                                 "minecraft:netherrack",
                                 new String[]{
                                         "16, minecraft:netherrack"
@@ -152,8 +154,8 @@ public class ModBiomes {
                 new WastelandBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "wasteland_edge"),
                         () -> new BiomeSettings.Wasteland.Factory(
-                                48,
-                                "minecraft:lava",
+                                64,
+                                "minecraft:water",
                                 "minecraft:stone",
                                 new String[]{
                                         "8, minecraft:netherrack",

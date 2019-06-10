@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Defines a generated block layer when generating {@link AdvancedBiomeBase}-based biomes
+ * Defines a generated block layer when generating {@link BiomeLayeredBase}-based biomes
  */
 public class BlockLayer {
     private final int depth;

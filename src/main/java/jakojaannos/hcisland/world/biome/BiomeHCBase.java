@@ -3,7 +3,7 @@ package jakojaannos.hcisland.world.biome;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
 import net.minecraft.util.math.MathHelper;
 
-public class BiomeHCBase<TSettings extends BiomeSettings> extends AdvancedBiomeBase {
+public class BiomeHCBase<TSettings extends BiomeSettings> extends BiomeLayeredBase {
     BiomeHCBase(BiomeProperties properties) {
         super(properties);
 

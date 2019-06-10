@@ -1,5 +1,6 @@
 package jakojaannos.hcisland.world.biome;
 
+import lombok.val;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -8,6 +9,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
@@ -15,7 +17,7 @@ import java.util.Random;
 /**
  * Adds some convenience features for allowing a bit more customized biomes.
  */
-public abstract class AdvancedBiomeBase extends Biome {
+public abstract class BiomeLayeredBase extends Biome {
     private static final IBlockState[] LOOKUP = new IBlockState[256];
 
     private int seaLevelOverride;
@@ -41,7 +43,7 @@ public abstract class AdvancedBiomeBase extends Biome {
     /**
      * Sets the sea level override. Set to negative value to use world default.
      */
-    public AdvancedBiomeBase setSeaLevelOverride(int seaLevel) {
+    public BiomeLayeredBase setSeaLevelOverride(int seaLevel) {
         this.seaLevelOverride = seaLevel;
         return this;
     }
@@ -56,7 +58,7 @@ public abstract class AdvancedBiomeBase extends Biome {
     /**
      * Sets the block used as water substitute for blocks below sea level
      */
-    public AdvancedBiomeBase setOceanBlock(IBlockState oceanBlock) {
+    public BiomeLayeredBase setOceanBlock(IBlockState oceanBlock) {
         this.oceanBlock = oceanBlock;
         return this;
     }
@@ -71,7 +73,7 @@ public abstract class AdvancedBiomeBase extends Biome {
     /**
      * Sets the number of bedrock layers generated
      */
-    public AdvancedBiomeBase setBedrockDepth(int bedrockDepth) {
+    public BiomeLayeredBase setBedrockDepth(int bedrockDepth) {
         this.bedrockDepth = bedrockDepth;
         return this;
     }
@@ -86,9 +88,48 @@ public abstract class AdvancedBiomeBase extends Biome {
     /**
      * Sets the block to use as stone substitute
      */
-    public AdvancedBiomeBase setStoneBlock(IBlockState stoneBlock) {
+    public BiomeLayeredBase setStoneBlock(IBlockState stoneBlock) {
         this.stoneBlock = stoneBlock;
         return this;
+    }
+
+    /**
+     * Gets the edge biome to be used when neighboring an incompatible biome.
+     *
+     * @return the biome to be used as edge
+     */
+    @Nullable
+    public Biome getEdgeBiome() {
+        return null;
+    }
+
+    /**
+     * Checks if this biome can be neighbor with given biome. Ignored if biome does not have an edge.
+     *
+     * @param other biome to check against
+     * @return <code>true</code> if biome is compatible and no edge is needed, <code>false</code> otherwise
+     */
+    public boolean isCompatibleWith(Biome other) {
+        return true;
+    }
+
+    /**
+     * Whether or not this biome is oceanic, requiring a special beach-like biome as edge when neighboring non-oceanic
+     * biomes.
+     *
+     * @return <code>true</code> if biome is oceanic and requires beaches, <code>false</code> otherwise
+     */
+    public boolean isOceanic() {
+        return getBeachBiome() != null;
+    }
+
+    public boolean isCompatibleWithOceanic(Biome other) {
+        return true;
+    }
+
+    @Nullable
+    public Biome getBeachBiome() {
+        return null;
     }
 
 
@@ -122,14 +163,14 @@ public abstract class AdvancedBiomeBase extends Biome {
         return seaLevelOverride < 0 ? world.getSeaLevel() : seaLevelOverride;
     }
 
-    public AdvancedBiomeBase setLayers(BlockLayer[] layers, BlockLayer[] underwaterLayers) {
+    public BiomeLayeredBase setLayers(BlockLayer[] layers, BlockLayer[] underwaterLayers) {
         this.layers = layers;
         this.underwaterLayers = underwaterLayers;
         return this;
     }
 
 
-    protected AdvancedBiomeBase(BiomeProperties properties) {
+    protected BiomeLayeredBase(BiomeProperties properties) {
         super(properties);
         this.layers = new BlockLayer[0];
         this.underwaterLayers = new BlockLayer[0];

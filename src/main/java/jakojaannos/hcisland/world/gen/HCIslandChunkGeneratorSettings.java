@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
-import jakojaannos.hcisland.util.UnitHelper;
 import lombok.*;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
@@ -24,15 +23,15 @@ import java.util.stream.Collectors;
 public class HCIslandChunkGeneratorSettings {
     @Getter private final int islandShapeFuzz;
     @Getter private final boolean smoothBiomeEdges;
-    @Getter private final boolean generateShores;
+    @Getter private final boolean generateEdges;
     @Getter private final int shoreScale;
     private final List<IslandRadialBiome> biomes;
     private final Map<ResourceLocation, BiomeSettings> biomeSettings;
 
     private HCIslandChunkGeneratorSettings(Factory factory) {
         this.islandShapeFuzz = factory.islandShapeFuzz;
-        this.smoothBiomeEdges = false;
-        this.generateShores = false;
+        this.smoothBiomeEdges = factory.smoothBiomeEdges;
+        this.generateEdges = factory.generateEdges;
         this.shoreScale = factory.shoreScale;
 
         this.biomes = factory.biomes.stream()
@@ -139,7 +138,7 @@ public class HCIslandChunkGeneratorSettings {
 
         @Getter @Setter private int islandShapeFuzz;
         @Getter @Setter private boolean smoothBiomeEdges;
-        @Getter @Setter private boolean generateShores;
+        @Getter @Setter private boolean generateEdges;
         @Getter @Setter private int shoreScale;
         @Getter @Setter private List<IslandRadialBiome.Factory> biomes;
 
@@ -185,27 +184,26 @@ public class HCIslandChunkGeneratorSettings {
                 return;
             }
 
+            // TODO: make lava lake great again
+            // TODO: possibly replace the lake of lava with a void-pit?
+            biomes = Lists.newArrayList(
+                    new IslandRadialBiome.Factory(3, true, ModBiomes.ISLAND.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(8, false, ModBiomes.OCEAN.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(1, false, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
+            );
+
             /*biomes = Lists.newArrayList(
                     new IslandRadialBiome.Factory(3, true, ModBiomes.ISLAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(2, false, ModBiomes.ISLAND_BEACH.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(8, false, ModBiomes.OCEAN.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(2, false, ModBiomes.WASTELAND_BEACH.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(8, false, Biomes.OCEAN.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(1, false, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
             );*/
 
             islandShapeFuzz = 2;
             smoothBiomeEdges = true;
-            generateShores = true;
+            generateEdges = true;
             shoreScale = 2;
-
-            biomes = Lists.newArrayList(
-                    new IslandRadialBiome.Factory(5, true, ModBiomes.ISLAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(8, false, Biomes.OCEAN.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(2, false, ModBiomes.WASTELAND_BEACH.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(1, false, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
-            );
 
             biomeSettings = new HashMap<>();
             for (val adapterEntry : ModRegistries.BIOME_ADAPTERS.getEntries()) {

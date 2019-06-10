@@ -2,6 +2,7 @@ package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.world.WorldTypeHCIsland;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import jakojaannos.hcisland.world.gen.layer.GenLayerBiomeLayeredEdges;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandBiomes;
 import lombok.val;
 import lombok.var;
@@ -33,7 +34,7 @@ public class BiomeProviderHCIsland extends BiomeProvider {
     @Override
     public GenLayer[] getModdedBiomeGenerators(WorldType worldType, long seed, GenLayer[] original) {
         val islandWorldType = (WorldTypeHCIsland) worldType;
-        GenLayer hcChain = createBiomeGeneratorChain(islandWorldType, seed, original);
+        GenLayer hcChain = createGenLayerChain(islandWorldType, seed, original);
 
         // Finalize vanilla layers (GenLayer.java, rows 87-89)
         GenLayer voronoi = new GenLayerVoronoiZoom(10L, hcChain);
@@ -46,12 +47,12 @@ public class BiomeProviderHCIsland extends BiomeProvider {
         return super.getModdedBiomeGenerators(worldType, seed, original);
     }
 
-    public GenLayer createBiomeGeneratorChain(WorldTypeHCIsland worldType, long seed, GenLayer[] original) {
+    private GenLayer createGenLayerChain(WorldTypeHCIsland worldType, long seed, GenLayer[] original) {
         val settings = worldType.getSettings();
 
         val islandShapeFuzz = settings.getIslandShapeFuzz();
         val smoothBiomeEdges = settings.isSmoothBiomeEdges();
-        val generateShores = settings.isGenerateShores();
+        val generateEdges = settings.isGenerateEdges();
         val shoreScale = settings.getShoreScale();
 
         // Without any zooming (fuzz and shoreScale at zero):
@@ -59,7 +60,7 @@ public class BiomeProviderHCIsland extends BiomeProvider {
         // As zoom increases:
         //  - conversion ratio is divided by 2 for each zoom (zoom magnifies the world by 2x)
         // -> unit scale is 1 / pow(2, 2 - number_of_zooms)
-        val numberOfZooms = islandShapeFuzz + shoreScale;
+        val numberOfZooms = islandShapeFuzz + (generateEdges ? shoreScale : 0);
         var biomeUnitConversionRatio = 4.0;
         for (var i = 0; i < numberOfZooms; i++) {
             biomeUnitConversionRatio /= 2.0;
@@ -77,8 +78,9 @@ public class BiomeProviderHCIsland extends BiomeProvider {
             chain = new GenLayerSmooth(1000L, chain);
         }
 
-        if (generateShores) {
+        if (generateEdges) {
             chain = new GenLayerShore(1000L, chain);
+            chain = new GenLayerBiomeLayeredEdges(1337L, chain);
             for (var i = 0; i < shoreScale; i++) {
                 chain = new GenLayerZoom(715517L + i, chain);
             }

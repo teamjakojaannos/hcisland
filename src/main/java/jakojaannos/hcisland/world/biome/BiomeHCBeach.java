@@ -3,8 +3,8 @@ package jakojaannos.hcisland.world.biome;
 import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
 
-public class BiomeHCIslandBeach extends BiomeHCIslandBase<BiomeSettings.Beach> {
-    public BiomeHCIslandBeach() {
+public class BiomeHCBeach extends BiomeHCBase<BiomeSettings.Beach> {
+    public BiomeHCBeach() {
         super(getProperties());
 
         this.spawnableCreatureList.clear();
@@ -13,8 +13,10 @@ public class BiomeHCIslandBeach extends BiomeHCIslandBase<BiomeSettings.Beach> {
 
     private static BiomeProperties getProperties() {
         BiomeProperties props = new BiomeProperties("HC Island Beach");
-        props.setBaseHeight(0.24f);
-        props.setHeightVariation(0.0f);
+        //props.setBaseHeight(0.24f);
+        //props.setHeightVariation(0.0f);
+        props.setBaseHeight(0.0F);
+        props.setHeightVariation(0.025F);
         props.setTemperature(HCIslandConfig.world.temperatureIslandBeach);
 
         return props;
