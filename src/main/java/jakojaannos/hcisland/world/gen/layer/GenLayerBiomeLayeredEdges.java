@@ -133,7 +133,7 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
             val iterator = neighbors.iterator();
             while (iterator.hasNext()) {
                 val neighbor = Biome.getBiome(iterator.next());
-                if (neighbor == null) {
+                if (neighbor == null || neighbor == biome) {
                     continue;
                 }
 

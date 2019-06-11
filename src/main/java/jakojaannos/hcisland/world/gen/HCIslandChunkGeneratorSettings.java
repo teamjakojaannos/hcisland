@@ -200,8 +200,8 @@ public class HCIslandChunkGeneratorSettings {
             // TODO: possibly replace the lake of lava with a void-pit?
             biomes = Lists.newArrayList(
                     new IslandRadialBiome.Factory(5, true, ModBiomes.ISLAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(8, false, ModBiomes.OCEAN.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString())
+                    new IslandRadialBiome.Factory(12, false, ModBiomes.OCEAN.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(8, false, ModBiomes.WASTELAND.getRegistryName().toString())
             );
 
             /*biomes = Lists.newArrayList(

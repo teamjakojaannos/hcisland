@@ -2,7 +2,7 @@ package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.config.HCIslandConfig;
 
-public class BiomeHCWastelandBeach extends BiomeHCWasteland {
+public class BiomeHCWastelandBeach extends BiomeHCWastelandBase {
     public BiomeHCWastelandBeach() {
         super(getProperties());
     }

@@ -1,36 +1,23 @@
 package jakojaannos.hcisland.world.biome;
 
 import jakojaannos.hcisland.config.HCIslandConfig;
+import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
+import lombok.val;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 
-public class BiomeHCWasteland extends BiomeHCIslandBase<BiomeSettings.Wasteland> {
-    private boolean generateFire;
+import javax.annotation.Nullable;
 
-    public boolean generateFire() {
-        return generateFire;
-    }
-
+public class BiomeHCWasteland extends BiomeHCWastelandBase {
     public BiomeHCWasteland() {
         this(getProperties());
     }
 
     protected BiomeHCWasteland(BiomeProperties properties) {
         super(properties);
-
-        // Disable neutral spawning
-        this.spawnableCreatureList.clear();
-
-        // Copy cave creatures from hell
-        this.spawnableCaveCreatureList.clear();
-        this.spawnableCaveCreatureList = Biomes.HELL.getSpawnableList(EnumCreatureType.AMBIENT);
-
-        // Copy monsters from hell and add blazes
-        this.spawnableMonsterList.clear();
-        this.spawnableMonsterList = Biomes.HELL.getSpawnableList(EnumCreatureType.MONSTER);
-        this.spawnableMonsterList.add(new SpawnListEntry(EntityBlaze.class, 10, 2, 2));
     }
 
     private static BiomeProperties getProperties() {
@@ -42,9 +29,20 @@ public class BiomeHCWasteland extends BiomeHCIslandBase<BiomeSettings.Wasteland>
         return props;
     }
 
+    @Nullable
     @Override
-    protected void applyBiomeSettings(BiomeSettings.Wasteland settings) {
-        super.applyBiomeSettings(settings);
-        this.generateFire = settings.generateFire;
+    public Biome getEdgeBiome() {
+        return ModBiomes.WASTELAND_EDGE;
+    }
+
+    @Override
+    public boolean isCompatibleWith(Biome other) {
+        val otherSeaLevel = other instanceof BiomeLayeredBase
+                ? ((BiomeLayeredBase) other).getSeaLevelOverride()
+                : 64;
+        val ownSeaLevel = getSeaLevelOverride() != -1
+                ? getSeaLevelOverride()
+                : 64;
+        return otherSeaLevel == ownSeaLevel;
     }
 }
