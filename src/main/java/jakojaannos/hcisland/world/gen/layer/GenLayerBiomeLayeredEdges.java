@@ -1,7 +1,6 @@
 package jakojaannos.hcisland.world.gen.layer;
 
 import jakojaannos.hcisland.world.biome.BiomeLayeredBase;
-import lombok.AllArgsConstructor;
 import lombok.val;
 import lombok.var;
 import net.minecraft.init.Biomes;
@@ -9,9 +8,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
-import javax.annotation.Nullable;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class GenLayerBiomeLayeredEdges extends GenLayer {
@@ -62,7 +62,7 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
                 // generation does not recognize non-compatible oceanic biomes by itself
                 int newBiome;
                 if (isVanillaOceanic(parentBiome) || isLayeredOceanic(parentBiome)) {
-                    newBiome = handleOceanic(parentBiome, neighbors);
+                    newBiome = selectBeachOfMostCommonOceanic(parentBiome, neighbors);
                 }
                 // non-oceanic biomes need to be handled only if they are layered. There are two possible cases:
                 //  1. one-way beaches
@@ -80,16 +80,35 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
         return values;
     }
 
-    private int handleOceanic(Biome biome, Stream<Integer> neighbors) {
+    private int selectBeachOfMostCommonOceanic(Biome biome, Stream<Integer> neighbors) {
         return neighbors.map(Biome::getBiome)
                         .filter(Objects::nonNull)
                         .filter(neighbor -> isLayeredOceanic(neighbor) || isVanillaOceanic(neighbor))
                         .filter(neighbor -> !isCompatibleWithOceanic(biome, neighbor) || !isCompatibleWithOceanic(neighbor, biome))
-                        .filter(neighbor -> getSeaLevelFor(biome) != getSeaLevelFor(neighbor))
-                        .findFirst()
+                        .reduce(new HashMap<Biome, Integer>(),
+                                this::incrementBiomeCount,
+                                this::combineCounts)
+                        .entrySet()
+                        .stream()
+                        .max(Comparator.comparingInt(Map.Entry::getValue))
+                        .map(Map.Entry::getKey)
                         .map(this::getBeachBiomeFor)
                         .map(Biome::getIdForBiome)
                         .orElse(-1);
+    }
+
+    private <K, M extends Map<K, Integer>> M combineCounts(M countsA, M countsB) {
+        countsB.forEach((key, value) -> incrementBiomeCount(countsA, key, value));
+        return countsA;
+    }
+
+    private <K, M extends Map<K, Integer>> M incrementBiomeCount(M counts, K keyToIncrement) {
+        return incrementBiomeCount(counts, keyToIncrement, 1);
+    }
+
+    private <K, M extends Map<K, Integer>> M incrementBiomeCount(M counts, K keyToIncrement, int amount) {
+        counts.compute(keyToIncrement, (keyBiome, count) -> count != null ? count + amount : amount);
+        return counts;
     }
 
     private boolean isVanillaOceanic(Biome biome) {
