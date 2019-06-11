@@ -65,7 +65,7 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
     }
 
     private String saveValues() {
-        return settings.toString().replace("\n", "");
+        return HCIslandChunkGeneratorSettings.Factory.toJson(settings).replace("\n", "");
     }
 
     @Override

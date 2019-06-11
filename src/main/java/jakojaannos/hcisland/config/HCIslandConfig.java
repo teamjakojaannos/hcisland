@@ -24,6 +24,13 @@ public class HCIslandConfig {
         @Config.Comment("Overrides for generator settings default values")
         public String generatorSettingsDefaults = "";
 
+        @Config.Comment({
+                "Silently adds this offset to radii of all biomes. This is to avoid biomes \"disappearing\" during ",
+                "fuzzy zoom biome generation layer. This also mitigates issues with biomes becoming noticeably ",
+                "smaller in some cases where world gen seed happens to be biased towards scaling down biomes.",
+        })
+        public int generatorBiomeRadiusOffset = 1;
+
         @Config.RequiresMcRestart
         public float temperatureIsland = 0.8f;
 

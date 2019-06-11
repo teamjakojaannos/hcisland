@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.function.Supplier;
 
 public class AdvancedBiomeSettingsAdapter extends BiomeSettingsAdapter {
-    public AdvancedBiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings.Factory> defaultSettingsSupplier) {
+    public AdvancedBiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings> defaultSettingsSupplier) {
         super(biomeId, defaultSettingsSupplier);
     }
 

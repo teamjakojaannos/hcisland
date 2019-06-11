@@ -4,16 +4,18 @@ import com.google.common.collect.Lists;
 import jakojaannos.hcisland.client.gui.ExtendedGuiPageButtonList;
 import jakojaannos.hcisland.client.gui.GuiCustomizeBiomeLayers;
 import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorldBiome;
+import jakojaannos.hcisland.util.BlockHelper;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
-public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Factory> implements IBiomeSettingsGuiProvider<TSettings> {
+public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings> implements IBiomeSettingsGuiProvider<TSettings> {
     private int idSeaLevel = -1;
     private int idOceanBlock = -1;
     private int idStoneBlock = -1;
@@ -25,7 +27,7 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Fa
                                                     I18n.format("createWorld.customize.hcisland.field.biome.stoneBlock"),
                                                     true),
                 new GuiPageButtonList.EditBoxEntry(idStoneBlock = idCounter++,
-                                                   settings.stoneBlock,
+                                                   settings.stoneBlock.getBlock().getRegistryName().toString(),
                                                    true,
                                                    s -> true),
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
@@ -41,7 +43,7 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Fa
                                                     I18n.format("createWorld.customize.hcisland.field.biome.oceanBlock"),
                                                     true),
                 new GuiPageButtonList.EditBoxEntry(idOceanBlock = idCounter++,
-                                                   settings.oceanBlock,
+                                                   settings.oceanBlock.getBlock().getRegistryName().toString(),
                                                    true,
                                                    s -> true),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
@@ -74,9 +76,9 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Fa
     @Override
     public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, String value, TSettings settings, TSettings defaultSettings) {
         if (id == idStoneBlock) {
-            settings.stoneBlock = value;
+            settings.stoneBlock = BlockHelper.stringToBlockstateWithFallback(Blocks.STONE.getDefaultState(), value);
         } else if (id == idOceanBlock) {
-            settings.oceanBlock = value;
+            settings.oceanBlock = BlockHelper.stringToBlockstateWithFallback(Blocks.STONE.getDefaultState(), value);;
         }
     }
 }

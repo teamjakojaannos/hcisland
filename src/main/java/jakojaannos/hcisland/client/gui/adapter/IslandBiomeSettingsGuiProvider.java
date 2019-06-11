@@ -9,7 +9,7 @@ import net.minecraft.client.resources.I18n;
 import java.util.Arrays;
 import java.util.List;
 
-public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Island.Factory> extends AdvancedBiomeSettingsGuiProvider<TSettings> {
+public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Island> extends AdvancedBiomeSettingsGuiProvider<TSettings> {
     private int idGenerateFalls = -1;
     private int idGenerateLakes = -1;
     private int idGenerateLakesLava = -1;

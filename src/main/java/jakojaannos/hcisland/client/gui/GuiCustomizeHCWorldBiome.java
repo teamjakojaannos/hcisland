@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
-public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<BiomeSettings.Factory> implements GuiPageButtonList.GuiResponder {
+public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<BiomeSettings> implements GuiPageButtonList.GuiResponder {
     private final GuiCustomizeHCWorld parent;
     private final BiomeSettingsAdapter adapter;
     private final IBiomeSettingsGuiProvider guiProvider;
 
-    private final Supplier<BiomeSettings.Factory> defaultSettingsSupplier;
+    private final Supplier<BiomeSettings> defaultSettingsSupplier;
 
     public GuiCustomizeHCWorldBiome(
             GuiCustomizeHCWorld parent,
             BiomeSettingsAdapter adapter,
-            BiomeSettings.Factory settings,
-            Supplier<BiomeSettings.Factory> defaultSettingsSupplier
+            BiomeSettings settings,
+            Supplier<BiomeSettings> defaultSettingsSupplier
     ) {
         this.parent = parent;
         this.adapter = adapter;

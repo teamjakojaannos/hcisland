@@ -1,13 +1,18 @@
 package jakojaannos.hcisland.world.gen.layer;
 
 import jakojaannos.hcisland.world.biome.BiomeLayeredBase;
+import lombok.AllArgsConstructor;
 import lombok.val;
+import lombok.var;
 import net.minecraft.init.Biomes;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class GenLayerBiomeLayeredEdges extends GenLayer {
     private static final int SAMPLE_EXTENT = 1;
@@ -40,18 +45,23 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
                     continue;
                 }
 
-                val idLeft = parentValues[parentX - 1 + parentY * parentSampleWidth];
-                val idRight = parentValues[parentX + 1 + parentY * parentSampleWidth];
-                val idUp = parentValues[parentX + (parentY + 1) * parentSampleWidth];
-                val idDown = parentValues[parentX + (parentY - 1) * parentSampleWidth];
-                int[] neighbors = {idLeft, idRight, idUp, idDown};
+                val sb = Stream.<Integer>builder();
+                for (var dy = -SAMPLE_EXTENT; dy <= SAMPLE_EXTENT; dy++) {
+                    for (var dx = -SAMPLE_EXTENT; dx <= SAMPLE_EXTENT; dx++) {
+                        if (dx == 0 && dy == 0) {
+                            continue;
+                        }
+                        sb.add(parentValues[parentX + dx + (parentY + dy) * parentSampleWidth]);
+                    }
+                }
+                val neighbors = sb.build();
 
                 // Only cases for oceanic biomes are two-way beaches where two non-compatible oceanic biomes meet.
                 // Two-way case is required in order to avoid odd clipping with liquid blocks in places where sea levels
                 // of the two oceanic biomes do not match. We DO NEED to handle non-layered biomes too, as vanilla shore
                 // generation does not recognize non-compatible oceanic biomes by itself
                 int newBiome;
-                if (isOceanic(parentBiomeId, parentBiome)) {
+                if (isVanillaOceanic(parentBiome) || isLayeredOceanic(parentBiome)) {
                     newBiome = handleOceanic(parentBiome, neighbors);
                 }
                 // non-oceanic biomes need to be handled only if they are layered. There are two possible cases:
@@ -70,41 +80,35 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
         return values;
     }
 
-    private boolean isOceanic(int biomeId, @Nullable Biome biome) {
-        return GenLayer.isBiomeOceanic(biomeId)
-                || (biome instanceof BiomeLayeredBase && ((BiomeLayeredBase) biome).isOceanic());
+    private int handleOceanic(Biome biome, Stream<Integer> neighbors) {
+        return neighbors.map(Biome::getBiome)
+                        .filter(Objects::nonNull)
+                        .filter(neighbor -> isLayeredOceanic(neighbor) || isVanillaOceanic(neighbor))
+                        .filter(neighbor -> !isCompatibleWithOceanic(biome, neighbor) || !isCompatibleWithOceanic(neighbor, biome))
+                        .filter(neighbor -> getSeaLevelFor(biome) != getSeaLevelFor(neighbor))
+                        .findFirst()
+                        .map(this::getBeachBiomeFor)
+                        .map(Biome::getIdForBiome)
+                        .orElse(-1);
     }
 
-    private int handleOceanic(Biome biome, int[] neighbors) {
-        val ownSeaLevel = getSeaLevelFor(biome);
-        for (val neighborId : neighbors) {
-            val neighbor = Biome.getBiome(neighborId);
-            if (neighbor == null || !isOceanic(neighborId, neighbor)) {
-                continue;
-            }
+    private boolean isVanillaOceanic(Biome biome) {
+        return isBiomeOceanic(Biome.getIdForBiome(biome));
+    }
 
-            val neighborSeaLevel = getSeaLevelFor(neighbor);
-            boolean selfIsCompatible = isCompatibleWithOceanic(biome, neighbor);
-            boolean neighborIsCompatible = isCompatibleWithOceanic(neighbor, biome);
-
-            if (!selfIsCompatible || !neighborIsCompatible || ownSeaLevel != neighborSeaLevel) {
-                val beachBiome = getBeachBiomeFor(biome);
-
-                if (beachBiome == null) {
-                    throw new IllegalStateException("Could not determine beach for biome: \"" + biome.getRegistryName() + "\"");
-                }
-
-                return Biome.getIdForBiome(biome);
-            }
-        }
-
-        return -1;
+    private boolean isLayeredOceanic(Biome biome) {
+        return biome instanceof BiomeLayeredBase && ((BiomeLayeredBase) biome).isOceanic();
     }
 
     private Biome getBeachBiomeFor(Biome biome) {
-        return biome instanceof BiomeLayeredBase
+        val result = biome instanceof BiomeLayeredBase
                 ? ((BiomeLayeredBase) biome).getBeachBiome()
                 : Biomes.BEACH; // FIXME: Variants!
+
+        if (result == null) {
+            throw new IllegalStateException("Could not determine beach for biome: \"" + biome.getRegistryName() + "\"");
+        }
+        return result;
     }
 
     private boolean isCompatibleWithOceanic(Biome biome, Biome other) {
@@ -123,23 +127,19 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
         }
     }
 
-    private int handleNonOceanic(Biome biome, int[] neighbors) {
+    private int handleNonOceanic(Biome biome, Stream<Integer> neighbors) {
         if (biome instanceof BiomeLayeredBase) {
             val layeredBiome = (BiomeLayeredBase) biome;
-
-            for (val neighborId : neighbors) {
-                val neighbor = Biome.getBiome(neighborId);
+            val iterator = neighbors.iterator();
+            while (iterator.hasNext()) {
+                val neighbor = Biome.getBiome(iterator.next());
                 if (neighbor == null) {
                     continue;
                 }
 
                 // 1. one-way beach
-                if (isOceanic(neighborId, neighbor)) {
+                if (isVanillaOceanic(neighbor) || isLayeredOceanic(neighbor)) {
                     val beach = getBeachBiomeFor(neighbor);
-                    if (beach == null) {
-                        throw new IllegalStateException("Could not determine beach for biome: \"" + neighbor.getRegistryName() + "\"");
-                    }
-
                     return Biome.getIdForBiome(beach);
                 }
                 // 2. self is layered and other is non-compatible non-oceanic biome

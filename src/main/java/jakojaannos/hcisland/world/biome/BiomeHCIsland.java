@@ -12,7 +12,7 @@ public class BiomeHCIsland extends BiomeHCIslandBase<BiomeSettings.Forest> {
         BiomeProperties props = new BiomeProperties("HC Island");
         //props.setBaseHeight(0.25f);
         //props.setHeightVariation(0.1f);
-        props.setBaseHeight(0.1f);
+        props.setBaseHeight(0.25f);
         props.setHeightVariation(0.2f);
         props.setTemperature(HCIslandConfig.world.temperatureIsland);
 

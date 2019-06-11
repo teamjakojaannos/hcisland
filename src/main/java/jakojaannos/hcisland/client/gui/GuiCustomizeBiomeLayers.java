@@ -1,10 +1,13 @@
 package jakojaannos.hcisland.client.gui;
 
+import jakojaannos.hcisland.util.BlockHelper;
 import jakojaannos.hcisland.world.biome.BlockLayer;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import java.io.IOException;
@@ -14,8 +17,8 @@ import java.util.List;
 
 public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonList.GuiResponder {
     private final GuiCustomizeHCWorldBiome parent;
-    private final BiomeSettings.Factory config;
-    private final BiomeSettings.Factory defaultConfig;
+    private final BiomeSettings config;
+    private final BiomeSettings defaultConfig;
     private final boolean underwater;
 
     private GuiLayerList layerList;
@@ -26,7 +29,7 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
     private Gui focused;
     private int idCounter;
 
-    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorldBiome parent, BiomeSettings.Factory config, BiomeSettings.Factory defaultConfig, boolean underwater) {
+    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorldBiome parent, BiomeSettings config, BiomeSettings defaultConfig, boolean underwater) {
         this.parent = parent;
         this.config = config;
         this.defaultConfig = defaultConfig;
@@ -44,9 +47,8 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
         idCounter = 3;
 
         layerList = new GuiLayerList(mc, width, height, 32, height - 32, 25);
-        for (String layer : underwater ? config.layersUnderwater : config.layers) {
-            final BlockLayer bl = new BlockLayer(layer);
-            layerList.addEntry(bl.getDepth(), bl.getBlock().getBlock().getRegistryName().toString());
+        for (BlockLayer blockLayer : underwater ? config.layersUnderwater : config.layers) {
+            layerList.addEntry(blockLayer.getDepth(), blockLayer.getBlock().getBlock().getRegistryName().toString());
         }
     }
 
@@ -65,16 +67,22 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
                 break;
             default:
                 layerList.entries.stream()
-                        .filter(entry -> entry.depth == button || entry.remove == button)
-                        .findFirst()
-                        .orElseThrow(IllegalStateException::new)
-                        .actionPerformed(button);
+                                 .filter(entry -> entry.depth == button || entry.remove == button)
+                                 .findFirst()
+                                 .orElseThrow(IllegalStateException::new)
+                                 .actionPerformed(button);
                 break;
         }
     }
 
     private void applyChanges() {
-        final String[] layers = layerList.entries.stream().map(LayerEntry::toString).toArray(String[]::new);
+        //final String[] layers = layerList.entries.stream().map(LayerEntry::toString).toArray(String[]::new);
+        val layers = layerList.entries.stream()
+                                      .map(entry -> new BlockLayer(entry.getDepth(),
+                                                                   BlockHelper.stringToBlockstateWithFallback(
+                                                                           Blocks.STONE.getDefaultState(),
+                                                                           entry.getBlock())))
+                                      .toArray(BlockLayer[]::new);
         if (underwater) {
             config.layersUnderwater = layers;
         } else {
@@ -185,6 +193,14 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
         private final GuiButton remove;
         private final GuiSlider depth;
         private final GuiTextField block;
+
+        public int getDepth() {
+            return (int) depth.getSliderValue();
+        }
+
+        public String getBlock() {
+            return block.getText();
+        }
 
         private LayerEntry(int baseId) {
             this.remove = addButton(new GuiButtonExt(baseId++, width - 35, 0, 25, 25, "X"));

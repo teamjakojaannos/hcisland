@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import java.util.function.Supplier;
 
 public class ForestBiomeSettingsAdapter extends IslandBiomeSettingsAdapter {
-    public ForestBiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings.Forest.Factory> defaultSettingsSupplier) {
+    public ForestBiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings.Forest> defaultSettingsSupplier) {
         super(biomeId, defaultSettingsSupplier);
     }
 }

@@ -5,6 +5,8 @@ import jakojaannos.hcisland.world.biome.*;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
 import jakojaannos.hcisland.world.gen.adapter.*;
 import lombok.val;
+import net.minecraft.block.BlockSand;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
@@ -21,7 +23,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 @Mod.EventBusSubscriber
 public class ModBiomes {
     public static final Biome ISLAND = null;
-    public static final Biome ISLAND_BEACH = null;
+    public static final Biome BEACH = null;
     public static final Biome OCEAN = null;
     public static final Biome WASTELAND = null;
     public static final Biome WASTELAND_BEACH = null;
@@ -31,7 +33,7 @@ public class ModBiomes {
     public static void onRegisterBiomes(RegistryEvent.Register<Biome> event) {
         val r = event.getRegistry();
         register(r, "island", 0, BiomeType.WARM, new BiomeHCIsland(), Type.FOREST, Type.SPARSE);
-        register(r, "island_beach", 0, BiomeType.WARM, new BiomeHCBeach(), Type.BEACH);
+        register(r, "beach", 0, BiomeType.WARM, new BiomeHCBeach(), Type.BEACH);
         register(r, "ocean", 0, BiomeType.WARM, new BiomeHCOcean(), Type.OCEAN, Type.DEAD);
         register(r, "wasteland", 0, BiomeType.DESERT, new BiomeHCWasteland(), Type.WASTELAND, Type.DEAD, Type.HOT);
         register(r, "wasteland_beach", 0, BiomeType.DESERT, new BiomeHCWastelandBeach(), Type.WASTELAND, Type.BEACH);
@@ -53,17 +55,17 @@ public class ModBiomes {
         event.getRegistry().registerAll(
                 new ForestBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "island"),
-                        () -> new BiomeSettings.Forest.Factory(
-                                64,
-                                "minecraft:water",
-                                "minecraft:stone",
-                                new String[]{
-                                        "1, minecraft:grass",
-                                        "5, minecraft:dirt",
-                                        "1, minecraft:clay",
-                                        "2, minecraft:gravel"
+                        () -> new BiomeSettings.Forest(
+                                48,
+                                Blocks.WATER.getDefaultState(),
+                                Blocks.STONE.getDefaultState(),
+                                new BlockLayer[]{
+                                        new BlockLayer(1, Blocks.GRASS),
+                                        new BlockLayer(5, Blocks.DIRT),
+                                        new BlockLayer(1, Blocks.CLAY),
+                                        new BlockLayer(2, Blocks.GRAVEL),
                                 },
-                                new String[]{
+                                new BlockLayer[]{
                                 },
                                 false,
                                 false,
@@ -74,21 +76,21 @@ public class ModBiomes {
                         )),
                 new BeachBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "beach"),
-                        () -> new BiomeSettings.Beach.Factory(
-                                64,
-                                "minecraft:water",
-                                "minecraft:stone",
-                                new String[]{
-                                        "8, minecraft:sand",
-                                        "2, minecraft:sandstone",
-                                        "1, minecraft:clay",
-                                        "2, minecraft:gravel"
+                        () -> new BiomeSettings.Beach(
+                                48,
+                                Blocks.WATER.getDefaultState(),
+                                Blocks.STONE.getDefaultState(),
+                                new BlockLayer[]{
+                                        new BlockLayer(4, Blocks.SAND.getDefaultState().withProperty(BlockSand.VARIANT, BlockSand.EnumType.RED_SAND)),
+                                        new BlockLayer(2, Blocks.RED_SANDSTONE),
+                                        new BlockLayer(1, Blocks.CLAY),
+                                        new BlockLayer(2, Blocks.GRAVEL),
                                 },
-                                new String[]{
-                                        "2, minecraft:obsidian",
-                                        "1, minecraft:sandstone",
-                                        "1, minecraft:hardened_clay",
-                                        "2, minecraft:netherrack"
+                                new BlockLayer[]{
+                                        new BlockLayer(2, Blocks.OBSIDIAN),
+                                        new BlockLayer(1, Blocks.SANDSTONE),
+                                        new BlockLayer(1, Blocks.HARDENED_CLAY),
+                                        new BlockLayer(2, Blocks.NETHERRACK),
                                 },
                                 false,
                                 false,
@@ -97,34 +99,35 @@ public class ModBiomes {
                         )),
                 new AdvancedBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "ocean"),
-                        () -> new BiomeSettings.Factory(
-                                64,
-                                "minecraft:water",
-                                "minecraft:stone",
-                                new String[]{
-                                        "8, minecraft:netherrack"
+                        () -> new BiomeSettings(
+                                48,
+                                Blocks.WATER.getDefaultState(),
+                                Blocks.STONE.getDefaultState(),
+                                new BlockLayer[]{
+                                        new BlockLayer(3, Blocks.SAND.getDefaultState().withProperty(BlockSand.VARIANT, BlockSand.EnumType.RED_SAND)),
+                                        new BlockLayer(1, Blocks.RED_SANDSTONE),
                                 },
-                                new String[]{
-                                        "2, minecraft:obsidian",
-                                        "1, minecraft:sandstone",
-                                        "1, minecraft:hardened_clay",
-                                        "4, minecraft:netherrack"
+                                new BlockLayer[]{
+                                        new BlockLayer(2, Blocks.OBSIDIAN),
+                                        new BlockLayer(1, Blocks.SANDSTONE),
+                                        new BlockLayer(1, Blocks.HARDENED_CLAY),
+                                        new BlockLayer(2, Blocks.NETHERRACK),
                                 }
                         )),
                 new WastelandBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "wasteland"),
-                        () -> new BiomeSettings.Wasteland.Factory(
-                                64,
-                                "minecraft:water",
-                                "minecraft:netherrack",
-                                new String[]{
-                                        "8, minecraft:netherrack"
+                        () -> new BiomeSettings.Wasteland(
+                                48,
+                                Blocks.WATER.getDefaultState(),
+                                Blocks.NETHERRACK.getDefaultState(),
+                                new BlockLayer[]{
+                                        new BlockLayer(8, Blocks.NETHERRACK),
                                 },
-                                new String[]{
-                                        "1, minecraft:obsidian",
-                                        "1, minecraft:sandstone",
-                                        "1, minecraft:hardened_clay",
-                                        "8, minecraft:netherrack"
+                                new BlockLayer[]{
+                                        new BlockLayer(2, Blocks.OBSIDIAN),
+                                        new BlockLayer(1, Blocks.SANDSTONE),
+                                        new BlockLayer(1, Blocks.HARDENED_CLAY),
+                                        new BlockLayer(2, Blocks.NETHERRACK),
                                 },
                                 true,
                                 false,
@@ -133,18 +136,18 @@ public class ModBiomes {
                         )),
                 new WastelandBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "wasteland_beach"),
-                        () -> new BiomeSettings.Wasteland.Factory(
-                                64,
-                                "minecraft:water",
-                                "minecraft:netherrack",
-                                new String[]{
-                                        "16, minecraft:netherrack"
+                        () -> new BiomeSettings.Wasteland(
+                                48,
+                                Blocks.WATER.getDefaultState(),
+                                Blocks.NETHERRACK.getDefaultState(),
+                                new BlockLayer[]{
+                                        new BlockLayer(16, Blocks.NETHERRACK),
                                 },
-                                new String[]{
-                                        "1, minecraft:obsidian",
-                                        "1, minecraft:sandstone",
-                                        "1, minecraft:hardened_clay",
-                                        "10, minecraft:netherrack"
+                                new BlockLayer[]{
+                                        new BlockLayer(2, Blocks.OBSIDIAN),
+                                        new BlockLayer(1, Blocks.SANDSTONE),
+                                        new BlockLayer(1, Blocks.HARDENED_CLAY),
+                                        new BlockLayer(2, Blocks.NETHERRACK),
                                 },
                                 true,
                                 false,
@@ -153,16 +156,16 @@ public class ModBiomes {
                         )),
                 new WastelandBiomeSettingsAdapter(
                         new ResourceLocation(ModInfo.MODID, "wasteland_edge"),
-                        () -> new BiomeSettings.Wasteland.Factory(
+                        () -> new BiomeSettings.Wasteland(
                                 64,
-                                "minecraft:water",
-                                "minecraft:stone",
-                                new String[]{
-                                        "8, minecraft:netherrack",
-                                        "2, minecraft:gravel"
+                                Blocks.WATER.getDefaultState(),
+                                Blocks.NETHERRACK.getDefaultState(),
+                                new BlockLayer[]{
+                                        new BlockLayer(8, Blocks.NETHERRACK),
+                                        new BlockLayer(2, Blocks.GRAVEL),
                                 },
-                                new String[]{
-                                        "8, minecraft:netherrack"
+                                new BlockLayer[]{
+                                        new BlockLayer(8, Blocks.NETHERRACK),
                                 },
                                 true,
                                 true,
@@ -171,5 +174,4 @@ public class ModBiomes {
                         ))
         );
     }
-
 }

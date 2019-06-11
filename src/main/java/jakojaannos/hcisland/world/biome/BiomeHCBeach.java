@@ -15,7 +15,7 @@ public class BiomeHCBeach extends BiomeHCBase<BiomeSettings.Beach> {
         BiomeProperties props = new BiomeProperties("HC Island Beach");
         //props.setBaseHeight(0.24f);
         //props.setHeightVariation(0.0f);
-        props.setBaseHeight(0.0F);
+        props.setBaseHeight(-0.2f);
         props.setHeightVariation(0.025F);
         props.setTemperature(HCIslandConfig.world.temperatureIslandBeach);
 

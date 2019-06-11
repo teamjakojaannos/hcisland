@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeSettingsAdapter> {
-    private final Supplier<? extends BiomeSettings.Factory> defaultSettingsSupplier;
+    private final Supplier<? extends BiomeSettings> defaultSettingsSupplier;
     private final ResourceLocation biomeId;
 
     @Nullable private Biome cachedBiome;
@@ -30,12 +30,12 @@ public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeS
         return cachedBiome;
     }
 
-    public BiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings.Factory> defaultSettingsSupplier) {
+    public BiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings> defaultSettingsSupplier) {
         this.biomeId = biomeId;
         this.defaultSettingsSupplier = defaultSettingsSupplier;
     }
 
-    public BiomeSettings.Factory createDefaultSettingsFactory() {
+    public BiomeSettings createDefaultSettingsFactory() {
         return defaultSettingsSupplier.get();
     }
 
