@@ -10,7 +10,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.function.Supplier;
 
 public class IslandBiomeSettingsAdapter extends AdvancedBiomeSettingsAdapter {
-    public IslandBiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings.Island> defaultSettingsSupplier) {
+    public <TSettings extends BiomeSettings.Island> IslandBiomeSettingsAdapter(
+            ResourceLocation biomeId,
+            Supplier<TSettings> defaultSettingsSupplier
+    ) {
         super(biomeId, defaultSettingsSupplier);
     }
 

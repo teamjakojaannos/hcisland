@@ -2,22 +2,21 @@ package jakojaannos.hcisland.world.gen;
 
 import com.google.common.collect.Lists;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
+import jakojaannos.hcisland.util.json.BiomeSettingsMapTypeAdapterFactory;
 import jakojaannos.hcisland.util.json.BlockStateTypeAdapterFactory;
 import lombok.*;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class HCIslandChunkGeneratorSettings {
@@ -25,6 +24,7 @@ public class HCIslandChunkGeneratorSettings {
     @Getter private final boolean smoothBiomeEdges;
     @Getter private final boolean generateEdges;
     @Getter private final int shoreScale;
+    @Getter private final int beachSize;
     private final List<IslandRadialBiome> biomes;
     private final Map<ResourceLocation, BiomeSettings> biomeSettings;
 
@@ -32,6 +32,7 @@ public class HCIslandChunkGeneratorSettings {
         this.islandShapeFuzz = factory.islandShapeFuzz;
         this.smoothBiomeEdges = factory.smoothBiomeEdges;
         this.generateEdges = factory.generateEdges;
+        this.beachSize = factory.beachSize;
         this.shoreScale = factory.shoreScale;
         this.biomeSettings = factory.biomeSettings;
 
@@ -105,42 +106,9 @@ public class HCIslandChunkGeneratorSettings {
     public static class Factory {
         private static final Gson JSON_ADAPTER = new GsonBuilder().setLenient()
                                                                   .registerTypeAdapterFactory(new BlockStateTypeAdapterFactory())
+                                                                  .registerTypeAdapterFactory(new BiomeSettingsMapTypeAdapterFactory())
                                                                   .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-                                                                  .registerTypeAdapter(Factory.class, new FactorySerializer())
                                                                   .create();
-
-        private static class FactorySerializer implements JsonDeserializer<Factory> {
-            @Override
-            public Factory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                val result = new Factory(false);
-                val jsonObject = json.getAsJsonObject();
-                result.biomes = context.deserialize(jsonObject.getAsJsonArray("biomes"),
-                                                    new TypeToken<List<IslandRadialBiome.Factory>>() {
-                                                    }.getType());
-
-                val resultBiomeSettings = new HashMap<ResourceLocation, BiomeSettings>();
-                val biomeSettingsJson = jsonObject.getAsJsonObject("biomeSettings");
-                for (val entry : result.biomeSettings.entrySet()) {
-                    val entryJson = biomeSettingsJson.getAsJsonObject(entry.getKey().toString());
-                    BiomeSettings biomeSettings = context.deserialize(entryJson, entry.getValue().getClass());
-
-                    resultBiomeSettings.put(entry.getKey(), biomeSettings);
-                }
-                result.biomeSettings = resultBiomeSettings;
-
-                Optional.ofNullable(jsonObject.getAsJsonPrimitive("islandShapeFuzz"))
-                        .ifPresent(primitive -> result.islandShapeFuzz = primitive.getAsInt());
-                Optional.ofNullable(jsonObject.getAsJsonPrimitive("smoothBiomeEdges"))
-                        .ifPresent(primitive -> result.smoothBiomeEdges = primitive.getAsBoolean());
-                Optional.ofNullable(jsonObject.getAsJsonPrimitive("generateEdges"))
-                        .ifPresent(primitive -> result.smoothBiomeEdges = primitive.getAsBoolean());
-                Optional.ofNullable(jsonObject.getAsJsonPrimitive("shoreScale"))
-                        .ifPresent(primitive -> result.shoreScale = primitive.getAsInt());
-
-
-                return result;
-            }
-        }
 
         public static boolean hasOverrides() {
             return !HCIslandConfig.world.generatorSettingsDefaults.isEmpty();
@@ -154,6 +122,7 @@ public class HCIslandChunkGeneratorSettings {
         @Getter @Setter private boolean smoothBiomeEdges;
         @Getter @Setter private boolean generateEdges;
         @Getter @Setter private int shoreScale;
+        @Getter @Setter private int beachSize;
         @Getter @Setter private List<IslandRadialBiome.Factory> biomes;
         private Map<ResourceLocation, BiomeSettings> biomeSettings;
 
@@ -201,15 +170,9 @@ public class HCIslandChunkGeneratorSettings {
             biomes = Lists.newArrayList(
                     new IslandRadialBiome.Factory(5, true, ModBiomes.ISLAND.getRegistryName().toString()),
                     new IslandRadialBiome.Factory(12, false, ModBiomes.OCEAN.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(8, false, ModBiomes.WASTELAND.getRegistryName().toString())
+                    new IslandRadialBiome.Factory(8, false, ModBiomes.WASTELAND.getRegistryName().toString()),
+                    new IslandRadialBiome.Factory(3, false, Biomes.DESERT.getRegistryName().toString())
             );
-
-            /*biomes = Lists.newArrayList(
-                    new IslandRadialBiome.Factory(3, true, ModBiomes.ISLAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(8, false, Biomes.OCEAN.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(4, false, ModBiomes.WASTELAND.getRegistryName().toString()),
-                    new IslandRadialBiome.Factory(1, false, ModBiomes.WASTELAND_EDGE.getRegistryName().toString())
-            );*/
 
             islandShapeFuzz = 2;
             smoothBiomeEdges = true;
@@ -244,4 +207,5 @@ public class HCIslandChunkGeneratorSettings {
             biomeSettings.put(registryName, settings);
         }
     }
+
 }

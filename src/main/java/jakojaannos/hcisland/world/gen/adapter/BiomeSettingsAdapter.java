@@ -2,6 +2,7 @@ package jakojaannos.hcisland.world.gen.adapter;
 
 import jakojaannos.hcisland.client.gui.adapter.IBiomeSettingsGuiProvider;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
+import lombok.Getter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -13,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeSettingsAdapter> {
+    @Getter private final Class<? extends BiomeSettings> settingsType;
     private final Supplier<? extends BiomeSettings> defaultSettingsSupplier;
     private final ResourceLocation biomeId;
 
@@ -30,7 +32,11 @@ public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeS
         return cachedBiome;
     }
 
-    public BiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings> defaultSettingsSupplier) {
+    public <TSettings extends BiomeSettings> BiomeSettingsAdapter(
+            ResourceLocation biomeId,
+            Supplier<TSettings> defaultSettingsSupplier
+    ) {
+        this.settingsType = defaultSettingsSupplier.get().getClass();
         this.biomeId = biomeId;
         this.defaultSettingsSupplier = defaultSettingsSupplier;
     }

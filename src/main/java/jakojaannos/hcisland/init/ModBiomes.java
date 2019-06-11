@@ -26,7 +26,6 @@ public class ModBiomes {
     public static final Biome BEACH = null;
     public static final Biome OCEAN = null;
     public static final Biome WASTELAND = null;
-    public static final Biome WASTELAND_BEACH = null;
     public static final Biome WASTELAND_EDGE = null;
 
     @SubscribeEvent
@@ -36,7 +35,6 @@ public class ModBiomes {
         register(r, "beach", 0, BiomeType.WARM, new BiomeHCBeach(), Type.BEACH);
         register(r, "ocean", 0, BiomeType.WARM, new BiomeHCOcean(), Type.OCEAN, Type.DEAD);
         register(r, "wasteland", 0, BiomeType.DESERT, new BiomeHCWasteland(), Type.WASTELAND, Type.DEAD, Type.HOT);
-        register(r, "wasteland_beach", 0, BiomeType.DESERT, new BiomeHCWastelandBeach(), Type.WASTELAND, Type.BEACH);
         register(r, "wasteland_edge", 0, BiomeType.DESERT, new BiomeHCWastelandEdge(), Type.WASTELAND, Type.HOT);
     }
 
@@ -122,26 +120,6 @@ public class ModBiomes {
                                 Blocks.NETHERRACK.getDefaultState(),
                                 new BlockLayer[]{
                                         new BlockLayer(8, Blocks.NETHERRACK),
-                                },
-                                new BlockLayer[]{
-                                        new BlockLayer(2, Blocks.OBSIDIAN),
-                                        new BlockLayer(1, Blocks.SANDSTONE),
-                                        new BlockLayer(1, Blocks.HARDENED_CLAY),
-                                        new BlockLayer(2, Blocks.NETHERRACK),
-                                },
-                                true,
-                                false,
-                                true,
-                                true
-                        )),
-                new WastelandBiomeSettingsAdapter(
-                        new ResourceLocation(ModInfo.MODID, "wasteland_beach"),
-                        () -> new BiomeSettings.Wasteland(
-                                48,
-                                Blocks.WATER.getDefaultState(),
-                                Blocks.NETHERRACK.getDefaultState(),
-                                new BlockLayer[]{
-                                        new BlockLayer(16, Blocks.NETHERRACK),
                                 },
                                 new BlockLayer[]{
                                         new BlockLayer(2, Blocks.OBSIDIAN),

@@ -6,7 +6,10 @@ import net.minecraft.util.ResourceLocation;
 import java.util.function.Supplier;
 
 public class WastelandBiomeSettingsAdapter extends IslandBiomeSettingsAdapter {
-    public WastelandBiomeSettingsAdapter(ResourceLocation biomeId, Supplier<? extends BiomeSettings.Wasteland> defaultSettingsSupplier) {
+    public <TSettings extends BiomeSettings.Wasteland> WastelandBiomeSettingsAdapter(
+            ResourceLocation biomeId,
+            Supplier<TSettings> defaultSettingsSupplier
+    ) {
         super(biomeId, defaultSettingsSupplier);
     }
 }

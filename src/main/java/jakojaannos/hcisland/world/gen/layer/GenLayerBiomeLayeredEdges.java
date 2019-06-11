@@ -1,6 +1,7 @@
 package jakojaannos.hcisland.world.gen.layer;
 
 import jakojaannos.hcisland.world.biome.BiomeLayeredBase;
+import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.val;
 import lombok.var;
 import net.minecraft.init.Biomes;
@@ -15,21 +16,22 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class GenLayerBiomeLayeredEdges extends GenLayer {
-    private static final int SAMPLE_EXTENT = 1;
-
     private final GenLayer parent;
+    private final HCIslandChunkGeneratorSettings settings;
 
-    public GenLayerBiomeLayeredEdges(long seed, GenLayer parent) {
+    public GenLayerBiomeLayeredEdges(long seed, GenLayer parent, HCIslandChunkGeneratorSettings settings) {
         super(seed);
         this.parent = parent;
+        this.settings = settings;
     }
 
     @Override
     public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight) {
-        val parentSampleStartX = areaX - SAMPLE_EXTENT;
-        val parentSampleStartY = areaY - SAMPLE_EXTENT;
-        val parentSampleWidth = areaWidth + 2 * SAMPLE_EXTENT;
-        val parentSampleHeight = areaHeight + 2 * SAMPLE_EXTENT;
+        val beachSize = settings.getBeachSize();
+        val parentSampleStartX = areaX - beachSize;
+        val parentSampleStartY = areaY - beachSize;
+        val parentSampleWidth = areaWidth + 2 * beachSize;
+        val parentSampleHeight = areaHeight + 2 * beachSize;
 
         val parentValues = this.parent.getInts(parentSampleStartX, parentSampleStartY, parentSampleWidth, parentSampleHeight);
         val values = IntCache.getIntCache(areaWidth * areaHeight);
@@ -37,8 +39,8 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
         for (int y = 0; y < areaHeight; ++y) {
             for (int x = 0; x < areaWidth; ++x) {
                 this.initChunkSeed(x + areaX, y + areaY);
-                val parentX = x + SAMPLE_EXTENT;
-                val parentY = y + SAMPLE_EXTENT;
+                val parentX = x + beachSize;
+                val parentY = y + beachSize;
                 val parentBiomeId = parentValues[parentX + parentY * parentSampleWidth];
                 val parentBiome = Biome.getBiome(parentBiomeId);
                 if (parentBiome == null) {
@@ -46,8 +48,8 @@ public class GenLayerBiomeLayeredEdges extends GenLayer {
                 }
 
                 val sb = Stream.<Integer>builder();
-                for (var dy = -SAMPLE_EXTENT; dy <= SAMPLE_EXTENT; dy++) {
-                    for (var dx = -SAMPLE_EXTENT; dx <= SAMPLE_EXTENT; dx++) {
+                for (var dy = -beachSize; dy <= beachSize; dy++) {
+                    for (var dx = -beachSize; dx <= beachSize; dx++) {
                         if (dx == 0 && dy == 0) {
                             continue;
                         }

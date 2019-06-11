@@ -44,9 +44,6 @@ public class HCIslandConfig {
         public float temperatureWasteland = 1.5f;
 
         @Config.RequiresMcRestart
-        public float temperatureWastelandBeach = 1.5f;
-
-        @Config.RequiresMcRestart
         public float temperatureWastelandEdge = 1.25f;
 
         @Config.Comment("Set to true to completely disable mob spawn prevention")
