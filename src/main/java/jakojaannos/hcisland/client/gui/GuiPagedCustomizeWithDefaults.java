@@ -1,8 +1,8 @@
 package jakojaannos.hcisland.client.gui;
 
-import com.google.common.primitives.Floats;
 import lombok.val;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,11 +28,11 @@ public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustom
     public void initGui() {
         super.initGui();
 
+        val page = pages != null ? pages.getPage() : 0;
+        val scroll = pages != null ? pages.getAmountScrolled() : 0;
         createPagedList();
 
-        val page = pages != null ? pages.getPage() : 0;
         if (page != 0) {
-            val scroll = pages != null ? pages.getAmountScrolled() : 0;
             pages.setPage(page);
             pages.scrollBy(scroll);
             updatePageControls();
@@ -50,8 +50,6 @@ public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustom
     protected abstract GuiPageButtonList.GuiListEntry[][] getPages();
 
     protected abstract String[] updatePageNames();
-
-    protected abstract String getFormattedValue(int id, float value);
 
     @Override
     public void handleMouseInput() throws IOException {
@@ -97,20 +95,7 @@ public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustom
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
-
-        // Modifies text field float values using up/down arrow keys and modifier keys
-        if (getConfirmMode() == 0) {
-            switch (keyCode) {
-                case 200:
-                    modifyFocusValue(1.0f);
-                    break;
-                case 208:
-                    modifyFocusValue(-1.0f);
-                    break;
-                default:
-                    pages.onKeyPressed(typedChar, keyCode);
-            }
-        }
+        pages.onKeyPressed(typedChar, keyCode);
     }
 
     @Override
@@ -167,38 +152,5 @@ public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustom
 
         pageNames = updatePageNames();
         updatePageControls();
-    }
-
-    private void modifyFocusValue(float multiplier) {
-        Gui gui = pages.getFocusedControl();
-
-        if (gui instanceof GuiTextField) {
-            float modifier = multiplier;
-
-            if (GuiScreen.isShiftKeyDown()) {
-                modifier *= 0.1f;
-
-                if (GuiScreen.isCtrlKeyDown()) {
-                    modifier *= 0.1f;
-                }
-            } else if (isCtrlKeyDown()) {
-                modifier *= 10.0f;
-
-                if (GuiScreen.isAltKeyDown()) {
-                    modifier *= 10.0f;
-                }
-            }
-
-            GuiTextField textField = (GuiTextField) gui;
-            Float value = Floats.tryParse(textField.getText());
-
-            if (value != null) {
-                value += modifier;
-                int id = textField.getId();
-                String formatted = getFormattedValue(id, value);
-                textField.setText(formatted);
-                setEntryValue(id, formatted);
-            }
-        }
     }
 }

@@ -26,6 +26,8 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
             Consumer<List<HCIslandChunkGeneratorSettings.IslandRadialBiome>> settingsApplier
     ) {
         super(defaultSettingsSupplier, settingsApplier);
+        this.title = I18n.format("createWorld.customize.hcisland.radial.title");
+        this.subtitle = I18n.format("createWorld.customize.hcisland.radial.subtitle");
         this.parent = parent;
         this.settings = parent.settings.getBiomes();
     }
@@ -37,8 +39,19 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     @Override
     protected void createButtons() {
         super.createButtons();
-        add = addButton(new GuiButton(idCounter++, width / 2 + 98, height - 27 - 25, 90, 20, I18n.format("createWorld.customize.hcisland.biome.add")));
-        settingsList = new RadialBiomeSettingsList(idCounter, this, width, height, 32, height - 64, 36);
+        add = addButton(new GuiButton(idCounter++,
+                                      width / 2 + 98,
+                                      height - 27 - 25,
+                                      90,
+                                      20,
+                                      I18n.format("createWorld.customize.hcisland.radial.add")));
+        settingsList = new RadialBiomeSettingsList(idCounter,
+                                                   this,
+                                                   width,
+                                                   height,
+                                                   32,
+                                                   height - 64,
+                                                   36);
         settingsList.updateEntries(settings);
     }
 

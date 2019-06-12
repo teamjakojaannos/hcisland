@@ -332,7 +332,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             updatePosition(slotIndex, x, y, partialTicks);
 
             val biomeDisplayName = biomeName != null ? biomeName : "ERROR";
-            mc.fontRenderer.drawString(String.format("Biome: %s, radius: %d", biomeDisplayName, info.getRadius()), x + 32 + 3, y + 1, 16777215);
+            mc.fontRenderer.drawString(I18n.format("createWorld.customize.hcisland.radial.entry", biomeDisplayName, info.getRadius()), x + 32 + 3, y + 1, 16777215);
 
             mc.getTextureManager().bindTexture(SERVER_SELECTION_BUTTONS);
 
@@ -411,7 +411,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
             val selected = info.isSpawn()
                     ? I18n.format("gui.yes")
                     : I18n.format("gui.no");
-            spawn.displayString = I18n.format("createWorld.customize.hcisland.radial.spawn", selected);
+            spawn.displayString = I18n.format("createWorld.customize.hcisland.radial.field.spawn", selected);
         }
     }
 }

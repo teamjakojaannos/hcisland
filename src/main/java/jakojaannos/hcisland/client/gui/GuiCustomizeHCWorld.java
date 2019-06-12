@@ -8,7 +8,6 @@ import lombok.val;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiPageButtonList;
-import net.minecraft.client.gui.GuiSlider;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,10 +20,16 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @SideOnly(Side.CLIENT)
-public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandChunkGeneratorSettings> implements GuiSlider.FormatHelper, GuiPageButtonList.GuiResponder {
+public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandChunkGeneratorSettings> implements GuiPageButtonList.GuiResponder {
     private final GuiCreateWorld parent;
 
     private GuiButton clipboard;
+
+    private int idIslandShapeFuzz = -1;
+    private int idSmoothEdges = -1;
+    private int idGenerateEdges = -1;
+    private int idShoreScale = -1;
+    private int idBeachSize = -1;
 
     public GuiCustomizeHCWorld(GuiCreateWorld parent, @Nullable String preset, Consumer<HCIslandChunkGeneratorSettings> settingsApplier) {
         super(GeneratorSettingsHelper::createOverriddenDefaults, settingsApplier);
@@ -72,19 +77,59 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
     private GuiPageButtonList.GuiListEntry[] createGeneralPage() {
         return new GuiPageButtonList.GuiListEntry[]{
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
-                                                    "Nothing at the moment :c",
+                                                    I18n.format("createWorld.customize.hcisland.general.field.islandShapeFuzz"),
                                                     true),
-                null
+                new GuiPageButtonList.GuiSlideEntry(idIslandShapeFuzz = idCounter++,
+                                                    "",
+                                                    true,
+                                                    (id, name, value) -> String.valueOf((int) value),
+                                                    0,
+                                                    4,
+                                                    settings.getIslandShapeFuzz()),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.general.field.smoothBiomeEdges"),
+                                                    true),
+                new GuiPageButtonList.GuiButtonEntry(idSmoothEdges = idCounter++,
+                                                     I18n.format("createWorld.customize.hcisland.enabled"),
+                                                     true,
+                                                     settings.isSmoothBiomeEdges()),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.general.field.generateEdges"),
+                                                    true),
+                new GuiPageButtonList.GuiButtonEntry(idGenerateEdges = idCounter++,
+                                                     I18n.format("createWorld.customize.hcisland.enabled"),
+                                                     true,
+                                                     settings.isGenerateEdges()),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.general.field.shoreScale"),
+                                                    true),
+                new GuiPageButtonList.GuiSlideEntry(idShoreScale = idCounter++,
+                                                    "",
+                                                    true,
+                                                    (id, name, value) -> String.valueOf((int) value),
+                                                    0,
+                                                    4,
+                                                    settings.getShoreScale()),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.general.field.beachSize"),
+                                                    true),
+                new GuiPageButtonList.GuiSlideEntry(idBeachSize = idCounter++,
+                                                    "",
+                                                    true,
+                                                    (id, name, value) -> String.valueOf((int) value),
+                                                    0,
+                                                    3,
+                                                    settings.getBeachSize()),
         };
     }
 
     private GuiPageButtonList.GuiListEntry[] createRadialPage() {
         return new GuiPageButtonList.GuiListEntry[]{
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
-                                                    "Edit biomes",
+                                                    I18n.format("createWorld.customize.hcisland.radial.openEditorLabel"),
                                                     true),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
-                                                                   "Open Editor",
+                                                                   I18n.format("createWorld.customize.hcisland.openEditorButtonText"),
                                                                    true,
                                                                    () -> mc.displayGuiScreen(new GuiCustomizeRadialBiomes(this,
                                                                                                                           () -> defaultSettingsSupplier.get().getBiomes(),
@@ -107,7 +152,7 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
                                                     adapter.getBiome().getBiomeName(),
                                                     false),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
-                                                                   "createWorld.customize.hcisland.field.biome.edit",
+                                                                   "createWorld.customize.hcisland.biome.edit",
                                                                    false,
                                                                    () -> openBiomeEditor(adapter))
         );
@@ -128,24 +173,26 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
 
     @Override
     public void setEntryValue(int id, float value) {
+        if (id == idIslandShapeFuzz) {
+            settings.setIslandShapeFuzz((int) value);
+        } else if (id == idShoreScale) {
+            settings.setShoreScale((int) value);
+        } else if (id == idBeachSize) {
+            settings.setBeachSize((int) value);
+        }
+
         checkSettingsModified();
     }
 
     @Override
     public void setEntryValue(int id, boolean value) {
+        if (id == idSmoothEdges) {
+            settings.setSmoothBiomeEdges(value);
+        } else if (id == idGenerateEdges) {
+            settings.setGenerateEdges(value);
+        }
+
         checkSettingsModified();
-    }
-
-
-    @Override
-    public String getText(int id, String name, float value) {
-        return getFormattedValue(id, value);
-    }
-
-    @Override
-    protected String getFormattedValue(int id, float value) {
-        // TODO: Select by id
-        return String.format("%d", (int) value);
     }
 
 

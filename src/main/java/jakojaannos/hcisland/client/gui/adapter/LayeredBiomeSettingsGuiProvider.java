@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
-public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings> implements IBiomeSettingsGuiProvider<TSettings> {
+public class LayeredBiomeSettingsGuiProvider<TSettings extends BiomeSettings> implements IBiomeSettingsGuiProvider<TSettings> {
     private int idSeaLevel = -1;
     private int idOceanBlock = -1;
     private int idStoneBlock = -1;
@@ -25,14 +25,14 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings> i
     public List<GuiPageButtonList.GuiListEntry> createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, Supplier<TSettings> defaultSettingsSupplier) {
         return Lists.newArrayList(
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
-                                                    I18n.format("createWorld.customize.hcisland.field.biome.stoneBlock"),
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.stoneBlock"),
                                                     true),
                 new GuiPageButtonList.EditBoxEntry(idStoneBlock = idCounter++,
                                                    settings.stoneBlock.getBlock().getRegistryName().toString(),
                                                    true,
                                                    s -> true),
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
-                                                    I18n.format("createWorld.customize.hcisland.field.biome.seaLevel"),
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.seaLevel"),
                                                     true),
                 new GuiPageButtonList.GuiSlideEntry(idSeaLevel = idCounter++,
                                                     "",
@@ -41,18 +41,24 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings> i
                                                     1, 64,
                                                     settings.seaLevel),
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
-                                                    I18n.format("createWorld.customize.hcisland.field.biome.oceanBlock"),
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.oceanBlock"),
                                                     true),
                 new GuiPageButtonList.EditBoxEntry(idOceanBlock = idCounter++,
                                                    settings.oceanBlock.getBlock().getRegistryName().toString(),
                                                    true,
                                                    s -> true),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.layers"),
+                                                    true),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
-                                                                   "createWorld.customize.hcisland.field.biome.layers",
+                                                                   "createWorld.customize.hcisland.openEditorButtonText",
                                                                    true,
                                                                    () -> openLayersEditor(screen, settings, defaultSettingsSupplier, false)),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.layersUnderwater"),
+                                                    true),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
-                                                                   "createWorld.customize.hcisland.field.biome.layersUnderwater",
+                                                                   "createWorld.customize.hcisland.openEditorButtonText",
                                                                    true,
                                                                    () -> openLayersEditor(screen, settings, defaultSettingsSupplier, true))
         );

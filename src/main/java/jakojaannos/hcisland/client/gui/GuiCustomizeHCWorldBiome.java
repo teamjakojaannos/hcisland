@@ -46,11 +46,6 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
     }
 
     @Override
-    protected String getFormattedValue(int id, float value) {
-        return String.valueOf(value);
-    }
-
-    @Override
     protected GuiPageButtonList.GuiListEntry[][] getPages() {
         List<GuiPageButtonList.GuiListEntry> list = guiProvider.createPage(this, idCounter, settings, defaultSettingsSupplier);
         val result = new GuiPageButtonList.GuiListEntry[][]{

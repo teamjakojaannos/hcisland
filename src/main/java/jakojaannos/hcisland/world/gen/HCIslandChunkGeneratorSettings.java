@@ -1,10 +1,8 @@
 package jakojaannos.hcisland.world.gen;
 
 import com.google.common.collect.Lists;
-import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
-import jakojaannos.hcisland.util.world.gen.GeneratorSettingsHelper;
 import lombok.*;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
@@ -18,11 +16,11 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor()
 public class HCIslandChunkGeneratorSettings {
-    @Getter private int islandShapeFuzz = 2;
-    @Getter private boolean smoothBiomeEdges = true;
-    @Getter private boolean generateEdges = true;
-    @Getter private int shoreScale = 2;
-    @Getter private int beachSize = 1;
+    @Getter @Setter private int islandShapeFuzz = 2;
+    @Getter @Setter private boolean smoothBiomeEdges = true;
+    @Getter @Setter private boolean generateEdges = true;
+    @Getter @Setter private int shoreScale = 2;
+    @Getter @Setter private int beachSize = 1;
     @Getter @Setter private List<IslandRadialBiome> biomes = Lists.newArrayList(
             new IslandRadialBiome(6, true, ModBiomes.ISLAND.getRegistryName()),
             new IslandRadialBiome(8, false, ModBiomes.OCEAN.getRegistryName()),

@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Island> extends AdvancedBiomeSettingsGuiProvider<TSettings> {
+public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Island> extends LayeredBiomeSettingsGuiProvider<TSettings> {
     private int idGenerateFalls = -1;
     private int idGenerateLakes = -1;
     private int idGenerateLakesLava = -1;
@@ -21,16 +21,25 @@ public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Isla
         idCounter += list.size();
 
         list.addAll(Arrays.asList(
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.generateFalls"),
+                                                    true),
                 new GuiPageButtonList.GuiButtonEntry(idGenerateFalls = idCounter++,
-                                                     I18n.format("createWorld.customize.hcisland.field.biome.generateFalls"),
+                                                     I18n.format("createWorld.customize.hcisland.enabled"),
                                                      true,
                                                      settings.generateFalls),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.generateLakes"),
+                                                    true),
                 new GuiPageButtonList.GuiButtonEntry(idGenerateLakes = idCounter++,
-                                                     I18n.format("createWorld.customize.hcisland.field.biome.generateLakes"),
+                                                     I18n.format("createWorld.customize.hcisland.enabled"),
                                                      true,
                                                      settings.generateLakes),
+                new GuiPageButtonList.GuiLabelEntry(idCounter++,
+                                                    I18n.format("createWorld.customize.hcisland.biome.field.generateLakesLava"),
+                                                    true),
                 new GuiPageButtonList.GuiButtonEntry(idGenerateLakesLava = idCounter++,
-                                                     I18n.format("createWorld.customize.hcisland.field.biome.generateLakesLava"),
+                                                     I18n.format("createWorld.customize.hcisland.enabled"),
                                                      true,
                                                      settings.generateLakesLava)
         ));
