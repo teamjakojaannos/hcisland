@@ -1,8 +1,8 @@
 package jakojaannos.hcisland.event.handler;
 
+import jakojaannos.hcisland.util.world.gen.GeneratorSettingsHelper;
 import jakojaannos.hcisland.world.WorldTypeHCIsland;
 import jakojaannos.hcisland.world.biome.BiomeProviderHCIsland;
-import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import lombok.var;
@@ -32,7 +32,7 @@ public class SpawnPointEventHandler {
         val worldServer = (WorldServer) event.getWorld();
         val provider = worldServer.provider;
         val biomeProvider = (BiomeProviderHCIsland) worldServer.getBiomeProvider();
-        val settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(event.getSettings().getGeneratorOptions()).build();
+        val settings = GeneratorSettingsHelper.fromJson(event.getSettings().getGeneratorOptions());
 
         worldServer.findingSpawnPoint = true;
 

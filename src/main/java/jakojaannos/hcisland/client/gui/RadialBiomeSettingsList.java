@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 public class RadialBiomeSettingsList extends GuiListExtended {
     private static final ResourceLocation SERVER_SELECTION_BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
 
-    private static final int SCROLLBAR_OFFSET = 16;
-    private static final int LIST_EXTRA_WIDTH = 180;
     private static final int ENTRY_CONTROL_OFFSET = 10;
     private static final int BUTTON_MARGIN = 2;
     private static final int SMALL_BUTTON_SIZE = 16;
@@ -86,10 +84,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                              .collect(Collectors.toList());
 
         for (val removedEntry : removed) {
-            owner.removeButton(removedEntry.remove);
-            owner.removeButton(removedEntry.increaseRadius);
-            owner.removeButton(removedEntry.decreaseRadius);
-            owner.removeButton(removedEntry.spawn);
+            removeEntry(removedEntry);
             entries.remove(removedEntry);
         }
     }
@@ -113,11 +108,18 @@ public class RadialBiomeSettingsList extends GuiListExtended {
         }
     }
 
-
-    public void updateEntries(List<HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory> settings) {
+    public void updateEntries(List<HCIslandChunkGeneratorSettings.IslandRadialBiome> settings) {
+        entries.forEach(this::removeEntry);
         entries = settings.stream()
                           .map(Entry::new)
                           .collect(Collectors.toList());
+    }
+
+    private void removeEntry(Entry removedEntry) {
+        owner.removeButton(removedEntry.remove);
+        owner.removeButton(removedEntry.increaseRadius);
+        owner.removeButton(removedEntry.decreaseRadius);
+        owner.removeButton(removedEntry.spawn);
     }
 
     private boolean canMoveDown(int slotIndex) {
@@ -158,11 +160,11 @@ public class RadialBiomeSettingsList extends GuiListExtended {
     }
 
     public void addEntry() {
-        entries.add(new Entry(new HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory(3, false, "minecraft:forest")));
+        entries.add(new Entry(new HCIslandChunkGeneratorSettings.IslandRadialBiome(3, false, new ResourceLocation("minecraft:forest"))));
     }
 
     public class Entry implements IGuiListEntry, GuiPageButtonList.GuiResponder {
-        @Getter private HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory info;
+        @Getter private HCIslandChunkGeneratorSettings.IslandRadialBiome info;
         private String biomeName = null;
         private boolean removed = false;
 
@@ -173,7 +175,7 @@ public class RadialBiomeSettingsList extends GuiListExtended {
         private final GuiButton spawn;
         private final GuiTextField biome;
 
-        public Entry(HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory info) {
+        public Entry(HCIslandChunkGeneratorSettings.IslandRadialBiome info) {
             this.info = info;
 
             remove = addButton(new GuiButtonExt(idCounter++,
@@ -224,8 +226,8 @@ public class RadialBiomeSettingsList extends GuiListExtended {
                                      SMALL_BUTTON_SIZE);
             biome.setGuiResponder(this);
 
-            biome.setText(info.getBiomeId());
-            setEntryValue(biome.getId(), info.getBiomeId());
+            biome.setText(info.getBiomeId().toString());
+            setEntryValue(biome.getId(), info.getBiomeId().toString());
 
             radius.setSliderValue(info.getRadius(), false);
         }
@@ -237,10 +239,11 @@ public class RadialBiomeSettingsList extends GuiListExtended {
         @Override
         public void setEntryValue(int id, String value) {
             if (id == biome.getId()) {
-                info.setBiomeId(value);
+                val biomeId = new ResourceLocation(value.toLowerCase().trim());
+                info.setBiomeId(biomeId);
                 biomeName = null;
 
-                val registryBiome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(value.toLowerCase().trim()));
+                val registryBiome = ForgeRegistries.BIOMES.getValue(biomeId);
                 if (registryBiome != null) {
                     biomeName = registryBiome.getBiomeName();
                 }

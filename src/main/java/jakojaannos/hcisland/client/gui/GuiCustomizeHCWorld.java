@@ -1,8 +1,9 @@
 package jakojaannos.hcisland.client.gui;
 
 import jakojaannos.hcisland.init.ModRegistries;
-import jakojaannos.hcisland.world.gen.adapter.BiomeSettingsAdapter;
+import jakojaannos.hcisland.util.world.gen.GeneratorSettingsHelper;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
+import jakojaannos.hcisland.world.gen.adapter.BiomeSettingsAdapter;
 import lombok.val;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
@@ -16,40 +17,25 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-// TODO: Pages:
-//        1. general settings: lava ocean block override, sea level override, bedrock level etc.
-//        2. radial biomes
-//        3. biome settings page (see below)
-
-// TODO: Add single page with buttons for each customizable biome
-//       - Iterate biome adapter registry and create page for each
-//       - Adapter needs to be able to provide GUI elements on client-side
-//       - Chunk generator settings needs to accommodate to possible changes by:
-//          1. WorldTypeHCIsland#getBiomeProvider needs to apply changes to all biomes in the world using adapters
-//          2. settings themselves need to be updated according to adapters (need entries for all biomes)
-//          3. biomes themselves need some way of identifying their own entry from settings (probably hashmap by biome registry name)
-
 @SideOnly(Side.CLIENT)
-public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandChunkGeneratorSettings.Factory> implements GuiSlider.FormatHelper, GuiPageButtonList.GuiResponder {
+public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandChunkGeneratorSettings> implements GuiSlider.FormatHelper, GuiPageButtonList.GuiResponder {
     private final GuiCreateWorld parent;
 
     private GuiButton clipboard;
 
-    public GuiCustomizeHCWorld(GuiCreateWorld parent, @Nullable String preset) {
+    public GuiCustomizeHCWorld(GuiCreateWorld parent, @Nullable String preset, Consumer<HCIslandChunkGeneratorSettings> settingsApplier) {
+        super(GeneratorSettingsHelper::createOverriddenDefaults, settingsApplier);
         this.parent = parent;
 
         this.title = "Customize World Settings";
         this.subtitle = "Page 1 of many";
 
-        this.defaultSettings = new HCIslandChunkGeneratorSettings.Factory(true);
-
-        if (preset != null && !preset.isEmpty()) {
-            settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(preset);
-        } else {
-            settings = new HCIslandChunkGeneratorSettings.Factory(true);
-        }
+        this.settings = (preset != null && !preset.isEmpty())
+                ? GeneratorSettingsHelper.fromJson(preset)
+                : GeneratorSettingsHelper.createOverriddenDefaults();
     }
 
     @Override
@@ -62,10 +48,6 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
     protected void createButtons() {
         super.createButtons();
         clipboard = addButton(new GuiButton(idCounter++, width / 2 - 92, height - 27, 185, 20, I18n.format("createWorld.customize.hcisland.clipboard")));
-    }
-
-    private String saveValues() {
-        return HCIslandChunkGeneratorSettings.Factory.toJson(settings).replace("\n", "");
     }
 
     @Override
@@ -104,7 +86,9 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
                                                                    "Open Editor",
                                                                    true,
-                                                                   () -> mc.displayGuiScreen(new GuiCustomizeRadialBiomes(this)))
+                                                                   () -> mc.displayGuiScreen(new GuiCustomizeRadialBiomes(this,
+                                                                                                                          () -> defaultSettingsSupplier.get().getBiomes(),
+                                                                                                                          s -> settings.setBiomes(s))))
         };
     }
 
@@ -133,26 +117,23 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
         mc.displayGuiScreen(new GuiCustomizeHCWorldBiome(this,
                                                          adapter,
                                                          settings.getSettingsFor(adapter.getBiome().getRegistryName()),
-                                                         () -> {
-                                                             // FIXME: This is not really a sensible way of doing this
-                                                             val defaults = new HCIslandChunkGeneratorSettings.Factory(true);
-                                                             return defaults.getSettingsFor(adapter.getBiome().getRegistryName());
-                                                         }));
+                                                         () -> defaultSettingsSupplier.get().getSettingsFor(adapter.getBiome().getRegistryName()),
+                                                         s -> settings.setSettingsFor(adapter.getBiome().getRegistryName(), s)));
     }
 
     @Override
     public void setEntryValue(int id, String valueStr) {
-        setSettingsModified(!settings.equals(defaultSettings));
+        checkSettingsModified();
     }
 
     @Override
     public void setEntryValue(int id, float value) {
-        setSettingsModified(!settings.equals(defaultSettings));
+        checkSettingsModified();
     }
 
     @Override
     public void setEntryValue(int id, boolean value) {
-        setSettingsModified(!settings.equals(defaultSettings));
+        checkSettingsModified();
     }
 
 
@@ -177,20 +158,14 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
         }
 
         if (button.id == clipboard.id) {
-            setClipboardString(saveValues());
+            setClipboardString(GeneratorSettingsHelper.toJson(settings).replace("\n", ""));
         }
     }
 
     @Override
     protected void onDonePressed() {
-        parent.chunkProviderSettingsJson = saveValues();
+        super.onDonePressed();
         mc.displayGuiScreen(parent);
-    }
-
-    @Override
-    protected void restoreDefaults() {
-        settings.setDefaults();
-        super.restoreDefaults();
     }
 
     @Override

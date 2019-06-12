@@ -10,6 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
@@ -18,21 +19,19 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
     private final BiomeSettingsAdapter adapter;
     private final IBiomeSettingsGuiProvider guiProvider;
 
-    private final Supplier<BiomeSettings> defaultSettingsSupplier;
-
     public GuiCustomizeHCWorldBiome(
             GuiCustomizeHCWorld parent,
             BiomeSettingsAdapter adapter,
             BiomeSettings settings,
-            Supplier<BiomeSettings> defaultSettingsSupplier
+            Supplier<BiomeSettings> defaultSettingsSupplier,
+            Consumer<BiomeSettings> settingsApplier
     ) {
+        super(defaultSettingsSupplier, settingsApplier);
         this.parent = parent;
         this.adapter = adapter;
-        this.defaultSettingsSupplier = defaultSettingsSupplier;
         this.guiProvider = adapter.createGuiProvider();
 
         this.settings = settings;
-        this.defaultSettings = defaultSettingsSupplier.get();
     }
 
     @Override
@@ -53,7 +52,7 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
 
     @Override
     protected GuiPageButtonList.GuiListEntry[][] getPages() {
-        List<GuiPageButtonList.GuiListEntry> list = guiProvider.createPage(this, idCounter, settings, defaultSettings);
+        List<GuiPageButtonList.GuiListEntry> list = guiProvider.createPage(this, idCounter, settings, defaultSettingsSupplier);
         val result = new GuiPageButtonList.GuiListEntry[][]{
                 list.toArray(new GuiPageButtonList.GuiListEntry[0])
         };
@@ -64,31 +63,25 @@ public class GuiCustomizeHCWorldBiome extends GuiPagedCustomizeWithDefaults<Biom
 
     @Override
     public void setEntryValue(int id, boolean value) {
-        guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
-        setSettingsModified(!settings.equals(defaultSettings));
+        guiProvider.setEntryValue(this, id, value, settings);
+        checkSettingsModified();
     }
 
     @Override
     public void setEntryValue(int id, float value) {
-        guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
-        setSettingsModified(!settings.equals(defaultSettings));
+        guiProvider.setEntryValue(this, id, value, settings);
+        checkSettingsModified();
     }
 
     @Override
     public void setEntryValue(int id, String value) {
-        guiProvider.setEntryValue(this, id, value, settings, defaultSettings);
-        setSettingsModified(!settings.equals(defaultSettings));
+        guiProvider.setEntryValue(this, id, value, settings);
+        checkSettingsModified();
     }
 
     @Override
     protected void onDonePressed() {
-        parent.settings.updateBiomeSettingsFor(adapter.getBiome().getRegistryName(), settings);
+        super.onDonePressed();
         mc.displayGuiScreen(parent);
-    }
-
-    @Override
-    protected void restoreDefaults() {
-        settings = defaultSettingsSupplier.get();
-        super.restoreDefaults();
     }
 }

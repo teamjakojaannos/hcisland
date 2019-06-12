@@ -2,6 +2,7 @@ package jakojaannos.hcisland.world;
 
 import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorld;
 import jakojaannos.hcisland.init.ModRegistries;
+import jakojaannos.hcisland.util.world.gen.GeneratorSettingsHelper;
 import jakojaannos.hcisland.world.biome.BiomeProviderHCIsland;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.Getter;
@@ -40,12 +41,14 @@ public class WorldTypeHCIsland extends WorldType {
     @SideOnly(Side.CLIENT)
     @Override
     public void onCustomizeButton(net.minecraft.client.Minecraft mc, net.minecraft.client.gui.GuiCreateWorld guiCreateWorld) {
-        mc.displayGuiScreen(new GuiCustomizeHCWorld(guiCreateWorld, guiCreateWorld.chunkProviderSettingsJson));
+        mc.displayGuiScreen(new GuiCustomizeHCWorld(guiCreateWorld,
+                                                    guiCreateWorld.chunkProviderSettingsJson,
+                                                    s -> guiCreateWorld.chunkProviderSettingsJson = GeneratorSettingsHelper.toJson(s)));
     }
 
     @Override
     public BiomeProvider getBiomeProvider(World world) {
-        this.settings = HCIslandChunkGeneratorSettings.Factory.jsonToFactory(world.getWorldInfo().getGeneratorOptions()).build();
+        this.settings = GeneratorSettingsHelper.fromJson(world.getWorldInfo().getGeneratorOptions());
 
         if (!world.isRemote) {
             ModRegistries.BIOME_ADAPTERS.getValuesCollection()

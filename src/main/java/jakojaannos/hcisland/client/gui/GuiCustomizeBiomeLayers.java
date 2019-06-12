@@ -2,7 +2,6 @@ package jakojaannos.hcisland.client.gui;
 
 import jakojaannos.hcisland.util.BlockHelper;
 import jakojaannos.hcisland.world.biome.BlockLayer;
-import jakojaannos.hcisland.world.gen.BiomeSettings;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -12,14 +11,17 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonList.GuiResponder {
     private final GuiCustomizeHCWorldBiome parent;
-    private final BiomeSettings config;
-    private final BiomeSettings defaultConfig;
+    private final Supplier<BlockLayer[]> defaultSettingsSupplier;
+    private final Consumer<BlockLayer[]> settingsApplier;
     private final boolean underwater;
+
+    private BlockLayer[] settings;
 
     private GuiLayerList layerList;
     private GuiButton done;
@@ -29,10 +31,17 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
     private Gui focused;
     private int idCounter;
 
-    public GuiCustomizeBiomeLayers(GuiCustomizeHCWorldBiome parent, BiomeSettings config, BiomeSettings defaultConfig, boolean underwater) {
+    public GuiCustomizeBiomeLayers(
+            GuiCustomizeHCWorldBiome parent,
+            BlockLayer[] settings,
+            Supplier<BlockLayer[]> defaultSettingsSupplier,
+            Consumer<BlockLayer[]> settingsApplier,
+            boolean underwater
+    ) {
         this.parent = parent;
-        this.config = config;
-        this.defaultConfig = defaultConfig;
+        this.settings = settings;
+        this.defaultSettingsSupplier = defaultSettingsSupplier;
+        this.settingsApplier = settingsApplier;
         this.underwater = underwater;
     }
 
@@ -47,13 +56,22 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
         idCounter = 3;
 
         layerList = new GuiLayerList(mc, width, height, 32, height - 32, 25);
-        for (BlockLayer blockLayer : underwater ? config.layersUnderwater : config.layers) {
+        updateEntries();
+    }
+
+    private void updateEntries() {
+        for (val entry : layerList.entries) {
+            entry.remove();
+        }
+        layerList.entries.clear();
+
+        for (val blockLayer : settings) {
             layerList.addEntry(blockLayer.getDepth(), blockLayer.getBlock().getBlock().getRegistryName().toString());
         }
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 0:
                 applyChanges();
@@ -83,11 +101,7 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
                                                                            Blocks.STONE.getDefaultState(),
                                                                            entry.getBlock())))
                                       .toArray(BlockLayer[]::new);
-        if (underwater) {
-            config.layersUnderwater = layers;
-        } else {
-            config.layers = layers;
-        }
+        settingsApplier.accept(layers);
     }
 
     private void addEntry() {
@@ -95,11 +109,8 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
     }
 
     private void restoreDefaults() {
-        if (underwater) {
-            config.layers = Arrays.copyOf(defaultConfig.layers, defaultConfig.layers.length);
-        } else {
-            config.layersUnderwater = Arrays.copyOf(defaultConfig.layersUnderwater, defaultConfig.layersUnderwater.length);
-        }
+        settings = defaultSettingsSupplier.get();
+        updateEntries();
     }
 
     @Override
@@ -211,9 +222,13 @@ public class GuiCustomizeBiomeLayers extends GuiScreen implements GuiPageButtonL
         private void actionPerformed(GuiButton button) {
             if (button.id == remove.id) {
                 layerList.entries.remove(this);
-                buttonList.remove(remove);
-                buttonList.remove(depth);
+                remove();
             }
+        }
+
+        private void remove() {
+            buttonList.remove(remove);
+            buttonList.remove(depth);
         }
 
         @Override

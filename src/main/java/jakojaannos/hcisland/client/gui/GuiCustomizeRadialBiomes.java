@@ -9,21 +9,28 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
-public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIslandChunkGeneratorSettings.IslandRadialBiome.Factory>> {
+public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIslandChunkGeneratorSettings.IslandRadialBiome>> {
     private final GuiCustomizeHCWorld parent;
     private RadialBiomeSettingsList settingsList;
 
     private GuiButton add;
 
-    public GuiCustomizeRadialBiomes(GuiCustomizeHCWorld parent) {
+    public GuiCustomizeRadialBiomes(
+            GuiCustomizeHCWorld parent,
+            Supplier<List<HCIslandChunkGeneratorSettings.IslandRadialBiome>> defaultSettingsSupplier,
+            Consumer<List<HCIslandChunkGeneratorSettings.IslandRadialBiome>> settingsApplier
+    ) {
+        super(defaultSettingsSupplier, settingsApplier);
         this.parent = parent;
         this.settings = parent.settings.getBiomes();
     }
 
-    public  <T extends GuiButton> T addButton(T button) {
+    public <T extends GuiButton> T addButton(T button) {
         return super.addButton(button);
     }
 
@@ -31,7 +38,7 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     protected void createButtons() {
         super.createButtons();
         add = addButton(new GuiButton(idCounter++, width / 2 + 98, height - 27 - 25, 90, 20, I18n.format("createWorld.customize.hcisland.biome.add")));
-        settingsList = new RadialBiomeSettingsList(idCounter,this, width, height, 32, height - 64, 36);
+        settingsList = new RadialBiomeSettingsList(idCounter, this, width, height, 32, height - 64, 36);
         settingsList.updateEntries(settings);
     }
 
@@ -93,7 +100,7 @@ public class GuiCustomizeRadialBiomes extends GuiCustomizeWithDefaults<List<HCIs
     @Override
     protected void restoreDefaults() {
         super.restoreDefaults();
-        // TODO
+        settingsList.updateEntries(settings);
     }
 
     @Override

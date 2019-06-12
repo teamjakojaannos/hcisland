@@ -8,6 +8,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
 public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustomizeWithDefaults<TSettings> implements GuiPageButtonList.GuiResponder {
@@ -17,6 +19,10 @@ public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustom
     private ExtendedGuiPageButtonList pages;
     private GuiButton previousPage;
     private GuiButton nextPage;
+
+    public GuiPagedCustomizeWithDefaults(Supplier<TSettings> defaultSettingsSupplier, Consumer<TSettings> settingsApplier) {
+        super(defaultSettingsSupplier, settingsApplier);
+    }
 
     @Override
     public void initGui() {
@@ -121,8 +127,8 @@ public abstract class GuiPagedCustomizeWithDefaults<TSettings> extends GuiCustom
 
     @Override
     protected void restoreDefaults() {
-        createPagedList();
         super.restoreDefaults();
+        createPagedList();
     }
 
     @Override

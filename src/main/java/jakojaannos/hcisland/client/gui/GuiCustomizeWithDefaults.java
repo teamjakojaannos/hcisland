@@ -13,14 +13,17 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
 public abstract class GuiCustomizeWithDefaults<TSettings> extends GuiScreen {
     protected String title = "Customize screen with defaults";
     protected String subtitle = "This is a subtitle";
 
+    protected final Supplier<TSettings> defaultSettingsSupplier;
+    protected final Consumer<TSettings> settingsApplier;
     protected TSettings settings;
-    protected TSettings defaultSettings;
     protected int idCounter;
 
     private GuiButton done;
@@ -28,18 +31,27 @@ public abstract class GuiCustomizeWithDefaults<TSettings> extends GuiScreen {
     private GuiButton confirm;
     private GuiButton cancel;
 
+    private final TSettings defaultSettings;
     private boolean dirty;
     @Getter(AccessLevel.PROTECTED) private int confirmMode;
     @Getter(AccessLevel.PROTECTED) private boolean confirmDismissed;
 
-    protected abstract void onDonePressed();
+    protected GuiCustomizeWithDefaults(Supplier<TSettings> defaultSettingsSupplier, Consumer<TSettings> settingsApplier) {
+        this.defaultSettingsSupplier = defaultSettingsSupplier;
+        this.defaultSettings = defaultSettingsSupplier.get();
+        this.settingsApplier = settingsApplier;
+    }
+
+    protected void onDonePressed() {
+        settingsApplier.accept(settings);
+    }
 
     @Override
     public void initGui() {
         buttonList.clear();
         createButtons();
 
-        setSettingsModified(!settings.equals(defaultSettings));
+        checkSettingsModified();
     }
 
     protected void createButtons() {
@@ -138,16 +150,17 @@ public abstract class GuiCustomizeWithDefaults<TSettings> extends GuiScreen {
         drawDefaultBackground();
     }
 
-    protected void setSettingsModified(boolean modified) {
-        dirty = modified;
+    protected void checkSettingsModified() {
+        dirty = !settings.equals(defaultSettings);
 
         if (defaults != null) {
-            defaults.enabled = modified;
+            defaults.enabled = dirty;
         }
     }
 
     protected void restoreDefaults() {
-        setSettingsModified(false);
+        settings = defaultSettingsSupplier.get();
+        checkSettingsModified();
     }
 
     private void enterConfirmation(int mode) {

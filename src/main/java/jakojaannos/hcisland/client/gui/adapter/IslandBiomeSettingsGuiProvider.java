@@ -8,6 +8,7 @@ import net.minecraft.client.resources.I18n;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Island> extends AdvancedBiomeSettingsGuiProvider<TSettings> {
     private int idGenerateFalls = -1;
@@ -15,8 +16,8 @@ public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Isla
     private int idGenerateLakesLava = -1;
 
     @Override
-    public List<GuiPageButtonList.GuiListEntry> createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, TSettings defaultSettings) {
-        val list = super.createPage(screen, idCounter, settings, defaultSettings);
+    public List<GuiPageButtonList.GuiListEntry> createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, Supplier<TSettings> defaultSettingsSupplier) {
+        val list = super.createPage(screen, idCounter, settings, defaultSettingsSupplier);
         idCounter += list.size();
 
         list.addAll(Arrays.asList(
@@ -38,8 +39,8 @@ public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Isla
     }
 
     @Override
-    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, boolean value, TSettings settings, TSettings defaultSettings) {
-        super.setEntryValue(screen, id, value, settings, defaultSettings);
+    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, boolean value, TSettings settings) {
+        super.setEntryValue(screen, id, value, settings);
 
         if (id == idGenerateFalls) {
             settings.generateFalls = value;

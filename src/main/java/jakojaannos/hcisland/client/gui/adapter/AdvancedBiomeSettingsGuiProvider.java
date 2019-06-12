@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
 public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings> implements IBiomeSettingsGuiProvider<TSettings> {
@@ -21,7 +22,7 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings> i
     private int idStoneBlock = -1;
 
     @Override
-    public List<GuiPageButtonList.GuiListEntry> createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, TSettings defaultSettings) {
+    public List<GuiPageButtonList.GuiListEntry> createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, Supplier<TSettings> defaultSettingsSupplier) {
         return Lists.newArrayList(
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
                                                     I18n.format("createWorld.customize.hcisland.field.biome.stoneBlock"),
@@ -49,36 +50,40 @@ public class AdvancedBiomeSettingsGuiProvider<TSettings extends BiomeSettings> i
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
                                                                    "createWorld.customize.hcisland.field.biome.layers",
                                                                    true,
-                                                                   () -> openLayersEditor(screen, settings, defaultSettings, false)),
+                                                                   () -> openLayersEditor(screen, settings, defaultSettingsSupplier, false)),
                 new ExtendedGuiPageButtonList.GuiActionButtonEntry(idCounter++,
                                                                    "createWorld.customize.hcisland.field.biome.layersUnderwater",
                                                                    true,
-                                                                   () -> openLayersEditor(screen, settings, defaultSettings, true))
+                                                                   () -> openLayersEditor(screen, settings, defaultSettingsSupplier, true))
         );
     }
 
-    private void openLayersEditor(GuiCustomizeHCWorldBiome screen, TSettings settings, TSettings defaultSettings, boolean underwater) {
-        screen.mc.displayGuiScreen(new GuiCustomizeBiomeLayers(screen, settings, defaultSettings, underwater));
+    private void openLayersEditor(GuiCustomizeHCWorldBiome screen, TSettings settings, Supplier<TSettings> defaultSettingsSupplier, boolean underwater) {
+        screen.mc.displayGuiScreen(new GuiCustomizeBiomeLayers(screen,
+                                                               settings.layers,
+                                                               () -> defaultSettingsSupplier.get().layers,
+                                                               (layers) -> settings.layers = layers,
+                                                               underwater));
     }
 
     @Override
-    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, boolean value, TSettings settings, TSettings defaultSettings) {
+    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, boolean value, TSettings settings) {
 
     }
 
     @Override
-    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, float value, TSettings settings, TSettings defaultSettings) {
+    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, float value, TSettings settings) {
         if (id == idSeaLevel) {
             settings.seaLevel = (int) value;
         }
     }
 
     @Override
-    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, String value, TSettings settings, TSettings defaultSettings) {
+    public void setEntryValue(GuiCustomizeHCWorldBiome screen, int id, String value, TSettings settings) {
         if (id == idStoneBlock) {
             settings.stoneBlock = BlockHelper.stringToBlockstateWithFallback(Blocks.STONE.getDefaultState(), value);
         } else if (id == idOceanBlock) {
-            settings.oceanBlock = BlockHelper.stringToBlockstateWithFallback(Blocks.STONE.getDefaultState(), value);;
+            settings.oceanBlock = BlockHelper.stringToBlockstateWithFallback(Blocks.STONE.getDefaultState(), value);
         }
     }
 }
