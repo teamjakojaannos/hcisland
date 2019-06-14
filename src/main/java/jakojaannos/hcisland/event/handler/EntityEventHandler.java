@@ -25,9 +25,9 @@ public class EntityEventHandler {
         }
 
 
-        val modIdIsBlacklisted = Arrays.stream(HCIslandConfig.world.mobSpawnPreventionModIdBlacklist)
+        boolean modIdIsBlacklisted = Arrays.stream(HCIslandConfig.world.mobSpawnPreventionModIdBlacklist)
                                        .anyMatch(modId -> modId.equalsIgnoreCase(entityKey.getResourceDomain()));
-        val mobKeyIsBlacklisted = Arrays.stream(HCIslandConfig.world.mobSpawnPreventionBlacklist)
+        boolean mobKeyIsBlacklisted = Arrays.stream(HCIslandConfig.world.mobSpawnPreventionBlacklist)
                                         .anyMatch(mobKey -> mobKey.equalsIgnoreCase(entityKey.toString()));
 
         if (modIdIsBlacklisted || mobKeyIsBlacklisted) {
