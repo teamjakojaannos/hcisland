@@ -4,6 +4,7 @@ import jakojaannos.hcisland.HardcoreIsland;
 import jakojaannos.hcisland.init.ModLootTables;
 import jakojaannos.hcisland.world.biome.BiomeHCIslandBase;
 import jakojaannos.hcisland.world.biome.BiomeHCWasteland;
+import jakojaannos.hcisland.world.biome.BiomeHCWastelandBase;
 import jakojaannos.hcisland.world.storage.HCIslandWorldSavedData;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -84,7 +85,7 @@ public class WorldGenEventHandler {
         final Biome biome = world.getBiome(blockpos.add(16, 0, 16));
 
         // Generate fire in the wasteland biome
-        if (biome instanceof BiomeHCWasteland && ((BiomeHCWasteland) biome).generateFire) {
+        if (biome instanceof BiomeHCWastelandBase && ((BiomeHCWastelandBase) biome).generateFire) {
             Random rand = event.getRand();
 
             if (TerrainGen.populate(event.getGen(), world, rand, cX, cZ, false, PopulateChunkEvent.Populate.EventType.FIRE)) {
