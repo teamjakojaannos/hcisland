@@ -5,4 +5,5 @@ build
 libs
 out
 run
+run-client
 *.iml
