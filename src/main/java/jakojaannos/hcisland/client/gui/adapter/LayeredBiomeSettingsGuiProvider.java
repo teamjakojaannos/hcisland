@@ -6,6 +6,7 @@ import jakojaannos.hcisland.client.gui.GuiCustomizeBiomeLayers;
 import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorldBiome;
 import jakojaannos.hcisland.util.BlockHelper;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
+import jakojaannos.hcisland.world.gen.LayeredBiomeSettings;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @SideOnly(Side.CLIENT)
-public class LayeredBiomeSettingsGuiProvider<TSettings extends BiomeSettings> implements IBiomeSettingsGuiProvider<TSettings> {
+public class LayeredBiomeSettingsGuiProvider<TSettings extends LayeredBiomeSettings> implements IBiomeSettingsGuiProvider<TSettings> {
     private int idSeaLevel = -1;
     private int idOceanBlock = -1;
     private int idStoneBlock = -1;

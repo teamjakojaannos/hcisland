@@ -3,6 +3,7 @@ package jakojaannos.hcisland.world.gen.adapter;
 import jakojaannos.hcisland.client.gui.adapter.IBiomeSettingsGuiProvider;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
 import lombok.Getter;
+import lombok.val;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -32,9 +33,9 @@ public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeS
         return cachedBiome;
     }
 
-    public <TSettings extends BiomeSettings> BiomeSettingsAdapter(
+    public BiomeSettingsAdapter(
             ResourceLocation biomeId,
-            Supplier<TSettings> defaultSettingsSupplier
+            Supplier<? extends BiomeSettings> defaultSettingsSupplier
     ) {
         this.settingsType = defaultSettingsSupplier.get().getClass();
         this.biomeId = biomeId;
@@ -43,6 +44,16 @@ public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeS
 
     public BiomeSettings createDefaultSettingsFactory() {
         return defaultSettingsSupplier.get();
+    }
+
+    public void applyBiomeSettings(BiomeSettings settings) {
+        if (!Float.isNaN(settings.baseHeightOverride)) {
+            getBiome().baseHeight = settings.baseHeightOverride;
+        }
+
+        if (!Float.isNaN(settings.heightVariationOverride)) {
+            getBiome().heightVariation = settings.heightVariationOverride;
+        }
     }
 
     @Override
@@ -59,8 +70,6 @@ public abstract class BiomeSettingsAdapter implements IForgeRegistryEntry<BiomeS
     public Class<BiomeSettingsAdapter> getRegistryType() {
         return BiomeSettingsAdapter.class;
     }
-
-    public abstract void applyBiomeSettings(BiomeSettings settings);
 
     @SideOnly(Side.CLIENT)
     public abstract IBiomeSettingsGuiProvider createGuiProvider();

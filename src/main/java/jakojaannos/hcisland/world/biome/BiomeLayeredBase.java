@@ -1,6 +1,5 @@
 package jakojaannos.hcisland.world.biome;
 
-import lombok.val;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -185,7 +184,14 @@ public abstract class BiomeLayeredBase extends Biome {
     }
 
     @Override
-    public void genTerrainBlocks(World world, Random rand, ChunkPrimer primer, int globalX, int globalZ, double noiseVal) {
+    public void genTerrainBlocks(
+            World world,
+            Random rand,
+            ChunkPrimer primer,
+            int globalX,
+            int globalZ,
+            double noiseVal
+    ) {
         // HACK: Vanilla has x<->z swapped, so do we
         int x = globalZ & 15;
         int z = globalX & 15;
@@ -233,7 +239,15 @@ public abstract class BiomeLayeredBase extends Biome {
      * @param x             global x-coordinate of the column
      * @param z             global z-coordinate of the column
      */
-    protected void generateLookup(Random random, int solidDepth, int fuzzySeaLevel, int x, int z, double noiseVal, IBlockState[] lookup) {
+    protected void generateLookup(
+            Random random,
+            int solidDepth,
+            int fuzzySeaLevel,
+            int x,
+            int z,
+            double noiseVal,
+            IBlockState[] lookup
+    ) {
         final boolean underwater = solidDepth <= fuzzySeaLevel;
         final Iterator<BlockLayer> layerIter = Arrays.stream(getLayers(underwater)).iterator();
 

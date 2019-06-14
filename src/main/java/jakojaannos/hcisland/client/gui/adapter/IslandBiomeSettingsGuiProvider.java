@@ -2,6 +2,7 @@ package jakojaannos.hcisland.client.gui.adapter;
 
 import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorldBiome;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
+import jakojaannos.hcisland.world.gen.LayeredBiomeSettings;
 import lombok.val;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.resources.I18n;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class IslandBiomeSettingsGuiProvider<TSettings extends BiomeSettings.Island> extends LayeredBiomeSettingsGuiProvider<TSettings> {
+public class IslandBiomeSettingsGuiProvider<TSettings extends LayeredBiomeSettings.Island> extends LayeredBiomeSettingsGuiProvider<TSettings> {
     private int idGenerateFalls = -1;
     private int idGenerateLakes = -1;
     private int idGenerateLakesLava = -1;

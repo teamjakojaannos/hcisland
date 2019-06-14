@@ -2,7 +2,7 @@ package jakojaannos.hcisland.init;
 
 import jakojaannos.hcisland.ModInfo;
 import jakojaannos.hcisland.world.biome.*;
-import jakojaannos.hcisland.world.gen.BiomeSettings;
+import jakojaannos.hcisland.world.gen.LayeredBiomeSettings;
 import jakojaannos.hcisland.world.gen.adapter.*;
 import lombok.val;
 import net.minecraft.block.BlockSand;
@@ -23,6 +23,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 @Mod.EventBusSubscriber
 public class ModBiomes {
     public static final Biome ISLAND = null;
+    public static final Biome ISLAND_LOWLANDS = null;
     public static final Biome BEACH = null;
     public static final Biome OCEAN = null;
     public static final Biome WASTELAND = null;
@@ -31,14 +32,22 @@ public class ModBiomes {
     @SubscribeEvent
     public static void onRegisterBiomes(RegistryEvent.Register<Biome> event) {
         val r = event.getRegistry();
-        register(r, "island", 0, BiomeType.WARM, new BiomeHCIsland(), Type.FOREST, Type.SPARSE);
+        register(r, "island", 0, BiomeType.WARM, new BiomeHCForest(), Type.FOREST, Type.SPARSE);
+        register(r, "island_lowlands", 0, BiomeType.WARM, new BiomeHCIslandLowlands(), Type.FOREST, Type.SPARSE);
         register(r, "beach", 0, BiomeType.WARM, new BiomeHCBeach(), Type.BEACH);
         register(r, "ocean", 0, BiomeType.WARM, new BiomeHCOcean(), Type.OCEAN, Type.DEAD);
-        register(r, "wasteland", 0, BiomeType.DESERT, new BiomeHCWasteland(), Type.WASTELAND, Type.DEAD, Type.HOT);
-        register(r, "wasteland_edge", 0, BiomeType.DESERT, new BiomeHCWastelandEdge(), Type.WASTELAND, Type.HOT);
+        register(r, "wasteland", 0, BiomeType.DESERT, new BiomeHCWasteland<>(), Type.WASTELAND, Type.DEAD, Type.HOT);
+        register(r, "wasteland_edge", 0, BiomeType.DESERT, new BiomeHCWastelandEdge<>(), Type.WASTELAND, Type.HOT);
     }
 
-    private static void register(IForgeRegistry<Biome> registry, String key, int weight, BiomeManager.BiomeType managerType, Biome biome, BiomeDictionary.Type... types) {
+    private static void register(
+            IForgeRegistry<Biome> registry,
+            String key,
+            int weight,
+            BiomeManager.BiomeType managerType,
+            Biome biome,
+            BiomeDictionary.Type... types
+    ) {
         biome.setRegistryName(new ResourceLocation(ModInfo.MODID, key));
         registry.register(biome);
         BiomeDictionary.addTypes(biome, types);
@@ -51,11 +60,36 @@ public class ModBiomes {
     @SubscribeEvent
     public static void onRegisterSettingsAdapters(RegistryEvent.Register<BiomeSettingsAdapter> event) {
         event.getRegistry().registerAll(
-                new ForestBiomeSettingsAdapter(
+                new ForestBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "island"),
-                        () -> new BiomeSettings.Forest(
+                        () -> new LayeredBiomeSettings.Forest(
+                                0.25f,
+                                0.1f,
                                 48,
-                                Blocks.WATER.getDefaultState(),
+                                Blocks.LAVA.getDefaultState(),
+                                Blocks.STONE.getDefaultState(),
+                                new BlockLayer[]{
+                                        new BlockLayer(1, Blocks.GRASS),
+                                        new BlockLayer(5, Blocks.DIRT),
+                                        new BlockLayer(1, Blocks.CLAY),
+                                        new BlockLayer(2, Blocks.GRAVEL),
+                                },
+                                new BlockLayer[]{
+                                },
+                                false,
+                                true,
+                                false,
+                                7,
+                                4,
+                                25
+                        )),
+                new IslandBiomeSettingsAdapter<>(
+                        new ResourceLocation(ModInfo.MODID, "island_lowlands"),
+                        () -> new LayeredBiomeSettings.Island(
+                                -0.65f,
+                                0.1f,
+                                48,
+                                Blocks.LAVA.getDefaultState(),
                                 Blocks.STONE.getDefaultState(),
                                 new BlockLayer[]{
                                         new BlockLayer(1, Blocks.GRASS),
@@ -67,16 +101,15 @@ public class ModBiomes {
                                 },
                                 false,
                                 false,
-                                false,
-                                7,
-                                4,
-                                25
+                                false
                         )),
-                new BeachBiomeSettingsAdapter(
+                new BeachBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "beach"),
-                        () -> new BiomeSettings.Beach(
+                        () -> new LayeredBiomeSettings.Beach(
+                                -0.75f,
+                                0.025f,
                                 48,
-                                Blocks.WATER.getDefaultState(),
+                                Blocks.LAVA.getDefaultState(),
                                 Blocks.STONE.getDefaultState(),
                                 new BlockLayer[]{
                                         new BlockLayer(4, Blocks.SAND.getDefaultState().withProperty(BlockSand.VARIANT, BlockSand.EnumType.RED_SAND)),
@@ -95,11 +128,13 @@ public class ModBiomes {
                                 false,
                                 12
                         )),
-                new AdvancedBiomeSettingsAdapter(
+                new LayeredBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "ocean"),
-                        () -> new BiomeSettings(
+                        () -> new LayeredBiomeSettings(
+                                -1.8f,
+                                0.1f,
                                 48,
-                                Blocks.WATER.getDefaultState(),
+                                Blocks.LAVA.getDefaultState(),
                                 Blocks.STONE.getDefaultState(),
                                 new BlockLayer[]{
                                         new BlockLayer(3, Blocks.SAND.getDefaultState().withProperty(BlockSand.VARIANT, BlockSand.EnumType.RED_SAND)),
@@ -110,13 +145,14 @@ public class ModBiomes {
                                         new BlockLayer(1, Blocks.SANDSTONE),
                                         new BlockLayer(1, Blocks.HARDENED_CLAY),
                                         new BlockLayer(2, Blocks.NETHERRACK),
-                                }
-                        )),
-                new WastelandBiomeSettingsAdapter(
+                                })),
+                new WastelandBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "wasteland"),
-                        () -> new BiomeSettings.Wasteland(
+                        () -> new LayeredBiomeSettings.Wasteland(
+                                0.4f,
+                                0.25f,
                                 48,
-                                Blocks.WATER.getDefaultState(),
+                                Blocks.LAVA.getDefaultState(),
                                 Blocks.NETHERRACK.getDefaultState(),
                                 new BlockLayer[]{
                                         new BlockLayer(8, Blocks.NETHERRACK),
@@ -132,9 +168,11 @@ public class ModBiomes {
                                 true,
                                 true
                         )),
-                new WastelandBiomeSettingsAdapter(
+                new WastelandBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "wasteland_edge"),
-                        () -> new BiomeSettings.Wasteland(
+                        () -> new LayeredBiomeSettings.Wasteland(
+                                0.2f,
+                                0.1f,
                                 64,
                                 Blocks.WATER.getDefaultState(),
                                 Blocks.NETHERRACK.getDefaultState(),

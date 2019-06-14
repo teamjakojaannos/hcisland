@@ -84,6 +84,7 @@ public class BiomeProviderHCIsland extends BiomeProvider {
             for (var i = 0; i < shoreScale; i++) {
                 chain = new GenLayerZoom(715517L + i, chain);
             }
+            chain = new GenLayerBiomeLayeredEdges(1337L, chain, settings);
 
             if (smoothBiomeEdges) {
                 chain = new GenLayerSmooth(1000L, chain);

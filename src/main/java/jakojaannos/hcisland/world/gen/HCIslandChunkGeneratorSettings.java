@@ -19,10 +19,11 @@ public class HCIslandChunkGeneratorSettings {
     @Getter @Setter private int islandShapeFuzz = 2;
     @Getter @Setter private boolean smoothBiomeEdges = true;
     @Getter @Setter private boolean generateEdges = true;
-    @Getter @Setter private int shoreScale = 2;
-    @Getter @Setter private int beachSize = 1;
+    @Getter @Setter private int shoreScale = 1;
+    @Getter @Setter private int beachSize = 2;
     @Getter @Setter private List<IslandRadialBiome> biomes = Lists.newArrayList(
-            new IslandRadialBiome(6, true, ModBiomes.ISLAND.getRegistryName()),
+            new IslandRadialBiome(4, true, ModBiomes.ISLAND.getRegistryName()),
+            new IslandRadialBiome(3, true, ModBiomes.ISLAND_LOWLANDS.getRegistryName()),
             new IslandRadialBiome(8, false, ModBiomes.OCEAN.getRegistryName()),
             new IslandRadialBiome(8, false, ModBiomes.WASTELAND.getRegistryName()),
             new IslandRadialBiome(3, false, Biomes.DESERT.getRegistryName())

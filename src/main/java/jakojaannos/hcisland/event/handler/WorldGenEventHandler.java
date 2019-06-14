@@ -52,11 +52,11 @@ public class WorldGenEventHandler {
 
         // If it is modded biome with lake generation disabled, deny the event
         if (biome instanceof BiomeHCIslandBase) {
-            BiomeHCIslandBase<?> biomeIsland = (BiomeHCIslandBase<?>) biome;
+            BiomeHCIslandBase biomeIsland = (BiomeHCIslandBase) biome;
 
-            if (event.getType() == PopulateChunkEvent.Populate.EventType.LAKE && !biomeIsland.generateLakes()) {
+            if (event.getType() == PopulateChunkEvent.Populate.EventType.LAKE && !biomeIsland.generateLakes) {
                 event.setResult(Event.Result.DENY);
-            } else if (event.getType() == PopulateChunkEvent.Populate.EventType.LAVA && !biomeIsland.generateLakesLava()) {
+            } else if (event.getType() == PopulateChunkEvent.Populate.EventType.LAVA && !biomeIsland.generateLakesLava) {
                 event.setResult(Event.Result.DENY);
             }
         }
@@ -84,7 +84,7 @@ public class WorldGenEventHandler {
         final Biome biome = world.getBiome(blockpos.add(16, 0, 16));
 
         // Generate fire in the wasteland biome
-        if (biome instanceof BiomeHCWasteland && ((BiomeHCWasteland) biome).generateFire()) {
+        if (biome instanceof BiomeHCWasteland && ((BiomeHCWasteland) biome).generateFire) {
             Random rand = event.getRand();
 
             if (TerrainGen.populate(event.getGen(), world, rand, cX, cZ, false, PopulateChunkEvent.Populate.EventType.FIRE)) {
