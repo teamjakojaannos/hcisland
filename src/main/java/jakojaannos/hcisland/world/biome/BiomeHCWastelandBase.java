@@ -11,7 +11,7 @@ public abstract class BiomeHCWastelandBase extends BiomeHCIslandBase {
     protected BiomeHCWastelandBase(BiomeProperties properties) {
         super(properties);
 
-        if (HCIslandConfig.world.wastelandHasOverworldMobs) {
+        if (!HCIslandConfig.world.wastelandHasOverworldMobs) {
             // Disable neutral spawning
             this.spawnableCreatureList.clear();
         }
