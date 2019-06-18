@@ -50,6 +50,12 @@ public class HCIslandConfig {
 
         @Config.Comment("Blacklist of mob entity keys which are not allowed to spawn inside prevention radius. e.g. \"minecraft:zombie\" would prevent zombies from spawning")
         public String[] mobSpawnPreventionBlacklist = {};
+
+        @Config.Comment("Whether or not overworld mobs should spawn in wasteland biomes.")
+        public boolean wastelandHasOverworldMobs = false;
+
+        @Config.Comment("Whether or not nether mobs should spawn in wasteland biomes.")
+        public boolean wastelandHasNetherMobs = true;
     }
 
     @SubscribeEvent
