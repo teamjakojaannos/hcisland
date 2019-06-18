@@ -4,6 +4,7 @@ import jakojaannos.hcisland.init.ModRegistries;
 import jakojaannos.hcisland.util.world.gen.GeneratorSettingsHelper;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import jakojaannos.hcisland.world.gen.adapter.BiomeSettingsAdapter;
+import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @SideOnly(Side.CLIENT)
+@Log4j2
 public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandChunkGeneratorSettings> implements GuiPageButtonList.GuiResponder {
     private final GuiCreateWorld parent;
 
@@ -38,6 +40,8 @@ public class GuiCustomizeHCWorld extends GuiPagedCustomizeWithDefaults<HCIslandC
         this.title = "Customize World Settings";
         this.subtitle = "Page 1 of many";
 
+        // TODO: Initial settings do not respect overrides
+        log.info("Creating generator settings for customization. Preset is {}", (preset == null ? "null" : (preset.isEmpty() ? "empty" : preset)));
         this.settings = (preset != null && !preset.isEmpty())
                 ? GeneratorSettingsHelper.fromJson(preset)
                 : GeneratorSettingsHelper.createOverriddenDefaults();

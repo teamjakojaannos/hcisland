@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
 import lombok.*;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
@@ -14,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor()
+@NoArgsConstructor
+@Log4j2
 public class HCIslandChunkGeneratorSettings {
     @Getter @Setter private int islandShapeFuzz = 2;
     @Getter @Setter private boolean smoothBiomeEdges = true;
@@ -76,6 +78,7 @@ public class HCIslandChunkGeneratorSettings {
     }
 
     public void setSettingsFor(ResourceLocation registryName, BiomeSettings biomeSettings) {
+        log.info("Setting biome settings for: {}", registryName);
         this.biomeSettings.put(registryName, biomeSettings);
     }
 

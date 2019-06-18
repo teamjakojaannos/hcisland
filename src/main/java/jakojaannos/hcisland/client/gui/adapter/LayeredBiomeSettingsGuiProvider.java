@@ -5,7 +5,6 @@ import jakojaannos.hcisland.client.gui.ExtendedGuiPageButtonList;
 import jakojaannos.hcisland.client.gui.GuiCustomizeBiomeLayers;
 import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorldBiome;
 import jakojaannos.hcisland.util.BlockHelper;
-import jakojaannos.hcisland.world.gen.BiomeSettings;
 import jakojaannos.hcisland.world.gen.LayeredBiomeSettings;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.resources.I18n;
@@ -23,7 +22,12 @@ public class LayeredBiomeSettingsGuiProvider<TSettings extends LayeredBiomeSetti
     private int idStoneBlock = -1;
 
     @Override
-    public List<GuiPageButtonList.GuiListEntry> createPage(GuiCustomizeHCWorldBiome screen, int idCounter, TSettings settings, Supplier<TSettings> defaultSettingsSupplier) {
+    public List<GuiPageButtonList.GuiListEntry> createPage(
+            GuiCustomizeHCWorldBiome screen,
+            int idCounter,
+            TSettings settings,
+            Supplier<TSettings> defaultSettingsSupplier
+    ) {
         return Lists.newArrayList(
                 new GuiPageButtonList.GuiLabelEntry(idCounter++,
                                                     I18n.format("createWorld.customize.hcisland.biome.field.stoneBlock"),
@@ -65,11 +69,22 @@ public class LayeredBiomeSettingsGuiProvider<TSettings extends LayeredBiomeSetti
         );
     }
 
-    private void openLayersEditor(GuiCustomizeHCWorldBiome screen, TSettings settings, Supplier<TSettings> defaultSettingsSupplier, boolean underwater) {
+    private void openLayersEditor(
+            GuiCustomizeHCWorldBiome screen,
+            TSettings settings,
+            Supplier<TSettings> defaultSettingsSupplier,
+            boolean underwater
+    ) {
         screen.mc.displayGuiScreen(new GuiCustomizeBiomeLayers(screen,
-                                                               settings.layers,
+                                                               underwater ? settings.layersUnderwater : settings.layers,
                                                                () -> defaultSettingsSupplier.get().layers,
-                                                               (layers) -> settings.layers = layers,
+                                                               (layers) -> {
+                                                                   if (underwater) {
+                                                                       settings.layersUnderwater = layers;
+                                                                   } else {
+                                                                       settings.layers = layers;
+                                                                   }
+                                                               },
                                                                underwater));
     }
 

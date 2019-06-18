@@ -5,6 +5,7 @@ import jakojaannos.hcisland.client.gui.adapter.LayeredBiomeSettingsGuiProvider;
 import jakojaannos.hcisland.world.biome.BiomeLayeredBase;
 import jakojaannos.hcisland.world.gen.BiomeSettings;
 import jakojaannos.hcisland.world.gen.LayeredBiomeSettings;
+import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.function.Supplier;
 
+@Log4j2
 public class LayeredBiomeSettingsAdapter<TSettings extends LayeredBiomeSettings> extends BiomeSettingsAdapter {
     public LayeredBiomeSettingsAdapter(
             ResourceLocation biomeId,
@@ -23,15 +25,16 @@ public class LayeredBiomeSettingsAdapter<TSettings extends LayeredBiomeSettings>
     @Override
     public final void applyBiomeSettings(BiomeSettings settings) {
         super.applyBiomeSettings(settings);
-        applyBiomeSettings((TSettings) settings);
+        applyTypedBiomeSettings((TSettings) settings);
     }
 
-    protected void applyBiomeSettings(TSettings settings) {
+    protected void applyTypedBiomeSettings(TSettings settings) {
         val biome = getBiome();
         if (!(biome instanceof BiomeLayeredBase)) {
-            throw new IllegalStateException("Settings adapter registered for wrong type of biome");
+            throw log.throwing(new IllegalStateException("Settings adapter registered for wrong type of biome"));
         }
 
+        log.debug("Applying biome settings (Layered)...");
         val biomeLayered = (BiomeLayeredBase) biome;
         biomeLayered.setSeaLevelOverride(settings.seaLevel);
         biomeLayered.setStoneBlock(settings.stoneBlock);
