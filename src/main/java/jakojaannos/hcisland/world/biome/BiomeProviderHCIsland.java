@@ -1,5 +1,6 @@
 package jakojaannos.hcisland.world.biome;
 
+import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.world.WorldTypeHCIsland;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import jakojaannos.hcisland.world.gen.layer.GenLayerBiomeLayeredEdges;
@@ -67,8 +68,6 @@ public class BiomeProviderHCIsland extends BiomeProvider {
         }
 
         GenLayer chain = new GenLayerHCIslandBiomes(1337L,
-                                                    original[0],
-                                                    settings.getTotalRadialZoneRadius(),
                                                     biomeUnitConversionRatio,
                                                     settings::getBiomeAtDistanceSq);
         for (var i = 0; i < islandShapeFuzz; i++) {
@@ -91,6 +90,62 @@ public class BiomeProviderHCIsland extends BiomeProvider {
             }
         }
 
-        return chain;
+        return new MixGenLayer(original[0],
+                               chain,
+                               seed,
+                               biomeUnitConversionRatio,
+                               settings.getTotalRadialZoneRadius());
+    }
+
+    private static class MixGenLayer extends GenLayer {
+        private final GenLayer original;
+        private final GenLayer custom;
+        private final int totalRadius;
+
+        public MixGenLayer(GenLayer original, GenLayer custom, long seed, double unitScale, int totalRadius) {
+            super(seed);
+            this.original = original;
+            this.custom = custom;
+            this.totalRadius = totalRadius;
+        }
+
+        @Override
+        public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight) {
+            int[] originalInts = null;
+            int[] customInts = null;
+            val maskId = Biome.getIdForBiome(ModBiomes.__MASK);
+
+            // HACK: due to zooms, units here are roughly 4 times smaller than chunks. This means that we need
+            //       to multiply by 4 to get roughly the actual radius. However, high fuzz levels may overshoot
+            //       estimated radius quite a lot, so add extra to the multiplier to accommodate that.
+            val scaledRadius = totalRadius * (4 + 2);
+            var ints = IntCache.getIntCache(areaWidth * areaHeight);
+            for (var x = 0; x < areaWidth; x++) {
+                for (var y = 0; y < areaHeight; y++) {
+                    val distSq = (long) (x + areaX) * (x + areaX) + (long) (y + areaY) * (y + areaY);
+                    val index = x + (y * areaWidth);
+
+                    if (distSq > scaledRadius * scaledRadius) {
+                        ints[index] = originalInts == null
+                                ? (originalInts = original.getInts(areaX, areaY, areaWidth, areaHeight))[index]
+                                : originalInts[index];
+                    } else {
+                        var value = customInts == null
+                                ? (customInts = custom.getInts(areaX, areaY, areaWidth, areaHeight))[index]
+                                : customInts[index];
+
+                        if (value == maskId) {
+                            value = originalInts == null
+                                    ? (originalInts = original.getInts(areaX, areaY, areaWidth, areaHeight))[index]
+                                    : originalInts[index];
+                        }
+
+                        ints[index] = value;
+                    }
+                }
+            }
+
+            return ints;
+        }
     }
 }

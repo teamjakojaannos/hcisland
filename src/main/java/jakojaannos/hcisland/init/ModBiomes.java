@@ -22,6 +22,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 @ObjectHolder(ModInfo.MODID)
 @Mod.EventBusSubscriber
 public class ModBiomes {
+    public static final Biome __MASK = null;
     public static final Biome ISLAND = null;
     public static final Biome ISLAND_LOWLANDS = null;
     public static final Biome BEACH = null;
@@ -32,6 +33,7 @@ public class ModBiomes {
     @SubscribeEvent
     public static void onRegisterBiomes(RegistryEvent.Register<Biome> event) {
         val r = event.getRegistry();
+        register(r, "__mask", 0, BiomeType.DESERT, new Biome(new Biome.BiomeProperties("__mask")) {}, Type.WASTELAND);
         register(r, "island", 0, BiomeType.WARM, new BiomeHCForest(), Type.FOREST, Type.SPARSE);
         register(r, "island_lowlands", 0, BiomeType.WARM, new BiomeHCIslandLowlands(), Type.FOREST, Type.SPARSE);
         register(r, "beach", 0, BiomeType.WARM, new BiomeHCBeach(), Type.BEACH);
