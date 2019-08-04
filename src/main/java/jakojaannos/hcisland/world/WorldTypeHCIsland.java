@@ -4,6 +4,7 @@ import jakojaannos.hcisland.client.gui.GuiCustomizeHCWorld;
 import jakojaannos.hcisland.init.ModRegistries;
 import jakojaannos.hcisland.util.world.gen.GeneratorSettingsHelper;
 import jakojaannos.hcisland.world.biome.BiomeProviderHCIsland;
+import jakojaannos.hcisland.world.gen.ChunkGeneratorHCIsland;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -11,6 +12,8 @@ import lombok.val;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeProvider;
+import net.minecraft.world.gen.ChunkGeneratorOverworld;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -28,6 +31,11 @@ public class WorldTypeHCIsland extends WorldType {
     @Override
     public boolean isCustomizable() {
         return true;
+    }
+
+    @Override
+    public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
+        return new ChunkGeneratorHCIsland(world, generatorOptions);
     }
 
     @SideOnly(Side.CLIENT)

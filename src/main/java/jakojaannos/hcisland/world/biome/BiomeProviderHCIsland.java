@@ -1,5 +1,6 @@
 package jakojaannos.hcisland.world.biome;
 
+import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.world.WorldTypeHCIsland;
 import jakojaannos.hcisland.world.gen.HCIslandChunkGeneratorSettings;
@@ -7,14 +8,18 @@ import jakojaannos.hcisland.world.gen.layer.GenLayerBiomeLayeredEdges;
 import jakojaannos.hcisland.world.gen.layer.GenLayerHCIslandBiomes;
 import lombok.val;
 import lombok.var;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.gen.layer.*;
 import net.minecraft.world.storage.WorldInfo;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BiomeProviderHCIsland extends BiomeProvider {
@@ -111,8 +116,18 @@ public class BiomeProviderHCIsland extends BiomeProvider {
 
         @Override
         public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight) {
+            final Function<GenLayer, Supplier<int[]>> calculateForLayer = (layer) -> () -> layer.getInts(areaX,
+                                                                                                         areaY,
+                                                                                                         areaWidth,
+                                                                                                         areaHeight);
+            val useNetherGen = HCIslandConfig.world.generateNetherInsteadOfOverworld;
+            final Supplier<int[]> calculateOriginal = useNetherGen
+                ? () -> createIntsFilledWithHell(areaWidth, areaHeight)
+                : calculateForLayer.apply(original);
+            final Supplier<int[]> calculateCustom = calculateForLayer.apply(custom);
             int[] originalInts = null;
             int[] customInts = null;
+
             val maskId = Biome.getIdForBiome(ModBiomes.__MASK);
 
             // HACK: due to zooms, units here are roughly 4 times smaller than chunks. This means that we need
@@ -127,17 +142,17 @@ public class BiomeProviderHCIsland extends BiomeProvider {
 
                     if (distSq > scaledRadius * scaledRadius) {
                         ints[index] = originalInts == null
-                                ? (originalInts = original.getInts(areaX, areaY, areaWidth, areaHeight))[index]
-                                : originalInts[index];
+                            ? (originalInts = calculateOriginal.get())[index]
+                            : originalInts[index];
                     } else {
                         var value = customInts == null
-                                ? (customInts = custom.getInts(areaX, areaY, areaWidth, areaHeight))[index]
-                                : customInts[index];
+                            ? (customInts = calculateCustom.get())[index]
+                            : customInts[index];
 
                         if (value == maskId) {
                             value = originalInts == null
-                                    ? (originalInts = original.getInts(areaX, areaY, areaWidth, areaHeight))[index]
-                                    : originalInts[index];
+                                ? (originalInts = calculateOriginal.get())[index]
+                                : originalInts[index];
                         }
 
                         ints[index] = value;
@@ -145,6 +160,12 @@ public class BiomeProviderHCIsland extends BiomeProvider {
                 }
             }
 
+            return ints;
+        }
+
+        private static int[] createIntsFilledWithHell(int areaWidth, int areaHeight) {
+            val ints = new int[areaWidth * areaHeight];
+            Arrays.fill(ints, Biome.getIdForBiome(Biomes.HELL));
             return ints;
         }
     }
