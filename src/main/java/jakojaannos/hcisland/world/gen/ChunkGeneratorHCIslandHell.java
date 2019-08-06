@@ -18,89 +18,9 @@ public class ChunkGeneratorHCIslandHell extends ChunkGeneratorHell {
     public ChunkGeneratorHCIslandHell(World worldIn) {
         super(worldIn, worldIn.getWorldInfo().isMapFeaturesEnabled(), worldIn.getSeed());
     }
-/*
-    @Override
-    public void prepareHeights(int chunkX, int chunkZ, ChunkPrimer primer) {
-        int hellSeaLevel = this.world.getSeaLevel() / 2 + 1;
-        // 63 / 2 (=> 31.5) => 31
-        // 31 + 1 => 32
-        val bufferSizeXorZ = 5;
-        int bufferSizeY = 17;
-        this.buffer = this.getHeights(this.buffer,
-                                      chunkX * 4,
-                                      0,
-                                      chunkZ * 4,
-                                      bufferSizeXorZ,
-                                      bufferSizeY,
-                                      bufferSizeXorZ);
 
-        // Chunks are generated in four horizontal 4x4 steps. This is probably to reduce number of height-map
-        // queries? Or horizontal scaling trick? The height-map can be generated with lower res?
-        for (int stepX = 0; stepX < 4; ++stepX) {
-            for (int stepZ = 0; stepZ < 4; ++stepZ) {
-                // Chunk is generated in 16 sections, although section height is 8 blocks instead of 16!
-                for (int section = 0; section < 16; ++section) {
-                    // Buffer is indexed as columns
-                    int i00 = ((stepX) * bufferSizeXorZ + stepZ) * bufferSizeY;
-                    int i01 = ((stepX) * bufferSizeXorZ + stepZ + 1) * bufferSizeY;
-                    int i10 = ((stepX + 1) * bufferSizeXorZ + stepZ) * bufferSizeY;
-                    int i11 = ((stepX + 1) * bufferSizeXorZ + stepZ + 1) * bufferSizeY;
-                    double val00 = this.buffer[i00 + section];
-                    double val01 = this.buffer[i01 + section];
-                    double val10 = this.buffer[i10 + section];
-                    double val11 = this.buffer[i11 + section];
-                    val gradientStepY = 1.0D / 8.0D;
-                    val gradientStepXorZ = 1.0D / 4.0D;
-                    double valOneAbove00 = (this.buffer[i00 + section + 1] - val00) * gradientStepY;
-                    double valOneAbove01 = (this.buffer[i01 + section + 1] - val01) * gradientStepY;
-                    double valOneAbove10 = (this.buffer[i10 + section + 1] - val10) * gradientStepY;
-                    double valOneAbove11 = (this.buffer[i11 + section + 1] - val11) * gradientStepY;
-
-                    for (int iy = 0; iy < 8; ++iy) {
-                        double yLocalVar00 = val00;
-                        double yLocalVar01 = val01;
-                        final double scaledDeltaXatZ0 = (val10 - val00) * gradientStepXorZ;
-                        final double scaledDeltaXatZ1 = (val11 - val01) * gradientStepXorZ;
-
-                        for (int ix = 0; ix < 4; ++ix) {
-                            double densityAtCurrentPos = yLocalVar00;
-                            double d16 = (yLocalVar01 - yLocalVar00) * gradientStepXorZ;
-
-                            for (int iz = 0; iz < 4; ++iz) {
-                                IBlockState iblockstate = null;
-
-                                val blockY = iy + section * 8;
-                                if (blockY < hellSeaLevel) {
-                                    iblockstate = LAVA;
-                                }
-
-                                if (densityAtCurrentPos > 0.0) {
-                                    iblockstate = NETHERRACK;
-                                }
-
-                                int blockX = ix + stepX * 4;
-                                int blockZ = iz + stepZ * 4;
-                                // May set state to null, which is a flag for surface building or sth.
-                                primer.setBlockState(blockX, blockY, blockZ, iblockstate);
-                                densityAtCurrentPos += d16;
-                            }
-
-                            // Make the values fade towards the value of the next horizontal step
-                            yLocalVar00 += scaledDeltaXatZ0;
-                            yLocalVar01 += scaledDeltaXatZ1;
-                        }
-
-                        // Make the values fade towards the value of the next vertical section
-                        val00 += valOneAbove00;
-                        val01 += valOneAbove01;
-                        val10 += valOneAbove10;
-                        val11 += valOneAbove11;
-                    }
-                }
-            }
-        }
-    }
-*/
+    // Mostly copy&paste from superclass, modified to bias lower density as y-level increases and to fade away
+    // the overworld edge.
     public double[] getHeights(
             @Nullable double[] buffer,
             int xOffset,
@@ -181,12 +101,9 @@ public class ChunkGeneratorHCIslandHell extends ChunkGeneratorHell {
                         density = density * (1.0D - d9) + -10.0D * d9;
                     }
 
+                    // Pull density down to -100 as we get closer to the overworld border
                     if (distanceFromOriginSq > fadeStartSq && distanceFromOriginSq < fadeEndSq) {
                         double fadeT = (distanceFromOriginSq - (fadeStart * fadeStart)) / (fadeEndSq - fadeStartSq);
-                        //yDensityModifier *= fadeT * ((double) y / (bufferSizeY - 1)) * 1000;
-                        //yDensityModifier = 9999999;
-                        //log.info("fadeT: {}", fadeT);
-
                         density = MathHelper.clampedLerp(-100.0, density, fadeT);
                     }
 
@@ -199,6 +116,7 @@ public class ChunkGeneratorHCIslandHell extends ChunkGeneratorHell {
         return buffer;
     }
 
+    // Mostly copy&paste from superclass, modified to not to generate bedrock to the top of the nether
     @Override
     public void buildSurfaces(int p_185937_1_, int p_185937_2_, ChunkPrimer primer) {
         if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, p_185937_1_, p_185937_2_, primer, this.world))
