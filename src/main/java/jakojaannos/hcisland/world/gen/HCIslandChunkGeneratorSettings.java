@@ -1,6 +1,7 @@
 package jakojaannos.hcisland.world.gen;
 
 import com.google.common.collect.Lists;
+import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.init.ModBiomes;
 import jakojaannos.hcisland.init.ModRegistries;
 import lombok.*;
@@ -23,13 +24,19 @@ public class HCIslandChunkGeneratorSettings {
     @Getter @Setter private boolean generateEdges = true;
     @Getter @Setter private int shoreScale = 1;
     @Getter @Setter private int beachSize = 2;
-    @Getter @Setter private List<IslandRadialBiome> biomes = Lists.newArrayList(
+
+    @SuppressWarnings("ConstantConditions")
+    @Getter @Setter private List<IslandRadialBiome> biomes = !HCIslandConfig.world.generateNetherInsteadOfOverworld
+            ? Lists.newArrayList(
             new IslandRadialBiome(4, true, ModBiomes.ISLAND.getRegistryName()),
             new IslandRadialBiome(3, true, ModBiomes.ISLAND_LOWLANDS.getRegistryName()),
             new IslandRadialBiome(8, false, ModBiomes.OCEAN.getRegistryName()),
             new IslandRadialBiome(8, false, ModBiomes.WASTELAND.getRegistryName()),
-            new IslandRadialBiome(3, false, Biomes.DESERT.getRegistryName())
-    );
+            new IslandRadialBiome(3, false, Biomes.DESERT.getRegistryName()))
+            : Lists.newArrayList(
+            new IslandRadialBiome(4, true, ModBiomes.ISLAND.getRegistryName()),
+            new IslandRadialBiome(3, true, ModBiomes.ISLAND_LOWLANDS.getRegistryName()),
+            new IslandRadialBiome(2, false, ModBiomes.OCEAN.getRegistryName()));
     private Map<ResourceLocation, BiomeSettings> biomeSettings =
             ModRegistries.BIOME_ADAPTERS.getEntries()
                                         .stream()

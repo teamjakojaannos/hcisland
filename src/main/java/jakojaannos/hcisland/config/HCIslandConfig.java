@@ -22,7 +22,7 @@ public class HCIslandConfig {
 
     public static class ConfigWorld {
         @Config.Comment("Should the world generator use nether world generator for areas outside the island?")
-        @Config.RequiresWorldRestart
+        @Config.RequiresMcRestart
         public boolean generateNetherInsteadOfOverworld = false;
 
         @Config.Comment("Overrides for generator settings default values")

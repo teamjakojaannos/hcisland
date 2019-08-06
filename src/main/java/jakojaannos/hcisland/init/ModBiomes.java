@@ -1,6 +1,7 @@
 package jakojaannos.hcisland.init;
 
 import jakojaannos.hcisland.ModInfo;
+import jakojaannos.hcisland.config.HCIslandConfig;
 import jakojaannos.hcisland.world.biome.*;
 import jakojaannos.hcisland.world.gen.LayeredBiomeSettings;
 import jakojaannos.hcisland.world.gen.adapter.*;
@@ -29,6 +30,15 @@ public class ModBiomes {
     public static final Biome OCEAN = null;
     public static final Biome WASTELAND = null;
     public static final Biome WASTELAND_EDGE = null;
+
+    private static final int DEFAULT_SEA_LEVEL = 48;
+    private static final int DEFAULT_SEA_LEVEL_NETHER = 31;
+
+    private static <T> T value(T ifNether, T ifNormal) {
+        return HCIslandConfig.world.generateNetherInsteadOfOverworld
+                ? ifNether
+                : ifNormal;
+    }
 
     @SubscribeEvent
     public static void onRegisterBiomes(RegistryEvent.Register<Biome> event) {
@@ -65,9 +75,9 @@ public class ModBiomes {
                 new ForestBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "island"),
                         () -> new LayeredBiomeSettings.Forest(
-                                0.25f,
-                                0.1f,
-                                48,
+                                value(-0.1f, 0.25f),
+                                value(0.1f, 0.1f),
+                                value(DEFAULT_SEA_LEVEL_NETHER, DEFAULT_SEA_LEVEL),
                                 Blocks.LAVA.getDefaultState(),
                                 Blocks.STONE.getDefaultState(),
                                 new BlockLayer[]{
@@ -88,9 +98,9 @@ public class ModBiomes {
                 new IslandBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "island_lowlands"),
                         () -> new LayeredBiomeSettings.Island(
-                                -0.65f,
-                                0.1f,
-                                48,
+                                value(-1.45f, -0.65f),
+                                value(0.1f, 0.1f),
+                                value(DEFAULT_SEA_LEVEL_NETHER, DEFAULT_SEA_LEVEL),
                                 Blocks.LAVA.getDefaultState(),
                                 Blocks.STONE.getDefaultState(),
                                 new BlockLayer[]{
@@ -108,9 +118,9 @@ public class ModBiomes {
                 new BeachBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "beach"),
                         () -> new LayeredBiomeSettings.Beach(
-                                -0.75f,
-                                0.025f,
-                                48,
+                                value(-1.55f, -0.75f),
+                                value(0.025f, 0.025f),
+                                value(DEFAULT_SEA_LEVEL_NETHER, DEFAULT_SEA_LEVEL),
                                 Blocks.LAVA.getDefaultState(),
                                 Blocks.STONE.getDefaultState(),
                                 new BlockLayer[]{
@@ -133,9 +143,9 @@ public class ModBiomes {
                 new LayeredBiomeSettingsAdapter<>(
                         new ResourceLocation(ModInfo.MODID, "ocean"),
                         () -> new LayeredBiomeSettings(
-                                -1.8f,
-                                0.1f,
-                                48,
+                                value(-1.95f, -1.8f),
+                                value(0.0f, 0.1f),
+                                value(DEFAULT_SEA_LEVEL_NETHER, DEFAULT_SEA_LEVEL),
                                 Blocks.LAVA.getDefaultState(),
                                 Blocks.STONE.getDefaultState(),
                                 new BlockLayer[]{
@@ -153,7 +163,7 @@ public class ModBiomes {
                         () -> new LayeredBiomeSettings.Wasteland(
                                 0.4f,
                                 0.25f,
-                                48,
+                                value(DEFAULT_SEA_LEVEL_NETHER, DEFAULT_SEA_LEVEL),
                                 Blocks.LAVA.getDefaultState(),
                                 Blocks.NETHERRACK.getDefaultState(),
                                 new BlockLayer[]{

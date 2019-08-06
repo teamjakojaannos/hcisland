@@ -32,4 +32,6 @@ public class BiomeHCOcean extends BiomeHCBase {
     public Biome getBeachBiome() {
         return ModBiomes.BEACH;
     }
+
+
 }

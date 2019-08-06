@@ -122,10 +122,14 @@ public class BiomeProviderHCIsland extends BiomeProvider {
                                                                                                          areaHeight);
             val useNetherGen = HCIslandConfig.world.generateNetherInsteadOfOverworld;
             final Supplier<int[]> calculateOriginal = useNetherGen
-                ? () -> createIntsFilledWithHell(areaWidth, areaHeight)
+                ? () -> createIntsFilledWith(areaWidth, areaHeight, Biomes.HELL)
+                : calculateForLayer.apply(original);
+            final Supplier<int[]> calculateMaskedOriginal = useNetherGen
+                ? () -> createIntsFilledWith(areaWidth, areaHeight, ModBiomes.OCEAN)
                 : calculateForLayer.apply(original);
             final Supplier<int[]> calculateCustom = calculateForLayer.apply(custom);
             int[] originalInts = null;
+            int[] maskedOriginalInts = null;
             int[] customInts = null;
 
             val maskId = Biome.getIdForBiome(ModBiomes.__MASK);
@@ -140,7 +144,11 @@ public class BiomeProviderHCIsland extends BiomeProvider {
                     val distSq = (long) (x + areaX) * (x + areaX) + (long) (y + areaY) * (y + areaY);
                     val index = x + (y * areaWidth);
 
-                    if (distSq > scaledRadius * scaledRadius) {
+                    val scaledRadiusSq = useNetherGen
+                            ? (scaledRadius + 8) * (scaledRadius + 8)
+                            : scaledRadius * scaledRadius;
+
+                    if (distSq > scaledRadiusSq) {
                         ints[index] = originalInts == null
                             ? (originalInts = calculateOriginal.get())[index]
                             : originalInts[index];
@@ -150,9 +158,9 @@ public class BiomeProviderHCIsland extends BiomeProvider {
                             : customInts[index];
 
                         if (value == maskId) {
-                            value = originalInts == null
-                                ? (originalInts = calculateOriginal.get())[index]
-                                : originalInts[index];
+                            value = maskedOriginalInts == null
+                                ? (maskedOriginalInts = calculateMaskedOriginal.get())[index]
+                                : maskedOriginalInts[index];
                         }
 
                         ints[index] = value;
@@ -163,9 +171,9 @@ public class BiomeProviderHCIsland extends BiomeProvider {
             return ints;
         }
 
-        private static int[] createIntsFilledWithHell(int areaWidth, int areaHeight) {
+        private static int[] createIntsFilledWith(int areaWidth, int areaHeight, Biome biome) {
             val ints = new int[areaWidth * areaHeight];
-            Arrays.fill(ints, Biome.getIdForBiome(Biomes.HELL));
+            Arrays.fill(ints, Biome.getIdForBiome(biome));
             return ints;
         }
     }
